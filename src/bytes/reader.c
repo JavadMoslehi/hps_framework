@@ -60,8 +60,9 @@ hps_byte_status hps_byte_reader_skip(hps_byte_reader *reader, const size_t lengt
     return status;
 }
 
-hps_byte_status hps_byte_reader_take(hps_byte_reader *reader, const size_t length,
-                                    hps_byte_view *result)
+hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader,
+                                        const size_t length,
+                                        hps_byte_view *result)
 {
     hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
@@ -84,9 +85,9 @@ hps_byte_status hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
-            status = hps_byte_view_at(reader->view, reader->position, result);
+            status = hps_byte_view_read_u8(reader->view, reader->position, result);
             if (status == HPS_BYTE_OK) {
-                /* Successful at proves position < view.length <= SIZE_MAX. */
+                /* Successful read_u8 proves position < view.length <= SIZE_MAX. */
                 reader->position += 1U;
             }
         }

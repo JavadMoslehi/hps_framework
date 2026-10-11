@@ -61,8 +61,8 @@ hps_byte_status hps_byte_reader_skip(hps_byte_reader *reader, size_t length);
  * by length. Same range contract as skip. Empty result is {NULL, 0}, including
  * at EOF/empty input, without pointer arithmetic. O(1), no payload access/copy.
  */
-hps_byte_status hps_byte_reader_take(hps_byte_reader *reader, size_t length,
-                                    hps_byte_view *result);
+hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader, size_t length,
+                                        hps_byte_view *result);
 
 /* Reads 1/2/4/8 bytes at the current position and advances only on success.
  * Insufficient remaining bytes => OUT_OF_RANGE with unchanged cursor/output.

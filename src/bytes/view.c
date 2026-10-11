@@ -2,7 +2,7 @@
 
 /**
  * @file src/bytes/view.c
- * @brief Checked construction, slicing, lookup and equality of borrowed bytes.
+ * @brief Checked construction, slicing, byte reads and equality of borrowed bytes.
  */
 
 static hps_byte_status view_check(const hps_byte_view view)
@@ -46,8 +46,8 @@ hps_byte_status hps_byte_view_slice(const hps_byte_view view, const size_t offse
     return status;
 }
 
-hps_byte_status hps_byte_view_at(const hps_byte_view view, const size_t index,
-                                 uint8_t *result)
+hps_byte_status hps_byte_view_read_u8(const hps_byte_view view, const size_t index,
+                                    uint8_t *result)
 {
     hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {

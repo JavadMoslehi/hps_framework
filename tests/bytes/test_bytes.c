@@ -19,9 +19,9 @@ static void test_views(void)
     status = hps_byte_view_slice(view, 1U, 2U, &slice);
     assert(status == HPS_BYTE_OK && slice.data == &data[1] && slice.length == 2U);
     uint8_t value = 91U;
-    status = hps_byte_view_at(slice, 1U, &value);
+    status = hps_byte_view_read_u8(slice, 1U, &value);
     assert(status == HPS_BYTE_OK && value == 0U);
-    status = hps_byte_view_at(slice, 2U, &value);
+    status = hps_byte_view_read_u8(slice, 2U, &value);
     assert(status == HPS_BYTE_OUT_OF_RANGE && value == 0U);
     status = hps_byte_view_slice(view, SIZE_MAX, 1U, &slice);
     assert(status == HPS_BYTE_OUT_OF_RANGE && slice.data == &data[1]);
@@ -37,7 +37,7 @@ static void test_views(void)
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     status = hps_byte_view_slice(view, 0U, 1U, NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_view_at(view, 0U, NULL);
+    status = hps_byte_view_read_u8(view, 0U, NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     uint8_t equal = 99U;
     status = hps_byte_view_equal(view, view, &equal);
@@ -59,7 +59,7 @@ static void test_views(void)
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     status = hps_byte_view_slice(malformed, 0U, 0U, &slice);
     assert(status == HPS_BYTE_INVALID_ARGUMENT && slice.data == NULL);
-    status = hps_byte_view_at(malformed, 0U, &value);
+    status = hps_byte_view_read_u8(malformed, 0U, &value);
     assert(status == HPS_BYTE_INVALID_ARGUMENT && value == 0U);
     status = hps_byte_view_slice(view, 1U, 2U, &view);
     assert(status == HPS_BYTE_OK && view.data == &data[1] && view.length == 2U);
@@ -67,7 +67,7 @@ static void test_views(void)
     assert(status == HPS_BYTE_OK && slice.data == NULL);
     status = hps_byte_view_slice(slice, 0U, 0U, &slice);
     assert(status == HPS_BYTE_OK && slice.data == NULL);
-    status = hps_byte_view_at(slice, 0U, &value);
+    status = hps_byte_view_read_u8(slice, 0U, &value);
     assert(status == HPS_BYTE_OUT_OF_RANGE);
 }
 
@@ -85,10 +85,10 @@ static void test_buffers(void)
     hps_byte_status status = hps_byte_buffer_init(&buffer, data, 4U);
     assert(status == HPS_BYTE_OK && buffer.length == 0U && data[3] == 91U);
     const hps_byte_view initial = {data, 3U};
-    status = hps_byte_buffer_assign(&buffer, initial);
+    status = hps_byte_buffer_assign_bytes(&buffer, initial);
     assert(status == HPS_BYTE_OK);
     const hps_byte_view too_many = {data, 2U};
-    status = hps_byte_buffer_append(&buffer, too_many);
+    status = hps_byte_buffer_append_bytes(&buffer, too_many);
     assert(status == HPS_BYTE_NO_SPACE);
     assert_snapshot(&buffer, data);
     status = hps_byte_buffer_truncate(&buffer, SIZE_MAX);
@@ -98,26 +98,26 @@ static void test_buffers(void)
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     assert_snapshot(&buffer, data);
     const hps_byte_view malformed = {NULL, SIZE_MAX};
-    status = hps_byte_buffer_assign(&buffer, malformed);
+    status = hps_byte_buffer_assign_bytes(&buffer, malformed);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     assert_snapshot(&buffer, data);
-    status = hps_byte_buffer_append(&buffer, malformed);
+    status = hps_byte_buffer_append_bytes(&buffer, malformed);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     assert_snapshot(&buffer, data);
     const uint8_t larger[5] = {7U, 7U, 7U, 7U, 7U};
     const hps_byte_view oversized = {larger, 5U};
-    status = hps_byte_buffer_assign(&buffer, oversized);
+    status = hps_byte_buffer_assign_bytes(&buffer, oversized);
     assert(status == HPS_BYTE_NO_SPACE);
     assert_snapshot(&buffer, data);
     hps_byte_view borrowed = {NULL, 0U};
     status = hps_byte_buffer_as_view(&buffer, &borrowed);
     assert(status == HPS_BYTE_OK && borrowed.data == data && borrowed.length == 3U);
-    status = hps_byte_buffer_append_byte(&buffer, 4U);
+    status = hps_byte_buffer_append_u8(&buffer, 4U);
     assert(status == HPS_BYTE_OK && buffer.length == 4U && data[3] == 4U);
-    status = hps_byte_buffer_append_byte(&buffer, 9U);
+    status = hps_byte_buffer_append_u8(&buffer, 9U);
     assert(status == HPS_BYTE_NO_SPACE && data[3] == 4U && buffer.length == 4U);
     const hps_byte_view empty = {NULL, 0U};
-    status = hps_byte_buffer_append(&buffer, empty);
+    status = hps_byte_buffer_append_bytes(&buffer, empty);
     assert(status == HPS_BYTE_OK && buffer.length == 4U);
     status = hps_byte_buffer_truncate(&buffer, 2U);
     assert(status == HPS_BYTE_OK && buffer.length == 2U && data[3] == 4U);
@@ -125,16 +125,16 @@ static void test_buffers(void)
     assert(status == HPS_BYTE_OK && buffer.length == 0U && data[0] == 1U);
     status = hps_byte_buffer_as_view(&buffer, &borrowed);
     assert(status == HPS_BYTE_OK && borrowed.data == NULL && borrowed.length == 0U);
-    status = hps_byte_buffer_assign(&buffer, empty);
+    status = hps_byte_buffer_assign_bytes(&buffer, empty);
     assert(status == HPS_BYTE_OK && data[3] == 4U);
 
     /* Test-only malformed metadata; no impossible extent is dereferenced. */
     buffer.length = SIZE_MAX;
-    status = hps_byte_buffer_append(&buffer, empty);
+    status = hps_byte_buffer_append_bytes(&buffer, empty);
     assert(status == HPS_BYTE_INVALID_STATE && buffer.length == SIZE_MAX);
-    status = hps_byte_buffer_assign(&buffer, empty);
+    status = hps_byte_buffer_assign_bytes(&buffer, empty);
     assert(status == HPS_BYTE_INVALID_STATE);
-    status = hps_byte_buffer_append_byte(&buffer, 1U);
+    status = hps_byte_buffer_append_u8(&buffer, 1U);
     assert(status == HPS_BYTE_INVALID_STATE);
     status = hps_byte_buffer_clear(&buffer);
     assert(status == HPS_BYTE_INVALID_STATE);
@@ -144,21 +144,21 @@ static void test_buffers(void)
     assert(status == HPS_BYTE_INVALID_STATE && borrowed.data == larger);
     status = hps_byte_buffer_init(&buffer, NULL, 0U);
     assert(status == HPS_BYTE_OK);
-    status = hps_byte_buffer_append(&buffer, empty);
+    status = hps_byte_buffer_append_bytes(&buffer, empty);
     assert(status == HPS_BYTE_OK);
-    status = hps_byte_buffer_assign(&buffer, empty);
+    status = hps_byte_buffer_assign_bytes(&buffer, empty);
     assert(status == HPS_BYTE_OK);
-    status = hps_byte_buffer_append_byte(&buffer, 1U);
+    status = hps_byte_buffer_append_u8(&buffer, 1U);
     assert(status == HPS_BYTE_NO_SPACE);
     status = hps_byte_buffer_as_view(&buffer, &borrowed);
     assert(status == HPS_BYTE_OK && borrowed.data == NULL);
     status = hps_byte_buffer_init(NULL, NULL, 0U);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_buffer_assign(NULL, empty);
+    status = hps_byte_buffer_assign_bytes(NULL, empty);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_buffer_append(NULL, empty);
+    status = hps_byte_buffer_append_bytes(NULL, empty);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_buffer_append_byte(NULL, 1U);
+    status = hps_byte_buffer_append_u8(NULL, 1U);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     status = hps_byte_buffer_clear(NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
@@ -190,13 +190,13 @@ static void test_overlap_model(void)
                         &buffer, &data[destination], 16U - destination);
                     assert(status == HPS_BYTE_OK);
                     const hps_byte_view prefix = {&data[destination], initial};
-                    status = hps_byte_buffer_assign(&buffer, prefix);
+                    status = hps_byte_buffer_assign_bytes(&buffer, prefix);
                     assert(status == HPS_BYTE_OK);
                     for (size_t index = 0U; index < count; index += 1U) {
                         expected[destination + initial + index] = (uint8_t)(source + index);
                     }
                     const hps_byte_view input = {&data[source], count};
-                    status = hps_byte_buffer_append(&buffer, input);
+                    status = hps_byte_buffer_append_bytes(&buffer, input);
                     assert(status == HPS_BYTE_OK && buffer.length == initial + count);
                     for (size_t index = 0U; index < 16U; index += 1U) {
                         assert(data[index] == expected[index]);
@@ -206,7 +206,7 @@ static void test_overlap_model(void)
                     for (size_t index = 0U; index < count; index += 1U) {
                         expected[destination + index] = (uint8_t)(source + index);
                     }
-                    status = hps_byte_buffer_assign(&buffer, input);
+                    status = hps_byte_buffer_assign_bytes(&buffer, input);
                     assert(status == HPS_BYTE_OK && buffer.length == count);
                     for (size_t index = 0U; index < 16U; index += 1U) {
                         assert(data[index] == expected[index]);
@@ -403,7 +403,7 @@ static void test_endian_append_u16(
             }
             status = hps_byte_buffer_init(&buffer, &data[1], 3U + spare);
             assert(status == HPS_BYTE_OK);
-            status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+            status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
             assert(status == HPS_BYTE_OK);
             status = append(&buffer, values[fixture]);
             assert(status == HPS_BYTE_OK);
@@ -415,7 +415,7 @@ static void test_endian_append_u16(
         }
         status = hps_byte_buffer_init(&buffer, &data[1], 2U);
         assert(status == HPS_BYTE_OK);
-        status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+        status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
         assert(status == HPS_BYTE_OK);
         for (size_t index = 0U; index < 11U; index += 1U) {
             snapshot[index] = data[index];
@@ -473,7 +473,7 @@ static void test_endian_append_u32(
             }
             status = hps_byte_buffer_init(&buffer, &data[1], 5U + spare);
             assert(status == HPS_BYTE_OK);
-            status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+            status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
             assert(status == HPS_BYTE_OK);
             status = append(&buffer, values[fixture]);
             assert(status == HPS_BYTE_OK);
@@ -485,7 +485,7 @@ static void test_endian_append_u32(
         }
         status = hps_byte_buffer_init(&buffer, &data[1], 4U);
         assert(status == HPS_BYTE_OK);
-        status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+        status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
         assert(status == HPS_BYTE_OK);
         for (size_t index = 0U; index < 11U; index += 1U) {
             snapshot[index] = data[index];
@@ -543,7 +543,7 @@ static void test_endian_append_u64(
             }
             status = hps_byte_buffer_init(&buffer, &data[1], 9U + spare);
             assert(status == HPS_BYTE_OK);
-            status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+            status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
             assert(status == HPS_BYTE_OK);
             status = append(&buffer, values[fixture]);
             assert(status == HPS_BYTE_OK);
@@ -555,7 +555,7 @@ static void test_endian_append_u64(
         }
         status = hps_byte_buffer_init(&buffer, &data[1], 8U);
         assert(status == HPS_BYTE_OK);
-        status = hps_byte_buffer_append_byte(&buffer, 0xA5U);
+        status = hps_byte_buffer_append_u8(&buffer, 0xA5U);
         assert(status == HPS_BYTE_OK);
         for (size_t index = 0U; index < 11U; index += 1U) {
             snapshot[index] = data[index];

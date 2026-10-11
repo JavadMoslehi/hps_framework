@@ -87,9 +87,11 @@ profile and [review evidence](docs/architecture/misra-review.md).
 ## Bytes
 
 `hps/bytes/view.h` provides borrowed read-only byte views with checked slicing,
-index access and equality. `hps/bytes/buffer.h` provides fixed-capacity mutable
-buffers over caller-owned uint8_t arrays, with assign/append/truncate/clear and
-borrowed views. Failures preserve state; overlapping copies use memmove.
+`read_u8` access and equality. `hps/bytes/buffer.h` provides fixed-capacity mutable
+buffers over caller-owned uint8_t arrays, with `assign_bytes`, `append_bytes`,
+`append_u8`, truncate/clear and borrowed views. A view describes readable bytes;
+a buffer tracks writable storage, its active length and its capacity. Failures
+preserve state; overlapping copies use memmove.
 No module allocation, pool dependency or synchronization is involved.
 
 `hps/bytes/endian.h` adds checked u16/u32/u64 reads at view offsets and complete
@@ -97,14 +99,15 @@ field appends to buffers, in explicit LE/BE order. No native alignment/byte-orde
 assumption is used. See [integer byte encoding](docs/architecture/bytes-endian.md).
 
 `hps/bytes/reader.h` adds a sequential cursor over borrowed views, with remaining,
-skip, borrowed slices and u8/u16/u32/u64 reads. Failed operations preserve cursor
-and output; taking a slice copies no payload. See
+skip, `take_view` borrowed slices and u8/u16/u32/u64 reads. Failed operations
+preserve cursor and output; taking a slice copies no payload. See
 [the reader contract](docs/architecture/bytes-reader.md) for ownership, bounded
 work and ecosystem integration limits. Its C tests have not been built or run.
 
 Link `HPS::bytes` in CMake or use `hps-bytes` in Meson. See
 [the bytes contract](docs/architecture/bytes.md) for lifetimes, bounds, target libc
-requirements and prepared-test status. C builds/tests remain deferred.
+requirements, API name migration and prepared-test status. C builds/tests remain
+deferred.
 
 ## Numeric type policy
 

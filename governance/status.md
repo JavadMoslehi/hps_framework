@@ -21,6 +21,7 @@ industrial certification or release evidence bundle is currently established.
 | GAP-014 | Endian integer reads/appends and prepared byte fixtures are unbuilt; 64-bit arithmetic helpers/stack/ABI remain target assumptions | Verify the [endian change](reviews/bytes-endian-2026-10-11.md), essential types and actual target dependencies when builds are authorized | Open |
 | GAP-015 | Sequential reader and cursor/failure tests are prepared but unbuilt; target ABI, stack and timing remain unverified | Verify the [reader change](reviews/bytes-reader-2026-10-11.md) with compiled tests/analyzers/fuzzing and target evidence when authorized | Open |
 | GAP-016 | Ecosystem directories are placeholders; industrial/medical/defence overlays and concrete target contracts for all eight ecosystems are unset | Select product scope, system safety/security requirements, standards and target profiles before adoption | Open |
+| GAP-017 | Five bytes API symbols were renamed; updated consumer compilation/linkage remains unverified | Apply the [name migration](reviews/bytes-api-names-2026-10-11.md) and rebuild suites/consumers when builds are authorized | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

@@ -38,22 +38,24 @@ extern "C" {
 hps_byte_status hps_byte_buffer_init(hps_byte_buffer *buffer,
                                      uint8_t *storage, size_t capacity);
 
-/* Replaces active bytes/length with source; overlapping payloads are supported
- * with memmove semantics. Source length <= capacity, else NO_SPACE.
+/* Copies source bytes into existing storage, replacing active bytes/length.
+ * Overlapping payloads use memmove semantics.
+ * Source length <= capacity, else NO_SPACE.
  * INVALID_ARGUMENT on NULL buffer/malformed source; INVALID_STATE on malformed
  * initialized buffer. O(source.length), no byte copy for an empty source. */
-hps_byte_status hps_byte_buffer_assign(hps_byte_buffer *buffer,
-                                       hps_byte_view source);
+hps_byte_status hps_byte_buffer_assign_bytes(hps_byte_buffer *buffer,
+                                            hps_byte_view source);
 
-/* Appends source, including an overlapping/self view, with memmove semantics.
+/* Copies source bytes after the active prefix, including an overlapping/self
+ * view, with memmove semantics.
  * source.length <= capacity-length, else NO_SPACE; no partial append.
- * Same argument/state errors as assign. O(source.length). */
-hps_byte_status hps_byte_buffer_append(hps_byte_buffer *buffer,
-                                       hps_byte_view source);
+ * Same argument/state errors as assign_bytes. O(source.length). */
+hps_byte_status hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
+                                            hps_byte_view source);
 
 /* Appends one byte; NO_SPACE when full. INVALID_ARGUMENT on NULL buffer;
  * INVALID_STATE on malformed state. O(1). */
-hps_byte_status hps_byte_buffer_append_byte(hps_byte_buffer *buffer, uint8_t value);
+hps_byte_status hps_byte_buffer_append_u8(hps_byte_buffer *buffer, uint8_t value);
 
 /* Shrinks length only; requested length > current length gives OUT_OF_RANGE.
  * No byte erase; init-required argument/state errors as above. O(1). */

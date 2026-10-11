@@ -41,8 +41,8 @@ hps_byte_status hps_byte_buffer_init(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_assign(hps_byte_buffer *buffer,
-                                       const hps_byte_view source)
+hps_byte_status hps_byte_buffer_assign_bytes(hps_byte_buffer *buffer,
+                                            const hps_byte_view source)
 {
     hps_byte_status status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
@@ -60,8 +60,8 @@ hps_byte_status hps_byte_buffer_assign(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_append(hps_byte_buffer *buffer,
-                                       const hps_byte_view source)
+hps_byte_status hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
+                                            const hps_byte_view source)
 {
     hps_byte_status status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
@@ -80,8 +80,8 @@ hps_byte_status hps_byte_buffer_append(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_append_byte(hps_byte_buffer *buffer,
-                                            const uint8_t value)
+hps_byte_status hps_byte_buffer_append_u8(hps_byte_buffer *buffer,
+                                        const uint8_t value)
 {
     hps_byte_status status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {

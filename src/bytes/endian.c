@@ -124,7 +124,7 @@ hps_byte_status hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
         (uint8_t)((value >> 8U) & UINT16_C(0xFF))
     };
     const hps_byte_view field = {encoded, 2U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }
 
 hps_byte_status hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
@@ -135,7 +135,7 @@ hps_byte_status hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
         (uint8_t)(value & UINT16_C(0xFF))
     };
     const hps_byte_view field = {encoded, 2U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }
 
 hps_byte_status hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
@@ -148,7 +148,7 @@ hps_byte_status hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
         (uint8_t)((value >> 24U) & UINT32_C(0xFF))
     };
     const hps_byte_view field = {encoded, 4U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }
 
 hps_byte_status hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
@@ -161,7 +161,7 @@ hps_byte_status hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
         (uint8_t)(value & UINT32_C(0xFF))
     };
     const hps_byte_view field = {encoded, 4U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }
 
 hps_byte_status hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
@@ -178,7 +178,7 @@ hps_byte_status hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
         (uint8_t)((value >> 56U) & UINT64_C(0xFF))
     };
     const hps_byte_view field = {encoded, 8U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }
 
 hps_byte_status hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
@@ -195,5 +195,5 @@ hps_byte_status hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
         (uint8_t)(value & UINT64_C(0xFF))
     };
     const hps_byte_view field = {encoded, 8U};
-    return hps_byte_buffer_append(buffer, field);
+    return hps_byte_buffer_append_bytes(buffer, field);
 }

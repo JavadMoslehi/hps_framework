@@ -15,8 +15,9 @@ uint8_t availability implies eight-bit C bytes for this representation.
 
 Each family has u16/u32/u64 functions with `_le` and `_be` suffixes. LE writes the
 least significant octet first; BE writes it last. For example, UINT32_C(0x81234567)
-is `67 45 23 81` in LE and `81 23 45 67` in BE. Existing view-at and append-byte
-operations already cover u8. The [sequential reader](bytes-reader.md) adds a
+is `67 45 23 81` in LE and `81 23 45 67` in BE. Existing
+`hps_byte_view_read_u8` and `hps_byte_buffer_append_u8` operations already cover
+u8. The [sequential reader](bytes-reader.md) adds a
 checked cursor over these reads; buffer.length already tracks sequential appends.
 Signed numbers, floating point, variable-length integers and protocol schemas
 remain outside these operations.
@@ -39,8 +40,9 @@ change the descriptor or an external cursor.
 Appends require an initialized buffer. NULL buffer gives HPS_BYTE_INVALID_ARGUMENT;
 malformed metadata gives HPS_BYTE_INVALID_STATE; insufficient capacity gives
 HPS_BYTE_NO_SPACE. The complete field is encoded in a fixed local uint8_t array
-and submitted as one checked append. Failure preserves the descriptor and every
-payload byte, including the active prefix and unused capacity. Success writes
+and submitted through one checked `hps_byte_buffer_append_bytes` call. Failure
+preserves the descriptor and every payload byte, including the active prefix and
+unused capacity. Success writes
 only the new field and advances length by its width. No partial field is appended.
 
 The local encoded array is consumed synchronously and its address is not retained.

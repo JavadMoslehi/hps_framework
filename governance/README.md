@@ -29,6 +29,7 @@ and blocks the corresponding release claim.
 | [Bytes review](reviews/bytes-2026-10-11.md) | Borrowed views, fixed-capacity buffers and pending evidence |
 | [Endian bytes review](reviews/bytes-endian-2026-10-11.md) | Bounded integer encoding and pending target/test evidence |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |
+| [Bytes API naming review](reviews/bytes-api-names-2026-10-11.md) | Explicit byte operations, migration and source-only checks |
 | [Test entry-point review](reviews/test-entrypoints-2026-10-11.md) | Shared runner and proposed test-only numerical exception |
 | [Pointer-pool review](reviews/pointer-pool-2026-10-11.md) | Current allocator contract, changes and open findings |
 | [Earlier source review](reviews/source-review-2026-10-11.md) | Historical inventory and earlier handle-pool snapshot |

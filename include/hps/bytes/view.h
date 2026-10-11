@@ -50,7 +50,8 @@ hps_byte_status hps_byte_view_slice(hps_byte_view view, size_t offset,
 
 /* index < length; reads exactly one byte into result. OUT_OF_RANGE on bad index,
  * INVALID_ARGUMENT on malformed view/NULL result. O(1). */
-hps_byte_status hps_byte_view_at(hps_byte_view view, size_t index, uint8_t *result);
+hps_byte_status hps_byte_view_read_u8(hps_byte_view view, size_t index,
+                                    uint8_t *result);
 
 /* Writes exactly 0 or 1. INVALID_ARGUMENT on malformed views/NULL result.
  * O(minimum length) worst-case; returns early on different lengths/bytes.

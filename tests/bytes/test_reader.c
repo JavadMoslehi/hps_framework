@@ -58,7 +58,7 @@ static void test_reader_sequence(void)
     status = hps_byte_reader_read_u8(&reader, &byte);
     assert(status == HPS_BYTE_OK && byte == 0xA5U && reader.position == 1U);
     hps_byte_view taken = {NULL, 0U};
-    status = hps_byte_reader_take(&reader, 2U, &taken);
+    status = hps_byte_reader_take_view(&reader, 2U, &taken);
     assert(status == HPS_BYTE_OK && reader.position == 3U);
     assert(taken.data == &data[1] && taken.length == 2U);
     assert(taken.data[0] == 0xAAU && taken.data[1] == 0xBBU);
@@ -94,7 +94,7 @@ static void test_reader_sequence(void)
 
     const hps_byte_reader eof = reader;
     const hps_byte_view taken_snapshot = taken;
-    status = hps_byte_reader_take(&reader, 1U, &taken);
+    status = hps_byte_reader_take_view(&reader, 1U, &taken);
     assert(status == HPS_BYTE_OUT_OF_RANGE);
     assert(taken.data == taken_snapshot.data && taken.length == taken_snapshot.length);
     assert_reader_snapshot(&reader, eof);
@@ -104,7 +104,7 @@ static void test_reader_sequence(void)
     status = hps_byte_reader_read_u8(&reader, &byte);
     assert(status == HPS_BYTE_OUT_OF_RANGE && byte == 0xFFU);
     assert_reader_snapshot(&reader, eof);
-    status = hps_byte_reader_take(&reader, 0U, &taken);
+    status = hps_byte_reader_take_view(&reader, 0U, &taken);
     assert(status == HPS_BYTE_OK && taken.data == NULL && taken.length == 0U);
     assert_reader_snapshot(&reader, eof);
     status = hps_byte_reader_skip(&reader, 0U);
@@ -135,7 +135,7 @@ static void test_reader_independent_cursors(void)
     assert(second.position == 4U);
     assert_reader_snapshot(&first, first_after_byte);
     hps_byte_view taken = {NULL, 0U};
-    status = hps_byte_reader_take(&first, 3U, &taken);
+    status = hps_byte_reader_take_view(&first, 3U, &taken);
     assert(status == HPS_BYTE_OK && first.position == 4U);
     assert(taken.data == &data[1] && taken.length == 3U);
     assert(first.view.data == data && second.view.data == data);
@@ -170,7 +170,7 @@ static void test_reader_initialization_and_empty(void)
     assert(reader.view.data == data && reader.view.length == 3U);
     assert(reader.position == 0U);
     hps_byte_view taken = {data, 1U};
-    status = hps_byte_reader_take(&reader, 0U, &taken);
+    status = hps_byte_reader_take_view(&reader, 0U, &taken);
     assert(status == HPS_BYTE_OK && taken.data == NULL && taken.length == 0U);
     assert(reader.position == 0U);
     status = hps_byte_reader_skip(&reader, 3U);
@@ -190,7 +190,7 @@ static void test_reader_initialization_and_empty(void)
     assert(status == HPS_BYTE_OK);
     taken.data = data;
     taken.length = 1U;
-    status = hps_byte_reader_take(&reader, 0U, &taken);
+    status = hps_byte_reader_take_view(&reader, 0U, &taken);
     assert(status == HPS_BYTE_OK && taken.data == NULL && taken.length == 0U);
     const hps_byte_reader empty = reader;
     uint8_t byte = 0xA5U;
@@ -200,7 +200,7 @@ static void test_reader_initialization_and_empty(void)
     status = hps_byte_reader_skip(&reader, 1U);
     assert(status == HPS_BYTE_OUT_OF_RANGE);
     assert_reader_snapshot(&reader, empty);
-    status = hps_byte_reader_take(&reader, 1U, &taken);
+    status = hps_byte_reader_take_view(&reader, 1U, &taken);
     assert(status == HPS_BYTE_OUT_OF_RANGE && taken.data == NULL && taken.length == 0U);
     assert_reader_snapshot(&reader, empty);
     const hps_byte_view canonical_empty = {NULL, 0U};
@@ -224,11 +224,11 @@ static void test_reader_arguments_and_state(void)
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     status = hps_byte_reader_skip(NULL, 0U);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_reader_take(NULL, 0U, &taken);
+    status = hps_byte_reader_take_view(NULL, 0U, &taken);
     assert(status == HPS_BYTE_INVALID_ARGUMENT && taken.data == data && taken.length == 1U);
-    status = hps_byte_reader_take(&reader, 0U, NULL);
+    status = hps_byte_reader_take_view(&reader, 0U, NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
-    status = hps_byte_reader_take(NULL, SIZE_MAX, NULL);
+    status = hps_byte_reader_take_view(NULL, SIZE_MAX, NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     status = hps_byte_reader_read_u8(NULL, &byte);
     assert(status == HPS_BYTE_INVALID_ARGUMENT && byte == 0xA5U);
@@ -242,16 +242,16 @@ static void test_reader_arguments_and_state(void)
     status = hps_byte_reader_skip(&reader, SIZE_MAX);
     assert(status == HPS_BYTE_OUT_OF_RANGE);
     assert_reader_snapshot(&reader, original);
-    status = hps_byte_reader_take(&reader, SIZE_MAX, &taken);
+    status = hps_byte_reader_take_view(&reader, SIZE_MAX, &taken);
     assert(status == HPS_BYTE_OUT_OF_RANGE && taken.data == data && taken.length == 1U);
     assert_reader_snapshot(&reader, original);
-    status = hps_byte_reader_take(&reader, 3U, &taken);
+    status = hps_byte_reader_take_view(&reader, 3U, &taken);
     assert(status == HPS_BYTE_OUT_OF_RANGE && taken.data == data && taken.length == 1U);
     assert_reader_snapshot(&reader, original);
     /* A rejected request leaves the reader usable for a smaller valid request. */
     status = hps_byte_reader_remaining(&reader, &remaining);
     assert(status == HPS_BYTE_OK && remaining == 2U);
-    status = hps_byte_reader_take(&reader, 2U, &taken);
+    status = hps_byte_reader_take_view(&reader, 2U, &taken);
     assert(status == HPS_BYTE_OK && reader.position == 3U);
     assert(taken.data == &data[1] && taken.length == 2U);
     remaining = SIZE_MAX;
@@ -272,15 +272,15 @@ static void test_reader_arguments_and_state(void)
         assert(status == HPS_BYTE_INVALID_STATE);
         status = hps_byte_reader_skip(&reader, SIZE_MAX);
         assert(status == HPS_BYTE_INVALID_STATE);
-        status = hps_byte_reader_take(&reader, 0U, &taken);
+        status = hps_byte_reader_take_view(&reader, 0U, &taken);
         assert(status == HPS_BYTE_INVALID_STATE && taken.data == data && taken.length == 1U);
-        status = hps_byte_reader_take(&reader, SIZE_MAX, &taken);
+        status = hps_byte_reader_take_view(&reader, SIZE_MAX, &taken);
         assert(status == HPS_BYTE_INVALID_STATE && taken.data == data && taken.length == 1U);
         status = hps_byte_reader_read_u8(&reader, &byte);
         assert(status == HPS_BYTE_INVALID_STATE && byte == 0xA5U);
         status = hps_byte_reader_remaining(&reader, NULL);
         assert(status == HPS_BYTE_INVALID_ARGUMENT);
-        status = hps_byte_reader_take(&reader, 0U, NULL);
+        status = hps_byte_reader_take_view(&reader, 0U, NULL);
         assert(status == HPS_BYTE_INVALID_ARGUMENT);
         status = hps_byte_reader_read_u8(&reader, NULL);
         assert(status == HPS_BYTE_INVALID_ARGUMENT);

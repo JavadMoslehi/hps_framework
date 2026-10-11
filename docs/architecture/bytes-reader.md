@@ -12,7 +12,7 @@ bytes without allocating, copying payload or using the static pool.
 | `hps_byte_reader_init` | Binds a view, normalizes empty input and sets position to zero |
 | `hps_byte_reader_remaining` | Writes the remaining count without moving position |
 | `hps_byte_reader_skip` | Advances position by a checked count without accessing payload |
-| `hps_byte_reader_take` | Writes a borrowed slice and advances by its length |
+| `hps_byte_reader_take_view` | Writes a borrowed slice and advances by its length |
 | `hps_byte_reader_read_u8` | Reads one byte and advances by one |
 | `hps_byte_reader_read_u16_le/be` | Reads a two-byte integer and advances by two |
 | `hps_byte_reader_read_u32_le/be` | Reads a four-byte integer and advances by four |
@@ -33,7 +33,7 @@ validation are outside this reader's contract.
 
 The invariant is `position <= view.length`. Before subtracting remaining bytes,
 the reader validates this invariant and the view's NULL/length combination.
-Skip checks count <= length-position. Take delegates to checked view slicing;
+Skip checks count <= length-position. `take_view` delegates to checked view slicing;
 numeric reads delegate to checked view/endian reads. A successful operation proves
 that the cursor increment is <=length-position, so the new position is <=length
 and the addition cannot wrap SIZE_MAX.

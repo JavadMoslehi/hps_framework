@@ -49,7 +49,7 @@ hps_byte_status hps_byte_view_read_u64_be(hps_byte_view view, size_t offset,
  * unused bytes after the field are preserved. NULL buffer => INVALID_ARGUMENT;
  * invalid buffer state => INVALID_STATE; insufficient remaining capacity =>
  * NO_SPACE with no partial append. All uintN_t values are supported.
- * Delegates one checked append to the bytes buffer implementation (memmove).
+ * Delegates once to buffer append_bytes (memmove).
  * O(1), at most eight bytes encoded/copied, at most eight local payload bytes
  * plus a local view and call state; actual stack/runtime helpers need target
  * qualification. The encoded local array does not escape the synchronous call.

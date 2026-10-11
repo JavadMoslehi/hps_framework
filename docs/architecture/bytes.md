@@ -4,14 +4,28 @@ The bytes module borrows caller-owned uint8_t arrays. It is independent of the
 pool, OS and thread services. It does not allocate, resize storage or free anything.
 It has no global mutable state and uses size_t for lengths/offsets/capacities.
 
+## Design
+
+A view answers which initialized bytes may be read: it borrows a readable span
+with a pointer and length. A buffer answers where bytes may be written and how
+many are active: it borrows writable storage with a pointer, length and fixed
+capacity. Both descriptors leave storage ownership and lifetime with the caller.
+
+`hps_byte_view_slice` and `hps_byte_buffer_as_view` create borrowed descriptors
+without copying payload. `hps_byte_buffer_assign_bytes` and
+`hps_byte_buffer_append_bytes` copy bytes into buffer storage. A reader adds a
+read position to a view; `buffer.length` already serves as the next append
+position. Clearing a buffer changes this length and does not erase its storage.
+
 ## View
 
 Include `hps/bytes/view.h`. An hps_byte_view contains a const uint8_t pointer and
 length. Construction and slice are O(1), with no payload copy. Empty results are
 normalized to {NULL, 0}; slicing an empty range performs no pointer arithmetic.
-An empty slice at the end is valid, an offset beyond the end is not. Index access
-requires index < length. Equality returns a uint8_t 0/1 result and stops on a
-mismatch; it is not suitable for secret constant-time comparisons.
+An empty slice at the end is valid, an offset beyond the end is not.
+`hps_byte_view_read_u8` requires index < length. Equality returns a uint8_t 0/1
+result and stops on a mismatch; it is not suitable for secret constant-time
+comparisons.
 
 The original array must remain alive, and nonempty input views must cover actual
 initialized readable bytes. A descriptor cannot prove pointer validity or extent.
@@ -29,12 +43,14 @@ For sequential checked reads with a cursor, see the
 Include `hps/bytes/buffer.h`. An hps_byte_buffer contains a uint8_t pointer,
 length and capacity. Initialize it with an actual caller-owned writable array;
 length starts at zero without reading or clearing payloads. NULL storage is valid
-only with capacity zero. Empty zero-capacity buffers accept empty append/assign,
-but a byte append returns NO_SPACE. Buffer descriptors can be rebound through init
-after invalidating borrowed views; storage ownership always stays with the caller.
+only with capacity zero. Empty zero-capacity buffers accept empty
+`append_bytes`/`assign_bytes`, but `append_u8` returns NO_SPACE. Buffer descriptors
+can be rebound through init after invalidating borrowed views; storage ownership
+always stays with the caller.
 
-Assign replaces active bytes; append adds a view; append_byte adds one byte.
-Capacity is fixed. Bounds are validated before copying; NO_SPACE does not perform
+`assign_bytes` replaces active bytes; `append_bytes` appends the bytes described
+by a view; `append_u8` adds one byte. Capacity is fixed. Bounds are validated
+before copying; NO_SPACE does not perform
 a partial copy or alter length/payload. Append uses source.length <= capacity-length
 rather than adding unchecked lengths. Overlapping source/destination, including
 self-append, is supported by standard memmove. Descriptor metadata and output
@@ -58,9 +74,9 @@ hps_byte_status message_init(void)
     return hps_byte_buffer_init(&message, message_storage, MESSAGE_CAPACITY);
 }
 
-hps_byte_status message_append(hps_byte_view payload)
+hps_byte_status message_append_bytes(hps_byte_view payload)
 {
-    return hps_byte_buffer_append(&message, payload);
+    return hps_byte_buffer_append_bytes(&message, payload);
 }
 ```
 
@@ -85,7 +101,7 @@ Buffer state validation precedes source validation; API comments specify applica
 errors. Caller pointers must be live, determinate and correctly typed; no recovery
 from arbitrary invalid pointers or stale lifetimes is promised.
 
-View construction/slice/index and buffer init/append_byte/truncate/clear/as_view
+View construction/slice/read_u8 and buffer init/append_u8/truncate/clear/as_view
 use O(1) work. Equality uses O(length) worst-case for equal-length inputs; copy and
 append use O(source.length). There are no retries, recursion, dynamic arrays or
 module scratch allocations. Metadata requires sizeof(view)/sizeof(buffer) on the
@@ -99,9 +115,29 @@ There is no linked-product no-heap or freestanding-libc-availability guarantee.
 The view implementation has no runtime library dependency in its source.
 
 Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson; the shared `hps_tests`
-runner invokes `test_bytes(void)` alongside the base and pool suites in all three
-build systems. Public headers are picked up automatically by the
+runner invokes `test_bytes(void)` alongside the base, pool and reader suites in
+all three build systems. Public headers are picked up automatically by the
 independent-inclusion portability suite. These manifests are prepared, not built.
+
+## API name migration
+
+The following external function symbols have been renamed to make the byte
+operation or borrowed result explicit:
+
+| Previous name | Current name |
+| --- | --- |
+| `hps_byte_buffer_assign` | `hps_byte_buffer_assign_bytes` |
+| `hps_byte_buffer_append` | `hps_byte_buffer_append_bytes` |
+| `hps_byte_buffer_append_byte` | `hps_byte_buffer_append_u8` |
+| `hps_byte_view_at` | `hps_byte_view_read_u8` |
+| `hps_byte_reader_take` | `hps_byte_reader_take_view` |
+
+Consumers must update calls and rebuild with the matching headers and library.
+There are no legacy aliases. Public structure layouts, status values, parameter
+types, ownership, bounds and failure contracts remain unchanged. Symbol
+compatibility with an older library is not preserved. See
+[the API naming review](../../governance/reviews/bytes-api-names-2026-10-11.md)
+for the change scope and deferred validation.
 
 ## Validation status
 
