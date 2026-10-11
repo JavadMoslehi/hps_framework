@@ -62,14 +62,31 @@ synthetic compiler/architecture detection. Run it with another GCC/Clang-compati
 compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
-The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes` and `test_reader`
-once, in that order, and stops on the first failure. Module test files expose
+The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
+`test_reader` and `test_status` once, in that order, and stops on the first failure.
+Module test files expose
 functions matching their filenames; the only suite runner `main` is in
 `tests/main.c`. Make, CMake and Meson now use this executable instead of the three
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
 This runner change has not been compiled or executed.
+
+## Status diagnostics
+
+`hps/status.h` defines the shared `int64_t` status type `hps_status_t`: success is
+zero and errors are negative. Framework, memory and bytes errors occupy distinct
+registered module ranges. `hps_status_module` identifies an allocated range;
+`hps_status_string` returns an immutable NUL-terminated diagnostic message of at
+most 31 characters, or `"unknown status"` for an unregistered code. No allocation
+or runtime registration is involved.
+
+Link `HPS::status` in CMake or use `hps-status` in Meson; memory/bytes targets
+include this dependency. Module status aliases and constants retain their names
+but now use this signed representation and module-specific negative values.
+Consumers must rebuild and update stored numeric status assumptions. See
+[the status contract and migration](docs/architecture/status.md). Its prepared C
+tests have not been compiled or run.
 
 ## Static memory pool
 
@@ -118,3 +135,8 @@ indices. Integer types with least/fast width qualifiers are not used. Plain `cha
 `int main(void)` signature; library numeric declarations do not use basic types.
 This project policy supports MISRA's numeric-type guidance; it does not establish
 whole-framework compliance.
+
+Flags retain `uint8_t`; API statuses use `hps_status_t` or its semantic module
+aliases. [The C rules](governance/c-rules.md) also require readable validation and
+state transitions, shared logic where contracts match, and explicit reasons for
+specialization or repetition.

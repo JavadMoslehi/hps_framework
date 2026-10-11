@@ -25,6 +25,21 @@ numerical types, C-string-only char pointers, typed static objects and explicit
 failure/lifetime contracts. Consult [current gaps](governance/status.md) before
 making compliance, deployment or performance claims.
 
+Use descriptive names and purpose comments, and keep validation, bounds and
+mutation order locally reviewable (HPS-C-017). Share avoidable duplicate logic
+only where the contracts and resource bounds match; record justified repetition
+or specialization (HPS-C-018). Do not weaken checks or couple an independent test
+oracle to production code to reduce repetition.
+
+Framework/module status APIs use `hps_status_t` (`int64_t`) from `hps/status.h` or
+a module alias; flags remain `uint8_t`. Allocate module IDs and negative reasons
+centrally, register bounded immutable diagnostic messages and document ABI/code
+migration under HPS-C-004/HPS-C-019. See
+[the status contract](docs/architecture/status.md) and
+[the user-requested policy change](governance/reviews/status-2026-10-11.md).
+Maintainer/reviewer disposition remains pending; this policy edit does not approve
+a MISRA deviation.
+
 For a qualified-target release, additionally run
 `python3 tools/check_policy.py --require-assessed`. This record gate currently
 fails because all baseline guidelines are unassessed; passing it later does not

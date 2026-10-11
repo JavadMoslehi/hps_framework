@@ -8,20 +8,22 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "hps/status.h"
 
 /* Fixed ABI/resource budget; these are not per-translation-unit overrides. */
 #define HPS_POOL_MAX_BUFFERS 32U
 #define HPS_POOL_BUFFER_SIZE 128U
 
-typedef uint8_t hps_pool_status;
-#define HPS_POOL_OK ((hps_pool_status)0U)
-#define HPS_POOL_INVALID_ARGUMENT ((hps_pool_status)1U)
-#define HPS_POOL_EXHAUSTED ((hps_pool_status)2U)
-#define HPS_POOL_INVALID_POINTER ((hps_pool_status)3U)
-#define HPS_POOL_DOUBLE_FREE ((hps_pool_status)4U)
-#define HPS_POOL_NOT_INITIALIZED ((hps_pool_status)5U)
-#define HPS_POOL_ALREADY_INITIALIZED ((hps_pool_status)6U)
-#define HPS_POOL_CORRUPT ((hps_pool_status)7U)
+/* Memory owns status module 1, reasons 1..7; all success aliases share zero. */
+typedef hps_status_t hps_pool_status;
+#define HPS_POOL_OK HPS_STATUS_OK
+#define HPS_POOL_INVALID_ARGUMENT ((hps_pool_status)-INT64_C(65537))
+#define HPS_POOL_EXHAUSTED ((hps_pool_status)-INT64_C(65538))
+#define HPS_POOL_INVALID_POINTER ((hps_pool_status)-INT64_C(65539))
+#define HPS_POOL_DOUBLE_FREE ((hps_pool_status)-INT64_C(65540))
+#define HPS_POOL_NOT_INITIALIZED ((hps_pool_status)-INT64_C(65541))
+#define HPS_POOL_ALREADY_INITIALIZED ((hps_pool_status)-INT64_C(65542))
+#define HPS_POOL_CORRUPT ((hps_pool_status)-INT64_C(65543))
 
 typedef struct {
     size_t capacity;

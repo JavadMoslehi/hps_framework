@@ -6,9 +6,9 @@
  * @brief Template for a public HPS C module header.
  */
 
-#include <stdint.h>
+#include "hps/status.h"
 
-typedef uint8_t hps_module_status;
+typedef hps_status_t hps_module_status;
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,6 +16,8 @@ extern "C" {
 
 /* Template only: replace this prototype with the reviewed module contract.
  * Document initialization, inputs, failure outputs, lifetime and execution context.
+ * Status aliases retain the common int64_t ABI. Reserve a unique module ID and
+ * register its negative errors/messages before adding module-specific constants.
  */
 hps_module_status hps_module_operation(void);
 

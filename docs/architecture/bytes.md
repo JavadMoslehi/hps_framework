@@ -88,13 +88,18 @@ budgets; size_t alone is not admission control.
 
 ## Errors, bounds and dependencies
 
-| Condition | Status |
-| --- | --- |
-| Successful operation | HPS_BYTE_OK |
-| NULL required argument or malformed source/view | HPS_BYTE_INVALID_ARGUMENT |
-| Slice/index/truncate outside active length | HPS_BYTE_OUT_OF_RANGE |
-| Copy/append exceeds destination capacity | HPS_BYTE_NO_SPACE |
-| Buffer length > capacity or NULL data with positive capacity | HPS_BYTE_INVALID_STATE |
+`hps_byte_status` is a semantic alias of the shared `int64_t` `hps_status_t`.
+Bytes owns module ID two; its typed constants occupy that module's reserved
+negative range. See [shared status diagnostics](status.md) for classification,
+immutable messages and registration.
+
+| Condition | Status | Value |
+| --- | --- | --- |
+| Successful operation | HPS_BYTE_OK | 0 |
+| NULL required argument or malformed source/view | HPS_BYTE_INVALID_ARGUMENT | -131073 |
+| Slice/index/truncate outside active length | HPS_BYTE_OUT_OF_RANGE | -131074 |
+| Copy/append exceeds destination capacity | HPS_BYTE_NO_SPACE | -131075 |
+| Buffer length > capacity or NULL data with positive capacity | HPS_BYTE_INVALID_STATE | -131076 |
 
 Failed operations preserve payloads, descriptors and scalar/descriptor outputs.
 Buffer state validation precedes source validation; API comments specify applicable
@@ -114,9 +119,10 @@ transitive no-heap behavior and timing/stack must be reviewed for the target.
 There is no linked-product no-heap or freestanding-libc-availability guarantee.
 The view implementation has no runtime library dependency in its source.
 
-Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson; the shared `hps_tests`
-runner invokes `test_bytes(void)` alongside the base, pool and reader suites in
-all three build systems. Public headers are picked up automatically by the
+Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson, with the corresponding
+status library dependency. The shared `hps_tests` runner invokes `test_bytes(void)`
+alongside the base, pool, reader and status suites in all three build systems.
+Public headers are picked up automatically by the
 independent-inclusion portability suite. These manifests are prepared, not built.
 
 ## API name migration
@@ -133,11 +139,26 @@ operation or borrowed result explicit:
 | `hps_byte_reader_take` | `hps_byte_reader_take_view` |
 
 Consumers must update calls and rebuild with the matching headers and library.
-There are no legacy aliases. Public structure layouts, status values, parameter
-types, ownership, bounds and failure contracts remain unchanged. Symbol
-compatibility with an older library is not preserved. See
+There are no legacy aliases. The naming change preserved public structure
+layouts, status values, parameter types, ownership, bounds and failure contracts
+at that step. Symbol compatibility with the earlier names is not preserved. See
 [the API naming review](../../governance/reviews/bytes-api-names-2026-10-11.md)
-for the change scope and deferred validation.
+for that historical change scope and deferred validation.
+
+## Status ABI migration
+
+The current shared-status change preserves function names, status alias spelling
+and byte ownership/bounds/failure behavior. It changes `hps_byte_status` from
+uint8_t to int64_t and replaces positive error values 1..4 with -131073..-131076.
+Use named constants; do not narrow errors into uint8_t or continue serializing the
+earlier numeric values. Byte view, buffer and reader structure layouts are
+unchanged because they contain no status member.
+
+Rebuild the library and every consumer together, including callbacks, wrappers
+and foreign-language bindings that return or store this alias. The existing
+typed endian header and implementation are unchanged, but their status-return
+ABI widens through the alias as well. Old binaries cannot be mixed with the new
+headers/library. See [the shared-status change record](../../governance/reviews/status-2026-10-11.md).
 
 ## Validation status
 
@@ -148,3 +169,6 @@ covering overlapping and disjoint ranges. They have not been compiled or run:
 the user's no-build instruction remains active. No sanitizer/analyzer, mixed C/C++
 ABI, target timing or industrial qualification evidence is supplied.
 See [the change review](../../governance/reviews/bytes-2026-10-11.md).
+That review covers its original snapshot; the
+[shared-status review](../../governance/reviews/status-2026-10-11.md) records the
+current representation change and pending checks.

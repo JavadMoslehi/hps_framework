@@ -48,6 +48,27 @@ Zero-sized malloc/calloc returns NULL with INVALID_ARGUMENT. realloc(NULL, 0)
 follows that policy; realloc(live, 0) releases successfully. These are documented
 pool choices, not a promise of all zero-size behaviors across libc implementations.
 
+`hps_pool_status` is a semantic alias of `hps_status_t`, the shared int64_t status
+type from `hps/status.h`. Memory owns module ID one. Status names retain their
+module meaning and can be passed directly to `hps_status_module` and
+`hps_status_string`; returned diagnostic strings are immutable. See
+[the shared status contract](status.md).
+
+| Status | Value |
+| --- | --- |
+| HPS_POOL_OK | 0 |
+| HPS_POOL_INVALID_ARGUMENT | -65537 |
+| HPS_POOL_EXHAUSTED | -65538 |
+| HPS_POOL_INVALID_POINTER | -65539 |
+| HPS_POOL_DOUBLE_FREE | -65540 |
+| HPS_POOL_NOT_INITIALIZED | -65541 |
+| HPS_POOL_ALREADY_INITIALIZED | -65542 |
+| HPS_POOL_CORRUPT | -65543 |
+
+The memory target (`HPS::memory` in CMake, `hps-memory` in Meson) carries its status
+library dependency. Diagnostic lookup has no dependency on live pool state and
+does not alter `hps_pool_last_status`.
+
 This is byte-buffer storage, not a drop-in general typed-object allocator. Arrays
 are declared uint8_t objects; use the returned addresses as uint8_t buffers. Do not
 cast them to structures, numerical scalars or over-aligned objects. Signature
@@ -88,8 +109,10 @@ Do not label the lookup search-free or scalable O(1). Fixed limits bound executi
 but are not measured latency/WCET evidence. The block count and size are fixed API
 constants, not silently differing per-file configurations. Private storage budget
 is 32*sizeof(private block), including pointer/flag/padding overhead, plus a head
-pointer, size_t counter, uint8_t flag and status; verify actual ABI sizes, stack and
-linker layout on a selected target. Payload budget alone is 4096 bytes.
+pointer, size_t counter, uint8_t flag and int64_t status; verify actual ABI sizes,
+stack and linker layout on a selected target. Payload budget alone is 4096 bytes.
+The last-status object now has int64_t representation; include that widened
+storage and the separate immutable diagnostic registry in target budget evidence.
 
 ## Migration and evidence
 
@@ -98,12 +121,23 @@ Replace acquire/resolve/release with the four functions above; callers no longer
 supply metadata or payload arrays. Generation retirement and post-reuse stale-handle
 rejection no longer exist. This is an intentional API/ABI break at development 0.1.0.
 
+The current shared-status change separately widens `hps_pool_status` from uint8_t
+to int64_t and replaces positive errors 1..7 with -65537..-65543. Function names,
+allocation signatures, pool capacity, ownership and error priority are unchanged.
+The `hps_pool_stats` layout is unchanged because it has no status field. Rebuild
+all status-returning callers, callbacks and bindings with the matching library;
+update persisted numeric assumptions and never narrow an error to uint8_t. Old
+binaries cannot be mixed with the new headers/library. See
+[the shared-status change record](../../governance/reviews/status-2026-10-11.md).
+
 Prepared tests cover signatures, pre-init use, reinit rejection, zero/oversize,
 calloc product overflow and clearing, realloc preservation, exhaustion/recovery,
 foreign/interior addresses and immediate double free. They have not been compiled
 or run under the user's no-build instruction. Earlier allocator test and review
 results do not validate this replacement. See [current review](misra-review.md)
 and [pointer-pool change record](../../governance/reviews/pointer-pool-2026-10-11.md).
+Those records remain evidence for their respective earlier snapshots; the shared
+status representation requires its own current ABI and test evidence.
 
 The public header has independent standard dependencies and guarded extern "C"
 for declarations. C/C++ mixed compilation/linking and target ABI remain untested.

@@ -15,6 +15,12 @@
 extern "C" {
 #endif
 
+
+typedef enum {
+    HPS_ENDIAN_LITTLE = 0,
+    HPS_ENDIAN_BIG    = 1
+} hps_endian_t;
+
 /* Shared contract: exact-width uint8_t/uint16_t/uint32_t/uint64_t must exist.
  * The view/buffer ownership, extent, initialization and lifetime contracts apply.
  * LE places the least significant octet first; BE places it last. Operations

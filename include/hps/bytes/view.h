@@ -8,13 +8,15 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "hps/status.h"
 
-typedef uint8_t hps_byte_status;
-#define HPS_BYTE_OK ((hps_byte_status)0U)
-#define HPS_BYTE_INVALID_ARGUMENT ((hps_byte_status)1U)
-#define HPS_BYTE_OUT_OF_RANGE ((hps_byte_status)2U)
-#define HPS_BYTE_NO_SPACE ((hps_byte_status)3U)
-#define HPS_BYTE_INVALID_STATE ((hps_byte_status)4U)
+/* Bytes owns status module 2, reasons 1..4; all success aliases share zero. */
+typedef hps_status_t hps_byte_status;
+#define HPS_BYTE_OK HPS_STATUS_OK
+#define HPS_BYTE_INVALID_ARGUMENT ((hps_byte_status)-INT64_C(131073))
+#define HPS_BYTE_OUT_OF_RANGE ((hps_byte_status)-INT64_C(131074))
+#define HPS_BYTE_NO_SPACE ((hps_byte_status)-INT64_C(131075))
+#define HPS_BYTE_INVALID_STATE ((hps_byte_status)-INT64_C(131076))
 
 typedef struct {
     const uint8_t *data;

@@ -19,5 +19,8 @@ int main(void)
     if (test_reader() != 0) {
         return 4;
     }
+    if (test_status() != 0) {
+        return 5;
+    }
     return 0;
 }

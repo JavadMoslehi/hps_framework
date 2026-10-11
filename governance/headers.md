@@ -45,6 +45,16 @@ HPS namespace; all definitions include their own public header before other
 implementation dependencies. Avoid ABI changes driven by undisclosed macros,
 packing pragmas or compiler-specific calling conventions.
 
+Headers declaring or directly using `hps_status_t` include `hps/status.h`
+explicitly. Headers using a semantic module alias explicitly include its defining
+header, such as `hps/bytes/view.h` for `hps_byte_status`, under HPS-HDR-003.
+Headers defining module errors document their registered namespace and keep
+constants typed; follow HPS-C-004/HPS-C-019 in [the C rules](c-rules.md).
+A public diagnostic-string API documents the returned
+pointer's immutability, lifetime, NUL termination, character set, maximum capacity
+and unknown-code behavior. Width changes to a status alias are ABI changes even
+when function names and alias spelling are unchanged.
+
 HPS-HDR-006: Guarded language linkage does not establish full C++ or ABI compatibility.
 Qualification must specify C/C++ compiler versions/modes and verify independent
 and repeated inclusion in both languages, then link a C++ caller with objects
@@ -61,8 +71,9 @@ this exact comment style or C++ support.
 ## Template
 
 See [the public-header template](templates/public-header.h). It demonstrates a
-small exact-width status type and a guarded C API. Replace names, guard and contract
-with those of the actual module; the example is not an implemented API.
+semantic alias of the common exact-width status type and a guarded C API. Replace
+names, guard and contract with those of the actual module and register any new
+module/error constants; the example is not an implemented API.
 
 The lightweight checker verifies the expected guard/file metadata and a limited
 pattern for linkage blocks around HPS function/extern declarations. It does not

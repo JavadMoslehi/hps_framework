@@ -3,7 +3,10 @@
 This directory is the normative engineering policy for HPS. It defines what a
 contributor must demonstrate before a change or release can be accepted. The
 policy is written in English so that external reviewers and integrators can use
-the same requirements. Policy version: 0.1.0; established: 2026-10-11.
+the same requirements. Policy version: 0.2.0; established: 2026-10-11. The
+user-requested readability, duplication and shared-status amendment is recorded
+in the [status change review](reviews/status-2026-10-11.md); project-role review
+and release acceptance remain pending.
 
 HPS is currently a development framework with an unverified replacement memory
 pool. This policy is an engineering baseline, not a certificate, a safety case,
@@ -30,6 +33,7 @@ and blocks the corresponding release claim.
 | [Endian bytes review](reviews/bytes-endian-2026-10-11.md) | Bounded integer encoding and pending target/test evidence |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |
 | [Bytes API naming review](reviews/bytes-api-names-2026-10-11.md) | Explicit byte operations, migration and source-only checks |
+| [Framework status review](reviews/status-2026-10-11.md) | Shared error namespaces, diagnostic strings and policy amendment |
 | [Test entry-point review](reviews/test-entrypoints-2026-10-11.md) | Shared runner and proposed test-only numerical exception |
 | [Pointer-pool review](reviews/pointer-pool-2026-10-11.md) | Current allocator contract, changes and open findings |
 | [Earlier source review](reviews/source-review-2026-10-11.md) | Historical inventory and earlier handle-pool snapshot |
@@ -52,7 +56,7 @@ It is not a MISRA analyzer. The [root agent rules](../AGENTS.md) and
 Repository hosting branch protection and required review settings must still be
 configured by maintainers; files cannot prevent someone bypassing review.
 
-Current scope is the base headers, static pool core and borrowed bytes module. Tests/examples follow the
+Current scope is the base headers, shared status registry, static pool core and borrowed bytes module. Tests/examples follow the
 same numerical type rules with a documented hosted `main` exception. OS adapters,
 cryptographic services, protocol stacks and payment applications are future or
 external integration responsibilities.
