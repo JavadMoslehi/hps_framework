@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_LANGUAGE_H
 #define HPS_BASE_LANGUAGE_H
 
+/**
+ * @file hps/base/language.h
+ * @brief C and C++ language and execution-environment detection.
+ */
+
 /* C++ is not a C dialect; do not advertise C features in C++ mode. */
 #define HPS_C_STANDARD_C89 198900L
 #define HPS_C_STANDARD_C95 199409L

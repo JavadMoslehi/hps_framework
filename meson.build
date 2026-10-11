@@ -14,3 +14,12 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
     timeout: 120)
 endif
 install_subdir('include/hps', install_dir: get_option('includedir'))
+
+hps_memory_library = static_library('hps_memory', 'src/memory/pool.c',
+  dependencies: hps_base, install: true)
+hps_memory = declare_dependency(link_with: hps_memory_library,
+  dependencies: hps_base)
+meson.override_dependency('hps-memory', hps_memory)
+hps_pool_test = executable('hps_pool_test', 'tests/memory/test_pool.c',
+  dependencies: hps_memory, c_args: ['-UNDEBUG'])
+test('hps_pool', hps_pool_test)

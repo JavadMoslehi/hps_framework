@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_FEATURES_COMPILER_H
 #define HPS_BASE_FEATURES_COMPILER_H
 
+/**
+ * @file hps/base/features/compiler.h
+ * @brief Compiler capability and extension feature flags.
+ */
+
 #include "hps/base/compiler.h"
 
 

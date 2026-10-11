@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_COMPILER_H
 #define HPS_BASE_COMPILER_H
 
+/**
+ * @file hps/base/compiler.h
+ * @brief Compiler identity, version and capability probes.
+ */
+
 #define HPS_COMPILER_UNKNOWN 0
 #define HPS_COMPILER_GCC 1
 #define HPS_COMPILER_CLANG 2

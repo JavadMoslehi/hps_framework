@@ -1,7 +1,27 @@
 #ifndef HPS_BASE_ATTRIBUTES_H
 #define HPS_BASE_ATTRIBUTES_H
 
+/**
+ * @file hps/base/attributes.h
+ * @brief Portable declaration annotations and compile-time assertions.
+ */
+
 #include "hps/base/features.h"
+#include <stddef.h>
+
+/* Target configuration: opt-in requires a recorded target review. */
+#ifndef HPS_ENABLE_COMPILER_ATTRIBUTES
+# define HPS_ENABLE_COMPILER_ATTRIBUTES 0
+#endif
+#if (HPS_ENABLE_COMPILER_ATTRIBUTES != 0) && (HPS_ENABLE_COMPILER_ATTRIBUTES != 1)
+# error "HPS_ENABLE_COMPILER_ATTRIBUTES must be 0 or 1"
+#endif
+#ifndef HPS_ENABLE_RESTRICT
+# define HPS_ENABLE_RESTRICT 0
+#endif
+#if (HPS_ENABLE_RESTRICT != 0) && (HPS_ENABLE_RESTRICT != 1)
+# error "HPS_ENABLE_RESTRICT must be 0 or 1"
+#endif
 
 #define HPS_DETAIL_JOIN_RAW(a, b) a##b
 #define HPS_DETAIL_JOIN(a, b) HPS_DETAIL_JOIN_RAW(a, b)
@@ -14,18 +34,22 @@
 #else
 /* The condition must be an integer constant expression. */
 # define HPS_STATIC_ASSERT(condition, message) \
-    typedef char HPS_DETAIL_JOIN(hps_static_assert_line_, __LINE__)[(condition) ? 1 : -1]
+    typedef size_t HPS_DETAIL_JOIN(hps_static_assert_line_, __LINE__)[(condition) ? 1 : -1]
 #endif
 
 #if HPS_C_IS_C99
 # define HPS_INLINE inline
-# define HPS_RESTRICT restrict
 #else
 # define HPS_INLINE
+#endif
+
+#if HPS_ENABLE_RESTRICT && HPS_C_IS_C99
+# define HPS_RESTRICT restrict
+#else
 # define HPS_RESTRICT
 #endif
 
-#if HPS_HAS_ATTRIBUTE(noreturn)
+#if HPS_ENABLE_COMPILER_ATTRIBUTES && HPS_HAS_ATTRIBUTE(noreturn)
 # define HPS_NORETURN __attribute__((__noreturn__))
 # define HPS_HAS_NORETURN 1
 #elif HPS_C_IS_C23
@@ -34,7 +58,7 @@
 #elif HPS_HAS_C11_FEATURES
 # define HPS_NORETURN _Noreturn
 # define HPS_HAS_NORETURN 1
-#elif HPS_COMPILER_IS_MSVC
+#elif HPS_ENABLE_COMPILER_ATTRIBUTES && HPS_COMPILER_IS_MSVC
 # define HPS_NORETURN __declspec(noreturn)
 # define HPS_HAS_NORETURN 1
 #else
@@ -42,7 +66,7 @@
 # define HPS_HAS_NORETURN 0
 #endif
 
-#if HPS_HAS_ATTRIBUTE(warn_unused_result)
+#if HPS_ENABLE_COMPILER_ATTRIBUTES && HPS_HAS_ATTRIBUTE(warn_unused_result)
 # define HPS_NODISCARD __attribute__((__warn_unused_result__))
 # define HPS_HAS_NODISCARD 1
 #elif HPS_C_IS_C23
@@ -53,13 +77,13 @@
 # define HPS_HAS_NODISCARD 0
 #endif
 
-#if HPS_HAS_ATTRIBUTE(deprecated)
+#if HPS_ENABLE_COMPILER_ATTRIBUTES && HPS_HAS_ATTRIBUTE(deprecated)
 # define HPS_DEPRECATED(message) __attribute__((__deprecated__(message)))
 # define HPS_HAS_DEPRECATED 1
 #elif HPS_C_IS_C23
 # define HPS_DEPRECATED(message) [[deprecated(message)]]
 # define HPS_HAS_DEPRECATED 1
-#elif HPS_COMPILER_IS_MSVC
+#elif HPS_ENABLE_COMPILER_ATTRIBUTES && HPS_COMPILER_IS_MSVC
 # define HPS_DEPRECATED(message) __declspec(deprecated(message))
 # define HPS_HAS_DEPRECATED 1
 #else

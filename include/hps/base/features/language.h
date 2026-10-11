@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_FEATURES_LANGUAGE_H
 #define HPS_BASE_FEATURES_LANGUAGE_H
 
+/**
+ * @file hps/base/features/language.h
+ * @brief C language capability detection for the selected dialect.
+ */
+
 #include "hps/base/standard.h"
 #include "hps/base/compiler.h"
 

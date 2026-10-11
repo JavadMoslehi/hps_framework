@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_ARCHITECTURE_POINTER_H
 #define HPS_BASE_ARCHITECTURE_POINTER_H
 
+/**
+ * @file hps/base/architecture/pointer.h
+ * @brief Target pointer bit count and width classification.
+ */
+
 /*
  * HPS - General Purpose C Framework
  *

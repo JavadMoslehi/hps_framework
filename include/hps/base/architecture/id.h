@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_ARCHITECTURE_ID_H
 #define HPS_BASE_ARCHITECTURE_ID_H
 
+/**
+ * @file hps/base/architecture/id.h
+ * @brief Target processor architecture identifiers and detection.
+ */
+
 /*
  * HPS - General Purpose C Framework
  *

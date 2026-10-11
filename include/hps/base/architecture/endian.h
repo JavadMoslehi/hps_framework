@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_ARCHITECTURE_ENDIAN_H
 #define HPS_BASE_ARCHITECTURE_ENDIAN_H
 
+/**
+ * @file hps/base/architecture/endian.h
+ * @brief Target byte-order identifiers and detection.
+ */
+
 /*
  * HPS - General Purpose C Framework
  *

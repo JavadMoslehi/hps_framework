@@ -35,7 +35,7 @@ def compile_source(source, standard='c99', flags=(), fail=False, diagnostic=None
             command += ['-x', 'c', '-', '-c', '-o', str(output)]
         else:
             command += ['-x', 'c', '-', '-fsyntax-only']
-        result = subprocess.run(command, input=source + '\ntypedef int hps_test_translation_unit;\n',
+        result = subprocess.run(command, input=source + '\n#include <stddef.h>\ntypedef size_t hps_test_translation_unit;\n',
                                 text=True, capture_output=True)
         if (result.returncode != 0) != fail:
             raise RuntimeError(' '.join(command) + '\n' + result.stderr + '\n' + source)
@@ -64,15 +64,21 @@ for dialect in ['c99', 'c11', 'c17', 'c2x']:
            'HPS_C_IS_C17 == (__STDC_VERSION__ >= 201710L)',
            'HPS_C_IS_C23 == (__STDC_VERSION__ >= 202311L)'], standard=dialect)
 
-# Detection/attributes remain usable in C89, unlike the C99 type API.
+# Policy switches are explicit, validated configuration; probes are informational.
+expect('hps/base/attributes.h', ['HPS_ENABLE_COMPILER_ATTRIBUTES == 0',
+       'HPS_ENABLE_RESTRICT == 0', '!HPS_HAS_NODISCARD'], standard='c99')
+for switch in ['HPS_ENABLE_COMPILER_ATTRIBUTES', 'HPS_ENABLE_RESTRICT']:
+    compile_source('#include "hps/base/attributes.h"\n',
+                   flags=['-D' + switch + '=2'], fail=True,
+                   diagnostic=switch + ' must be 0 or 1')
+
+# Detection/attributes remain usable in C89.
 for header in ['language.h', 'standard.h', 'compiler.h', 'architecture.h',
                'features.h', 'attributes.h', 'version.h']:
     compile_source('#include "hps/base/' + header + '"\n', 'c89')
 expect('hps/base/standard.h', ['HPS_C_LEGACY', '!HPS_C_IS_C99'], standard='c89')
 compile_source('#define HPS_REQUIRE_C99\n#include "hps/base/standard.h"\n',
                'c89', fail=True, diagnostic='HPS requires C99')
-compile_source('#include "hps/base/types.h"\n', 'c89', fail=True,
-               diagnostic='HPS base types require C99')
 compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
                'c99', fail=True)
 compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
@@ -82,13 +88,15 @@ compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(1, "C89 asse
 compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
                'c89', fail=True)
 compile_source('''#include "hps/base/attributes.h"
-HPS_NODISCARD int required_result(void);
+#include <stdint.h>
+HPS_NODISCARD int32_t required_result(void);
 int main(void) { required_result(); return 0; }
-''', fail=True, diagnostic='unused', codegen=True)
+''', flags=['-DHPS_ENABLE_COMPILER_ATTRIBUTES=1'], fail=True, diagnostic='unused', codegen=True)
 compile_source('''#include "hps/base/attributes.h"
-HPS_DEPRECATED("use replacement") int old_function(void);
-int main(void) { return old_function(); }
-''', fail=True, diagnostic='deprecated')
+#include <stdint.h>
+HPS_DEPRECATED("use replacement") int32_t old_function(void);
+int main(void) { return (old_function() == 0) ? 0 : 1; }
+''', flags=['-DHPS_ENABLE_COMPILER_ATTRIBUTES=1'], fail=True, diagnostic='deprecated')
 compile_source('''#include "hps/base/attributes.h"
 HPS_NORETURN void never_returns(void) { for (;;) {} }
 ''')
@@ -100,18 +108,8 @@ expect('hps/base/language.h', ['HPS_HOSTED_IS_KNOWN', 'HPS_IS_FREESTANDING',
        '!HPS_IS_HOSTED'], ['-ffreestanding'])
 compile_source('#include "hps/base.h"\n', flags=['-ffreestanding'])
 
-# Exercise the permitted absence of exact-width and pointer integer typedefs.
-with tempfile.TemporaryDirectory(prefix='hps-stdint-test-') as directory:
-    standard_header = ['#ifndef HPS_TEST_STDINT_H', '#define HPS_TEST_STDINT_H']
-    for bits in [8, 16, 32, 64]:
-        standard_header += [f'typedef long long int_least{bits}_t;',
-                            f'typedef unsigned long long uint_least{bits}_t;']
-    standard_header += ['typedef long long intmax_t;',
-                        'typedef unsigned long long uintmax_t;', '#endif']
-    Path(directory, 'stdint.h').write_text('\n'.join(standard_header) + '\n')
-    expect('hps/base/types.h', ['!HPS_HAS_INT8', '!HPS_HAS_INT16',
-           '!HPS_HAS_INT32', '!HPS_HAS_INT64', '!HPS_HAS_INTPTR'],
-           ['-I', directory])
+# Pointer detection counts C bytes using CHAR_BIT.
+with tempfile.TemporaryDirectory(prefix='hps-limits-test-') as directory:
     Path(directory, 'limits.h').write_text('#define CHAR_BIT 16\n')
     expect('hps/base/architecture/pointer.h',
            ['HPS_POINTER_BITS == 64', 'HPS_POINTER_WIDTH == HPS_POINTER_WIDTH_64'],
@@ -178,8 +176,9 @@ compile_source('''#include "hps/base/compiler.h"
 #undef HPS_HAS_ATTRIBUTE
 #define HPS_HAS_ATTRIBUTE(name) 0
 #include "hps/base/attributes.h"
-HPS_STATIC_ASSERT(sizeof(int) >= 2, "portable assertion");
-HPS_NODISCARD static HPS_INLINE int identity(int value) { return value; }
-int main(void) { return identity(0); }
+#include <stdint.h>
+HPS_STATIC_ASSERT(sizeof(size_t) >= 1U, "portable assertion");
+HPS_NODISCARD static HPS_INLINE int32_t identity(int32_t value) { return value; }
+int main(void) { return (identity(0) == 0) ? 0 : 1; }
 ''', run=True)
 print(f'HPS base: {checks} portability checks passed ({" ".join(CC)}).')

@@ -9,8 +9,23 @@ target_include_directories(hps_base INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(hps_base INTERFACE c_std_99)
 
+add_library(hps_memory STATIC src/memory/pool.c)
+add_library(HPS::memory ALIAS hps_memory)
+target_link_libraries(hps_memory PUBLIC HPS::base)
+set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+
 include(CTest)
 if(BUILD_TESTING)
+    add_executable(hps_pool_test tests/memory/test_pool.c)
+    target_link_libraries(hps_pool_test PRIVATE HPS::memory)
+    # Test assertions must remain active in Release builds.
+    if(MSVC)
+        target_compile_options(hps_pool_test PRIVATE /UNDEBUG)
+    else()
+        target_compile_options(hps_pool_test PRIVATE -UNDEBUG)
+    endif()
+    add_test(NAME hps_pool COMMAND hps_pool_test)
     add_executable(hps_base_test tests/base/test_base.c)
     target_link_libraries(hps_base_test PRIVATE HPS::base)
     set_target_properties(hps_base_test PROPERTIES
@@ -29,9 +44,10 @@ configure_package_config_file(cmake/HPSConfig.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/HPSConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPS)
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/HPSConfigVersion.cmake
-    VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion ARCH_INDEPENDENT)
+    VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
 set_target_properties(hps_base PROPERTIES EXPORT_NAME base)
-install(TARGETS hps_base EXPORT HPSTargets)
+install(TARGETS hps_base hps_memory EXPORT HPSTargets
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/hps DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT HPSTargets NAMESPACE HPS:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPS)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/HPSConfig.cmake

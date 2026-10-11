@@ -11,8 +11,8 @@ state. The API starts at development version 0.1.0 and is not a stable ABI.
 `language.h` exposes `HPS_LANGUAGE_IS_C`, `HPS_LANGUAGE_IS_CPP`, the raw
 `HPS_C_STANDARD_VERSION`, C89/C95/C99/C11/C17/C23 constants, and the raw C++
 version for detection only. C++ is not advertised as a C dialect. The complete
-base API, including `types.h`, requires C99 or newer; C++ consumption is not
-supported. Detection, version and declaration headers can be used in C89.
+base API targets C99 or newer. C++ identification is supported; public external
+C APIs carry guarded C linkage. Full C++/ABI consumption has not been qualified. Detection, version and declaration headers can be used in C89.
 
 `standard.h` preserves the C99 minimum policy. `HPS_REQUIRE_C99` enables an
 explicit compile-time rejection in this header. `HPS_C_IS_C99` through
@@ -24,7 +24,7 @@ C23 implementations.
 `HPS_HOSTED_IS_KNOWN` distinguishes a known execution environment from absent
 information. `HPS_IS_HOSTED` and `HPS_IS_FREESTANDING` are both false if the
 compiler does not supply `__STDC_HOSTED__`. Freestanding use assumes the target
-provides the standard C99 headers `<limits.h>`, `<stddef.h>` and `<stdint.h>`.
+provides `<limits.h>` and `<stddef.h>` for the base headers.
 
 ## Compiler and capabilities
 
@@ -64,38 +64,24 @@ convention. Other targets return `HPS_ENDIAN_UNKNOWN`. Check
 `HPS_ENDIANNESS_IS_KNOWN`, `HPS_IS_LITTLE_ENDIAN` and `HPS_IS_BIG_ENDIAN` before
 selecting order-dependent code. Unknown is never silently assumed little-endian.
 
-## Types
-
-| Type | Contract |
-| --- | --- |
-| `hps_byte` | `unsigned char`; a C byte contains `HPS_BITS_PER_BYTE` bits |
-| `hps_bool` | `_Bool`, with `HPS_TRUE` and `HPS_FALSE` |
-| `hps_size` | `size_t` |
-| `hps_ssize` | `ptrdiff_t`; pointer differences, not POSIX `ssize_t` |
-| `hps_float`, `hps_double` | Native `float`/`double`; no fixed width or IEEE-754 promise |
-| `hps_i8`/`hps_u8` through `hps_i64`/`hps_u64` | Exact widths, available only with `HPS_HAS_INT8`/`16`/`32`/`64` |
-| `hps_i_least8`/`hps_u_least8` through `hps_i_least64`/`hps_u_least64` | Standard minimum-width integer types |
-| `hps_iptr`, `hps_uptr` | Optional `intptr_t`/`uintptr_t`, guarded by `HPS_HAS_INTPTR` |
-| `hps_imax`, `hps_umax` | `intmax_t`/`uintmax_t` |
-
-`HPS_NULL` is the standard C `NULL`. There is no assumption that a byte has eight
-bits, that a pointer fits in a 64-bit integer, or that `long` has a fixed width.
-Pointer-sized integers guarantee only the standard `void *` round-trip contract;
-do not use them as a promise about function pointers or arbitrary address math.
-
 ## Declaration macros
 
 `HPS_STATIC_ASSERT(condition, message)` accepts an integer constant expression.
 It uses a standard assertion in C11+ and a negative-size typedef rejection in
-C89/C99. For the fallback, place assertions on distinct source lines; the
+C89/C99, using a `size_t` array typedef from `<stddef.h>`. For the fallback, place assertions on distinct source lines; the
 message is not part of the diagnostic. It never becomes a runtime check.
 
-`HPS_INLINE` and `HPS_RESTRICT` use C99 keywords, with empty C89 fallbacks.
+`HPS_INLINE` uses the C99 keyword, with an empty C89 fallback.
+`HPS_RESTRICT` is empty by default; `HPS_ENABLE_RESTRICT=1` enables it in C99+
+only after target review of the aliasing contract.
 Use `static HPS_INLINE` for header-defined helpers to avoid external inline
 linkage differences.
 
 `HPS_NORETURN`, `HPS_NODISCARD`, and `HPS_DEPRECATED(message)` use supported
-compiler attributes or standard syntax. Check their corresponding
+standard syntax by default. Compiler-specific annotations require
+`HPS_ENABLE_COMPILER_ATTRIBUTES=1` and a recorded target review. Both configuration
+switches default to zero and reject values other than zero or one; detection probes
+remain informational. Apply configuration consistently across a target. Check their corresponding
 `HPS_HAS_NORETURN`, `HPS_HAS_NODISCARD`, `HPS_HAS_DEPRECATED` flags if the
 annotation is required. An empty unsupported annotation is not a guarantee;
 `HPS_NODISCARD` diagnostics also depend on compiler warning settings.
@@ -112,15 +98,15 @@ casts to void and evaluates its operand once; avoid side effects in its operand.
 `HPS_VERSION_AT_LEAST(major, minor, patch)`. This predicate is intended for
 constant version values, not expressions with side effects.
 
-Native tests check type sizes, pointer round trips, byte order, version
+Native tests check pointer width, byte order, version
 comparisons and declaration usage. The Python suite compiles each header twice
 in isolation for C99/C11/C17/C2x, compiles the base in freestanding mode, checks
 expected rejection cases and tests synthetic preprocessor branches for supported
 compiler/architecture identities, unknown targets and optional features.
 
 Synthetic target tests validate branch selection, not target machine code,
-foreign standard libraries, ABI correctness or actual hardware. GCC and Clang
-on the development host are the tested toolchains. MSVC, Armclang, cross targets
+foreign standard libraries, ABI correctness or actual hardware. Historical GCC and Clang
+host results predate the current governance changes and do not validate this revision. MSVC, Armclang, cross targets
 and actual C23 toolchains still need native validation before production use.
 Safety/security certification, MISRA compliance and industry-specific assurance
 are separate activities; this base implementation does not claim them.

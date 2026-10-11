@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_FEATURES_ARCHITECTURE_H
 #define HPS_BASE_FEATURES_ARCHITECTURE_H
 
+/**
+ * @file hps/base/features/architecture.h
+ * @brief Known-target, pointer-width and byte-order feature flags.
+ */
+
 #include "hps/base/architecture.h"
 
 /* Architecture identity alone does not promise SIMD or unaligned access. */

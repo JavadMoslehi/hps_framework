@@ -1,6 +1,11 @@
 #ifndef HPS_BASE_STANDARD_H
 #define HPS_BASE_STANDARD_H
 
+/**
+ * @file hps/base/standard.h
+ * @brief C standard revision detection and minimum-version policy.
+ */
+
 #include "hps/base/language.h"
 
 
