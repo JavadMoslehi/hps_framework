@@ -16,8 +16,10 @@ uint8_t availability implies eight-bit C bytes for this representation.
 Each family has u16/u32/u64 functions with `_le` and `_be` suffixes. LE writes the
 least significant octet first; BE writes it last. For example, UINT32_C(0x81234567)
 is `67 45 23 81` in LE and `81 23 45 67` in BE. Existing view-at and append-byte
-operations already cover u8. Signed numbers, floating point, variable-length
-integers, protocol schemas and cursor-based readers/writers are future work.
+operations already cover u8. The [sequential reader](bytes-reader.md) adds a
+checked cursor over these reads; buffer.length already tracks sequential appends.
+Signed numbers, floating point, variable-length integers and protocol schemas
+remain outside these operations.
 
 These operations use uint8_t elements and explicit shifts/masks. They work at
 unaligned byte offsets without casting storage to a wider object type or choosing

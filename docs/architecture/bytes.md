@@ -21,6 +21,8 @@ No encoding or character/string semantics are attached.
 
 For explicit unsigned integer field encoding, see the
 [endian operations](bytes-endian.md) in `hps/bytes/endian.h`.
+For sequential checked reads with a cursor, see the
+[reader contract](bytes-reader.md) in `hps/bytes/reader.h`.
 
 ## Buffer
 

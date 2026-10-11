@@ -16,5 +16,8 @@ int main(void)
     if (test_bytes() != 0) {
         return 3;
     }
+    if (test_reader() != 0) {
+        return 4;
+    }
     return 0;
 }

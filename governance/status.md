@@ -19,6 +19,8 @@ industrial certification or release evidence bundle is currently established.
 | GAP-012 | Bytes view/buffer APIs and overlap/boundary tests are prepared but unbuilt; target memmove is unqualified | Run compiled tests/analyzers and qualify the target copy implementation, ABI, stack and timing | Open |
 | GAP-013 | User-requested int module test entry points exceed HPS-C-005; shared runner/build changes are unbuilt | Review the [proposed test-only exception](reviews/test-entrypoints-2026-10-11.md) and verify the updated runner when builds are authorized | Open |
 | GAP-014 | Endian integer reads/appends and prepared byte fixtures are unbuilt; 64-bit arithmetic helpers/stack/ABI remain target assumptions | Verify the [endian change](reviews/bytes-endian-2026-10-11.md), essential types and actual target dependencies when builds are authorized | Open |
+| GAP-015 | Sequential reader and cursor/failure tests are prepared but unbuilt; target ABI, stack and timing remain unverified | Verify the [reader change](reviews/bytes-reader-2026-10-11.md) with compiled tests/analyzers/fuzzing and target evidence when authorized | Open |
+| GAP-016 | Ecosystem directories are placeholders; industrial/medical/defence overlays and concrete target contracts for all eight ecosystems are unset | Select product scope, system safety/security requirements, standards and target profiles before adoption | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

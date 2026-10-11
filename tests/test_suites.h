@@ -6,6 +6,8 @@
  * @brief Internal module test entry points for the shared hosted runner.
  */
 
+#include <stdint.h>
+
 /* Each suite runs once per process; zero means success, nonzero means failure.
  * Assertion failures terminate the process. The pool suite requires the initial
  * uninitialized pool state. The requested int signatures have a proposed policy
@@ -14,5 +16,6 @@
 int test_base(void);
 int test_pool(void);
 int test_bytes(void);
+int32_t test_reader(void);
 
 #endif /* HPS_TESTS_TEST_SUITES_H */

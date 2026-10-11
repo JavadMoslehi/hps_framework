@@ -62,7 +62,7 @@ synthetic compiler/architecture detection. Run it with another GCC/Clang-compati
 compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
-The shared `hps_tests` executable runs `test_base`, `test_pool` and `test_bytes`
+The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes` and `test_reader`
 once, in that order, and stops on the first failure. Module test files expose
 functions matching their filenames; the only suite runner `main` is in
 `tests/main.c`. Make, CMake and Meson now use this executable instead of the three
@@ -95,6 +95,12 @@ No module allocation, pool dependency or synchronization is involved.
 `hps/bytes/endian.h` adds checked u16/u32/u64 reads at view offsets and complete
 field appends to buffers, in explicit LE/BE order. No native alignment/byte-order
 assumption is used. See [integer byte encoding](docs/architecture/bytes-endian.md).
+
+`hps/bytes/reader.h` adds a sequential cursor over borrowed views, with remaining,
+skip, borrowed slices and u8/u16/u32/u64 reads. Failed operations preserve cursor
+and output; taking a slice copies no payload. See
+[the reader contract](docs/architecture/bytes-reader.md) for ownership, bounded
+work and ecosystem integration limits. Its C tests have not been built or run.
 
 Link `HPS::bytes` in CMake or use `hps-bytes` in Meson. See
 [the bytes contract](docs/architecture/bytes.md) for lifetimes, bounds, target libc
