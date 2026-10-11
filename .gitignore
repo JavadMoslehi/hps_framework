@@ -1,0 +1,33 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Compiler outputs
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dll
+*.exe
+
+# CMake generated
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# Editor and IDE
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+*.pem
+*.key

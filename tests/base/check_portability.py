@@ -1,0 +1,185 @@
+#!/usr/bin/env python3
+"""Compile independent headers and exercise detection/failure contracts.
+
+Synthetic macro tests exercise branches only; they do not validate foreign ABIs.
+No binaries compiled with synthetic target macros are run.
+"""
+import argparse
+import os
+from pathlib import Path
+import shlex
+import subprocess
+import tempfile
+
+ROOT = Path(__file__).resolve().parents[2]
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--compiler', nargs='+', default=[os.environ.get('CC', 'cc')])
+args = parser.parse_args()
+CC = [part for item in args.compiler for part in shlex.split(item)]
+checks = 0
+
+
+def compile_source(source, standard='c99', flags=(), fail=False, diagnostic=None,
+                   run=False, headers=True, codegen=False):
+    global checks
+    with tempfile.TemporaryDirectory(prefix='hps-base-test-') as directory:
+        output = Path(directory) / 'test'
+        command = CC + ['-std=' + standard, '-Wall', '-Wextra', '-Werror',
+                        '-pedantic-errors', '-I', str(ROOT / 'include')]
+        if not headers:
+            command += ['-undef']
+        command += list(flags)
+        if run:
+            command += ['-x', 'c', '-', '-o', str(output)]
+        elif codegen:
+            command += ['-x', 'c', '-', '-c', '-o', str(output)]
+        else:
+            command += ['-x', 'c', '-', '-fsyntax-only']
+        result = subprocess.run(command, input=source + '\ntypedef int hps_test_translation_unit;\n',
+                                text=True, capture_output=True)
+        if (result.returncode != 0) != fail:
+            raise RuntimeError(' '.join(command) + '\n' + result.stderr + '\n' + source)
+        if diagnostic and diagnostic not in result.stderr:
+            raise RuntimeError('Expected diagnostic: ' + diagnostic + '\n' + result.stderr)
+        if run:
+            subprocess.run([str(output)], check=True)
+    checks += 1
+
+
+def expect(header, assertions, flags=(), standard='c99', headers=True):
+    source = '#include "' + header + '"\n'
+    for expression in assertions:
+        source += '#if !(' + expression + ')\n#error "incorrect detection"\n#endif\n'
+    source += 'int main(void) { return 0; }\n'
+    compile_source(source, standard, flags, headers=headers)
+
+
+for dialect in ['c99', 'c11', 'c17', 'c2x']:
+    for header in sorted((ROOT / 'include').rglob('*.h')):
+        name = header.relative_to(ROOT / 'include').as_posix()
+        compile_source('#include "' + name + '"\n#include "' + name + '"\n', dialect)
+    compile_source((ROOT / 'tests/base/test_base.c').read_text(), dialect, run=True)
+    expect('hps/base/standard.h', ['HPS_C_IS_C99',
+           'HPS_C_IS_C11 == (__STDC_VERSION__ >= 201112L)',
+           'HPS_C_IS_C17 == (__STDC_VERSION__ >= 201710L)',
+           'HPS_C_IS_C23 == (__STDC_VERSION__ >= 202311L)'], standard=dialect)
+
+# Detection/attributes remain usable in C89, unlike the C99 type API.
+for header in ['language.h', 'standard.h', 'compiler.h', 'architecture.h',
+               'features.h', 'attributes.h', 'version.h']:
+    compile_source('#include "hps/base/' + header + '"\n', 'c89')
+expect('hps/base/standard.h', ['HPS_C_LEGACY', '!HPS_C_IS_C99'], standard='c89')
+compile_source('#define HPS_REQUIRE_C99\n#include "hps/base/standard.h"\n',
+               'c89', fail=True, diagnostic='HPS requires C99')
+compile_source('#include "hps/base/types.h"\n', 'c89', fail=True,
+               diagnostic='HPS base types require C99')
+compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
+               'c99', fail=True)
+compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
+               'c11', fail=True, diagnostic='must fail')
+compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(1, "C89 assertion");\n',
+               'c89')
+compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
+               'c89', fail=True)
+compile_source('''#include "hps/base/attributes.h"
+HPS_NODISCARD int required_result(void);
+int main(void) { required_result(); return 0; }
+''', fail=True, diagnostic='unused', codegen=True)
+compile_source('''#include "hps/base/attributes.h"
+HPS_DEPRECATED("use replacement") int old_function(void);
+int main(void) { return old_function(); }
+''', fail=True, diagnostic='deprecated')
+compile_source('''#include "hps/base/attributes.h"
+HPS_NORETURN void never_returns(void) { for (;;) {} }
+''')
+
+for optional in ['VLA', 'COMPLEX', 'ATOMICS']:
+    expect('hps/base/features/language.h', ['!HPS_HAS_' + optional],
+           ['-D__STDC_NO_' + optional + '__=1'], 'c11')
+expect('hps/base/language.h', ['HPS_HOSTED_IS_KNOWN', 'HPS_IS_FREESTANDING',
+       '!HPS_IS_HOSTED'], ['-ffreestanding'])
+compile_source('#include "hps/base.h"\n', flags=['-ffreestanding'])
+
+# Exercise the permitted absence of exact-width and pointer integer typedefs.
+with tempfile.TemporaryDirectory(prefix='hps-stdint-test-') as directory:
+    standard_header = ['#ifndef HPS_TEST_STDINT_H', '#define HPS_TEST_STDINT_H']
+    for bits in [8, 16, 32, 64]:
+        standard_header += [f'typedef long long int_least{bits}_t;',
+                            f'typedef unsigned long long uint_least{bits}_t;']
+    standard_header += ['typedef long long intmax_t;',
+                        'typedef unsigned long long uintmax_t;', '#endif']
+    Path(directory, 'stdint.h').write_text('\n'.join(standard_header) + '\n')
+    expect('hps/base/types.h', ['!HPS_HAS_INT8', '!HPS_HAS_INT16',
+           '!HPS_HAS_INT32', '!HPS_HAS_INT64', '!HPS_HAS_INTPTR'],
+           ['-I', directory])
+    Path(directory, 'limits.h').write_text('#define CHAR_BIT 16\n')
+    expect('hps/base/architecture/pointer.h',
+           ['HPS_POINTER_BITS == 64', 'HPS_POINTER_WIDTH == HPS_POINTER_WIDTH_64'],
+           ['-I', directory, '-U__SIZEOF_POINTER__', '-D__SIZEOF_POINTER__=4'])
+
+# C++ identification must not advertise C standard features.
+expect('hps/base/standard.h', ['HPS_LANGUAGE_IS_CPP', '!HPS_LANGUAGE_IS_C',
+       '!HPS_C_LEGACY', '!HPS_C_IS_C99'], ['-D__cplusplus=201703L'], headers=False)
+
+# Compiler precedence, including Clang's GCC/MSVC compatibility macros.
+clang_version = ['-D__clang__=1', '-D__clang_major__=14',
+                 '-D__clang_minor__=0', '-D__clang_patchlevel__=1']
+for definitions, expected in [
+    ([], 'UNKNOWN'),
+    (['-D__GNUC__=11', '-D__GNUC_MINOR__=4'], 'GCC'),
+    (['-D_MSC_VER=1930'], 'MSVC'),
+    (clang_version + ['-D__GNUC__=4', '-D_MSC_VER=1930'], 'CLANG'),
+    (clang_version + ['-D__ARMCOMPILER_VERSION=6100000'], 'ARMCLANG'),
+    (['-D__GNUC__=4', '-D__GNUC_MINOR__=2', '-D__INTEL_COMPILER=1900'], 'UNKNOWN'),
+]:
+    expect('hps/base/compiler.h', ['HPS_COMPILER == HPS_COMPILER_' + expected,
+           '(HPS_COMPILER_IS_GCC + HPS_COMPILER_IS_CLANG + HPS_COMPILER_IS_MSVC + '
+           'HPS_COMPILER_IS_ARMCLANG) == ' + ('0' if expected == 'UNKNOWN' else '1')],
+           definitions, headers=False)
+
+for definitions, expected in [
+    ([], 'UNKNOWN'), (['-D__x86_64__=1'], 'X86_64'),
+    (['-D__i386__=1'], 'X86'), (['-D_M_X64=1'], 'X86_64'),
+    (['-D_M_IX86=600'], 'X86'), (['-D__arm__=1'], 'ARM32'),
+    (['-D_M_ARM=7'], 'ARM32'),
+    (['-D__aarch64__=1'], 'AARCH64'), (['-D_M_ARM64=1'], 'AARCH64'),
+    (['-D__riscv=1', '-D__riscv_xlen=32'], 'RISCV32'),
+    (['-D__riscv=1', '-D__riscv_xlen=64'], 'RISCV64'),
+    (['-D__riscv=1'], 'UNKNOWN'),
+    (['-D__riscv=1', '-D__riscv_xlen=128'], 'UNKNOWN'),
+]:
+    expect('hps/base/architecture/id.h',
+           ['HPS_ARCHITECTURE == HPS_ARCH_' + expected], definitions, headers=False)
+
+for definitions, expected in [
+    ([], 'UNKNOWN'), (['-D_WIN32=1'], 'LITTLE'),
+    (['-D__BYTE_ORDER__=1234', '-D__ORDER_LITTLE_ENDIAN__=1234'], 'LITTLE'),
+    (['-D__BYTE_ORDER__=4321', '-D__ORDER_BIG_ENDIAN__=4321'], 'BIG'),
+    (['-D__BYTE_ORDER__=3412', '-D__ORDER_BIG_ENDIAN__=4321',
+      '-D__ORDER_LITTLE_ENDIAN__=1234'], 'UNKNOWN'),
+]:
+    expect('hps/base/architecture/endian.h',
+           ['HPS_ENDIANNESS == HPS_ENDIAN_' + expected], definitions, headers=False)
+
+# Keep host ABI macros for system limits.h, and vary only pointer detection.
+for definitions, bits, width in [
+    (['-U__SIZEOF_POINTER__'], 0, 'UNKNOWN'),
+    (['-U__SIZEOF_POINTER__', '-D_WIN32=1'], 32, '32'),
+    (['-U__SIZEOF_POINTER__', '-D_WIN64=1'], 64, '64'),
+    (['-U__SIZEOF_POINTER__', '-D__SIZEOF_POINTER__=4'], 32, '32'),
+    (['-U__SIZEOF_POINTER__', '-D__SIZEOF_POINTER__=8'], 64, '64'),
+    (['-U__SIZEOF_POINTER__', '-D__SIZEOF_POINTER__=16'], 128, 'UNKNOWN'),
+]:
+    expect('hps/base/architecture/pointer.h', ['HPS_POINTER_BITS == ' + str(bits),
+           'HPS_POINTER_WIDTH == HPS_POINTER_WIDTH_' + width], definitions)
+
+# A compiler without extension probes must still compile the portable API.
+compile_source('''#include "hps/base/compiler.h"
+#undef HPS_HAS_ATTRIBUTE
+#define HPS_HAS_ATTRIBUTE(name) 0
+#include "hps/base/attributes.h"
+HPS_STATIC_ASSERT(sizeof(int) >= 2, "portable assertion");
+HPS_NODISCARD static HPS_INLINE int identity(int value) { return value; }
+int main(void) { return identity(0); }
+''', run=True)
+print(f'HPS base: {checks} portability checks passed ({" ".join(CC)}).')

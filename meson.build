@@ -1,0 +1,16 @@
+project('hps', 'c', version: '0.1.0',
+  default_options: ['c_std=c99', 'warning_level=3'])
+
+hps_base = declare_dependency(include_directories: include_directories('include'))
+meson.override_dependency('hps-base', hps_base)
+hps_base_test = executable('hps_base_test', 'tests/base/test_base.c',
+  dependencies: hps_base)
+test('hps_base', hps_base_test)
+python = find_program('python3', required: false)
+cc = meson.get_compiler('c')
+if python.found() and cc.get_id() in ['gcc', 'clang']
+  test('hps_base_portability', python,
+    args: [files('tests/base/check_portability.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
+endif
+install_subdir('include/hps', install_dir: get_option('includedir'))
