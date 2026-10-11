@@ -23,3 +23,12 @@ meson.override_dependency('hps-memory', hps_memory)
 hps_pool_test = executable('hps_pool_test', 'tests/memory/test_pool.c',
   dependencies: hps_memory, c_args: ['-UNDEBUG'])
 test('hps_pool', hps_pool_test)
+
+hps_bytes_library = static_library('hps_bytes', 'src/bytes/view.c', 'src/bytes/buffer.c',
+  dependencies: hps_base, install: true)
+hps_bytes = declare_dependency(link_with: hps_bytes_library,
+  dependencies: hps_base)
+meson.override_dependency('hps-bytes', hps_bytes)
+hps_bytes_test = executable('hps_bytes_test', 'tests/bytes/test_bytes.c',
+  dependencies: hps_bytes, c_args: ['-UNDEBUG'])
+test('hps_bytes', hps_bytes_test)

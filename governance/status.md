@@ -16,6 +16,7 @@ industrial certification or release evidence bundle is currently established.
 | GAP-008 | Public release license/security contact/support policy not selected in this task | Select and publish them before a supported distribution | Open |
 | GAP-009 | Payment, telecom and automotive product standards/scope unselected | Integration owner establishes profile-specific assessments and responsibilities | Open |
 | GAP-011 | Public headers have guarded C linkage; mixed C/C++ include/link behavior is untested | Qualify the chosen C++ consumer and C library toolchain/ABI | Open |
+| GAP-012 | Bytes view/buffer APIs and overlap/boundary tests are prepared but unbuilt; target memmove is unqualified | Run compiled tests/analyzers and qualify the target copy implementation, ABI, stack and timing | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

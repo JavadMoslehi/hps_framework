@@ -26,6 +26,7 @@ and blocks the corresponding release claim.
 | [MISRA plan](misra/README.md) | All-guideline index, review methods and deviation handling |
 | [MISRA matrix](misra/matrix.csv) | One disposition record for each of 221 baseline guidelines |
 | [Validation record](validation.md) | Reproducible subset checks and their limitations |
+| [Bytes review](reviews/bytes-2026-10-11.md) | Borrowed views, fixed-capacity buffers and pending evidence |
 | [Pointer-pool review](reviews/pointer-pool-2026-10-11.md) | Current allocator contract, changes and open findings |
 | [Earlier source review](reviews/source-review-2026-10-11.md) | Historical inventory and earlier handle-pool snapshot |
 | [Current gaps](status.md) | Facts and work still required for adoption |
@@ -47,7 +48,7 @@ It is not a MISRA analyzer. The [root agent rules](../AGENTS.md) and
 Repository hosting branch protection and required review settings must still be
 configured by maintainers; files cannot prevent someone bypassing review.
 
-Current scope is the base headers and static pool core. Tests/examples follow the
+Current scope is the base headers, static pool core and borrowed bytes module. Tests/examples follow the
 same numerical type rules with a documented hosted `main` exception. OS adapters,
 cryptographic services, protocol stacks and payment applications are future or
 external integration responsibilities.

@@ -52,7 +52,7 @@ def source_findings(source, path, hosted=False):
         (re.compile(r'\b(?:enum|union)\b'), 'HPS-C-004/010: numerical enum or union storage'),
         (re.compile(r'\b(?:setjmp|longjmp)\s*\('), 'HPS-C-014: nonlocal control transfer'),
     ]
-    if path.startswith('include/') or path.startswith('src/memory/'):
+    if path.startswith('include/') or (path.startswith('src/') and path != 'src/main.c'):
         patterns.extend([
             (re.compile(r'\b(?:pthread_\w+|thrd_\w+|atomic_\w+)\s*\('),
              'HPS-MEM-005: concurrency API in current single-context core'),
@@ -252,6 +252,15 @@ def self_test():
         actual = bool(source_findings(source, 'include/test.h', hosted))
         if actual != expected:
             raise RuntimeError(f'Checker self-test failed for {source!r}')
+    scope_cases = [
+        ('#include <stdio.h>', 'src/bytes/buffer.c', True),
+        ('atomic_load(value);', 'src/bytes/view.c', True),
+        ('#include <stdio.h>', 'src/main.c', False),
+    ]
+    for source, path, expected in scope_cases:
+        if bool(source_findings(source, path)) != expected:
+            raise RuntimeError(f'Implementation-scope self-test failed: {path}')
+    print(f'Implementation-scope self-tests: {len(scope_cases)} cases passed.')
     if within_root_file(ROOT, '/etc/passwd') or within_root_file(ROOT, '../outside'):
         raise RuntimeError('Evidence path containment self-test failed')
     print(f'Policy checker self-tests: {len(cases)} lexical cases passed.')

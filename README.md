@@ -75,6 +75,18 @@ This replaces the handle/index pool. There is no thread-safe variant. The rewrit
 C tests have not been built or run. Industry compliance requires the selected
 profile and [review evidence](docs/architecture/misra-review.md).
 
+## Bytes
+
+`hps/bytes/view.h` provides borrowed read-only byte views with checked slicing,
+index access and equality. `hps/bytes/buffer.h` provides fixed-capacity mutable
+buffers over caller-owned uint8_t arrays, with assign/append/truncate/clear and
+borrowed views. Failures preserve state; overlapping copies use memmove.
+No module allocation, pool dependency or synchronization is involved.
+
+Link `HPS::bytes` in CMake or use `hps-bytes` in Meson. See
+[the bytes contract](docs/architecture/bytes.md) for lifetimes, bounds, target libc
+requirements and prepared-test status. C builds/tests remain deferred.
+
 ## Numeric type policy
 
 Numeric declarations use exact-width types from `<stdint.h>` (such as `uint8_t`,
