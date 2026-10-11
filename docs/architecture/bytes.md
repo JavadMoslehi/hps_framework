@@ -19,6 +19,9 @@ Views do not keep the owner alive or prevent writes through another alias. They
 are binary sequences: embedded zero bytes are ordinary data, not a terminator.
 No encoding or character/string semantics are attached.
 
+For explicit unsigned integer field encoding, see the
+[endian operations](bytes-endian.md) in `hps/bytes/endian.h`.
+
 ## Buffer
 
 Include `hps/bytes/buffer.h`. An hps_byte_buffer contains a uint8_t pointer,
@@ -93,8 +96,9 @@ transitive no-heap behavior and timing/stack must be reviewed for the target.
 There is no linked-product no-heap or freestanding-libc-availability guarantee.
 The view implementation has no runtime library dependency in its source.
 
-Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson; Make registers the bytes
-test alongside existing tests. Public headers are picked up automatically by the
+Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson; the shared `hps_tests`
+runner invokes `test_bytes(void)` alongside the base and pool suites in all three
+build systems. Public headers are picked up automatically by the
 independent-inclusion portability suite. These manifests are prepared, not built.
 
 ## Validation status

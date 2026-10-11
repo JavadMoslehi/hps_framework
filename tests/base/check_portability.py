@@ -25,7 +25,8 @@ def compile_source(source, standard='c99', flags=(), fail=False, diagnostic=None
     with tempfile.TemporaryDirectory(prefix='hps-base-test-') as directory:
         output = Path(directory) / 'test'
         command = CC + ['-std=' + standard, '-Wall', '-Wextra', '-Werror',
-                        '-pedantic-errors', '-I', str(ROOT / 'include')]
+                        '-pedantic-errors', '-I', str(ROOT / 'include'),
+                        '-I', str(ROOT / 'tests/base')]
         if not headers:
             command += ['-undef']
         command += list(flags)
@@ -58,7 +59,9 @@ for dialect in ['c99', 'c11', 'c17', 'c2x']:
     for header in sorted((ROOT / 'include').rglob('*.h')):
         name = header.relative_to(ROOT / 'include').as_posix()
         compile_source('#include "' + name + '"\n#include "' + name + '"\n', dialect)
-    compile_source((ROOT / 'tests/base/test_base.c').read_text(), dialect, run=True)
+    base_source = (ROOT / 'tests/base/test_base.c').read_text()
+    base_source += '\nint main(void) { return test_base(); }\n'
+    compile_source(base_source, dialect, run=True)
     expect('hps/base/standard.h', ['HPS_C_IS_C99',
            'HPS_C_IS_C11 == (__STDC_VERSION__ >= 201112L)',
            'HPS_C_IS_C17 == (__STDC_VERSION__ >= 201710L)',

@@ -20,6 +20,12 @@ repository. User task constraints on execution and scope remain authoritative.
 - Run python3 tools/check_policy.py for relevant changes. It performs no C build.
   Run compiled tests/builds only when consistent with the user's instructions;
   if deferred, report that and do not reuse historical evidence as current evidence.
+- Module test files expose a callable entry point matching their filename stem,
+  such as `test_bytes(void)` in `test_bytes.c`; only `tests/main.c` owns
+  the shared hosted runner's `main`. Register new suites in `tests/test_suites.h`
+  and all build manifests. The user-requested `int` suite signatures are a proposed
+  test-only exception recorded in `governance/reviews/test-entrypoints-2026-10-11.md`,
+  not an approved extension of the numerical type policy.
 - Never claim MISRA compliance, industrial qualification, PCI/ISO certification,
   proven WCET or measured performance without the scoped evidence required in
   governance/verification.md.

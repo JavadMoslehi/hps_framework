@@ -1,3 +1,4 @@
+#include "../test_suites.h"
 #include "hps/memory/pool.h"
 #include <assert.h>
 
@@ -145,7 +146,7 @@ static void test_signatures(void)
     release(ptr);
 }
 
-int main(void)
+int test_pool(void)
 {
     test_startup();
     test_sizes_and_resize();

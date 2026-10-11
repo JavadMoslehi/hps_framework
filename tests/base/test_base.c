@@ -1,3 +1,4 @@
+#include "../test_suites.h"
 #include "hps/base.h"
 #include "hps/base.h"
 
@@ -32,7 +33,7 @@ HPS_STATIC_ASSERT(HPS_ALIGNOF(int32_t) > 0, "alignment");
 static HPS_THREAD_LOCAL int32_t thread_value;
 #endif
 
-int main(void)
+int test_base(void)
 {
     if (increment(41) != answer()) {
         return 1;

@@ -15,7 +15,7 @@ target_link_libraries(hps_memory PUBLIC HPS::base)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
-add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c)
+add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c src/bytes/endian.c)
 add_library(HPS::bytes ALIAS hps_bytes)
 target_link_libraries(hps_bytes PUBLIC HPS::base)
 set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
@@ -23,30 +23,18 @@ set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
 
 include(CTest)
 if(BUILD_TESTING)
-    add_executable(hps_bytes_test tests/bytes/test_bytes.c)
-    target_link_libraries(hps_bytes_test PRIVATE HPS::bytes)
-    set_target_properties(hps_bytes_test PROPERTIES
+    add_executable(hps_tests tests/main.c tests/base/test_base.c
+        tests/memory/test_pool.c tests/bytes/test_bytes.c)
+    target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes)
+    set_target_properties(hps_tests PROPERTIES
         C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
-    if(MSVC)
-        target_compile_options(hps_bytes_test PRIVATE /UNDEBUG)
-    else()
-        target_compile_options(hps_bytes_test PRIVATE -UNDEBUG)
-    endif()
-    add_test(NAME hps_bytes COMMAND hps_bytes_test)
-    add_executable(hps_pool_test tests/memory/test_pool.c)
-    target_link_libraries(hps_pool_test PRIVATE HPS::memory)
     # Test assertions must remain active in Release builds.
     if(MSVC)
-        target_compile_options(hps_pool_test PRIVATE /UNDEBUG)
+        target_compile_options(hps_tests PRIVATE /UNDEBUG)
     else()
-        target_compile_options(hps_pool_test PRIVATE -UNDEBUG)
+        target_compile_options(hps_tests PRIVATE -UNDEBUG)
     endif()
-    add_test(NAME hps_pool COMMAND hps_pool_test)
-    add_executable(hps_base_test tests/base/test_base.c)
-    target_link_libraries(hps_base_test PRIVATE HPS::base)
-    set_target_properties(hps_base_test PROPERTIES
-        C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
-    add_test(NAME hps_base COMMAND hps_base_test)
+    add_test(NAME hps_tests COMMAND hps_tests)
     find_package(Python3 COMPONENTS Interpreter)
     if(Python3_Interpreter_FOUND AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         add_test(NAME hps_base_portability

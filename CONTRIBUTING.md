@@ -32,3 +32,11 @@ replace the target/evidence review.
 
 Public headers must follow the [header contract](governance/headers.md), including
 explicit dependencies and guarded C linkage for C++ consumers of external C APIs.
+
+Module tests expose a function matching the source filename: `test_bytes.c`
+defines `test_bytes(void)`, for example. Declare suites in `tests/test_suites.h`
+and call them once from the shared `tests/main.c` runner; module files do not define
+`main`. Add each suite source to Make, CMake and Meson. Keep assertions enabled
+and propagate failures. The user-requested `int` suite signatures have a
+[proposed test-only policy exception](governance/reviews/test-entrypoints-2026-10-11.md);
+the existing numerical policy/checker still reports them pending review.

@@ -62,6 +62,15 @@ synthetic compiler/architecture detection. Run it with another GCC/Clang-compati
 compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
+The shared `hps_tests` executable runs `test_base`, `test_pool` and `test_bytes`
+once, in that order, and stops on the first failure. Module test files expose
+functions matching their filenames; the only suite runner `main` is in
+`tests/main.c`. Make, CMake and Meson now use this executable instead of the three
+separate module test executables; the portability suite remains separate.
+The user-requested `int` test entry points currently fail the numerical policy
+subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
+This runner change has not been compiled or executed.
+
 ## Static memory pool
 
 The memory module owns 32 static 128-byte buffers and a private pointer free list.
@@ -82,6 +91,10 @@ index access and equality. `hps/bytes/buffer.h` provides fixed-capacity mutable
 buffers over caller-owned uint8_t arrays, with assign/append/truncate/clear and
 borrowed views. Failures preserve state; overlapping copies use memmove.
 No module allocation, pool dependency or synchronization is involved.
+
+`hps/bytes/endian.h` adds checked u16/u32/u64 reads at view offsets and complete
+field appends to buffers, in explicit LE/BE order. No native alignment/byte-order
+assumption is used. See [integer byte encoding](docs/architecture/bytes-endian.md).
 
 Link `HPS::bytes` in CMake or use `hps-bytes` in Meson. See
 [the bytes contract](docs/architecture/bytes.md) for lifetimes, bounds, target libc
