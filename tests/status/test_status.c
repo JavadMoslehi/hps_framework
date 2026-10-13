@@ -2,6 +2,7 @@
 #include "hps/status.h"
 #include "hps/bytes/buffer.h"
 #include "hps/memory/pool.h"
+#include "hps/string/view.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -64,17 +65,30 @@ static void test_status_registered_codes(void)
         {HPS_BYTE_NO_SPACE, -INT64_C(131075),
          HPS_STATUS_MODULE_BYTES, "bytes: no space"},
         {HPS_BYTE_INVALID_STATE, -INT64_C(131076),
-         HPS_STATUS_MODULE_BYTES, "bytes: invalid state"}
+         HPS_STATUS_MODULE_BYTES, "bytes: invalid state"},
+        {HPS_STRING_INVALID_ARGUMENT, -INT64_C(196609),
+         HPS_STATUS_MODULE_STRING, "string: invalid argument"},
+        {HPS_STRING_OUT_OF_RANGE, -INT64_C(196610),
+         HPS_STATUS_MODULE_STRING, "string: out of range"},
+        {HPS_STRING_NO_SPACE, -INT64_C(196611),
+         HPS_STATUS_MODULE_STRING, "string: no space"},
+        {HPS_STRING_INVALID_STATE, -INT64_C(196612),
+         HPS_STATUS_MODULE_STRING, "string: invalid state"},
+        {HPS_STRING_NOT_TERMINATED, -INT64_C(196613),
+         HPS_STATUS_MODULE_STRING, "string: not terminated"}
     };
     const size_t count = sizeof(cases) / sizeof(cases[0]);
     assert(sizeof(hps_status_t) == sizeof(int64_t));
     assert(sizeof(hps_byte_status) == sizeof(hps_status_t));
     assert(sizeof(hps_pool_status) == sizeof(hps_status_t));
+    assert(sizeof(hps_string_status) == sizeof(hps_status_t));
     assert(HPS_STATUS_OK == INT64_C(0));
     assert(HPS_BYTE_OK == HPS_STATUS_OK && HPS_POOL_OK == HPS_STATUS_OK);
+    assert(HPS_STRING_OK == HPS_STATUS_OK);
     assert(HPS_STATUS_MODULE_FRAMEWORK == UINT16_C(0));
     assert(HPS_STATUS_MODULE_MEMORY == UINT16_C(1));
     assert(HPS_STATUS_MODULE_BYTES == UINT16_C(2));
+    assert(HPS_STATUS_MODULE_STRING == UINT16_C(3));
     assert(HPS_STATUS_MODULE_UNKNOWN == UINT16_MAX);
     assert(HPS_STATUS_MESSAGE_CAPACITY == (size_t)32U);
     const uint16_t success_module = hps_status_module(HPS_STATUS_OK);
@@ -105,7 +119,11 @@ static void test_status_unregistered_and_boundaries(void)
         {-INT64_C(131077), HPS_STATUS_MODULE_BYTES},
         {-INT64_C(196607), HPS_STATUS_MODULE_BYTES},
         {-INT64_C(196608), HPS_STATUS_MODULE_UNKNOWN},
-        {-INT64_C(196609), HPS_STATUS_MODULE_UNKNOWN},
+        {-INT64_C(196614), HPS_STATUS_MODULE_STRING},
+        {-INT64_C(262143), HPS_STATUS_MODULE_STRING},
+        {-INT64_C(262144), HPS_STATUS_MODULE_UNKNOWN},
+        {-INT64_C(262145), HPS_STATUS_MODULE_UNKNOWN},
+        {-INT64_C(327679), HPS_STATUS_MODULE_UNKNOWN},
         {INT64_C(1), HPS_STATUS_MODULE_UNKNOWN},
         {INT64_C(65536), HPS_STATUS_MODULE_UNKNOWN},
         {INT64_MAX, HPS_STATUS_MODULE_UNKNOWN},
@@ -124,13 +142,16 @@ static void test_status_diagnostic_lifetime(void)
     const char *success = hps_status_string(HPS_STATUS_OK);
     const char *bytes_error = hps_status_string(HPS_BYTE_INVALID_ARGUMENT);
     const char *memory_error = hps_status_string(HPS_POOL_CORRUPT);
+    const char *string_error = hps_status_string(HPS_STRING_NOT_TERMINATED);
     const char *unknown = hps_status_string(INT64_MIN);
     assert_status_message(HPS_STATUS_INVALID_STATE, "framework: invalid state");
     assert_status_message(HPS_POOL_ALREADY_INITIALIZED, "memory: already initialized");
     assert_status_message(HPS_BYTE_NO_SPACE, "bytes: no space");
+    assert_status_message(HPS_STRING_INVALID_STATE, "string: invalid state");
     assert(strcmp(success, "ok") == 0);
     assert(strcmp(bytes_error, "bytes: invalid argument") == 0);
     assert(strcmp(memory_error, "memory: corrupt") == 0);
+    assert(strcmp(string_error, "string: not terminated") == 0);
     assert(strcmp(unknown, "unknown status") == 0);
 }
 

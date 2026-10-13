@@ -36,7 +36,9 @@ def compile_source(source, standard='c99', flags=(), fail=False, diagnostic=None
             command += ['-x', 'c', '-', '-c', '-o', str(output)]
         else:
             command += ['-x', 'c', '-', '-fsyntax-only']
-        result = subprocess.run(command, input=source + '\n#include <stddef.h>\ntypedef size_t hps_test_translation_unit;\n',
+        # Keep macro-only translation units nonempty without host-library headers
+        # that could interpret synthetic language/target macros as real ABI data.
+        result = subprocess.run(command, input=source + '\ntypedef void (*hps_test_translation_unit)(void);\n',
                                 text=True, capture_output=True)
         if (result.returncode != 0) != fail:
             raise RuntimeError(' '.join(command) + '\n' + result.stderr + '\n' + source)
@@ -184,4 +186,49 @@ HPS_STATIC_ASSERT(sizeof(size_t) >= 1U, "portable assertion");
 HPS_NODISCARD static HPS_INLINE int32_t identity(int32_t value) { return value; }
 int main(void) { return (identity(0) == 0) ? 0 : 1; }
 ''', run=True)
+# Borrowed typed spans keep declarations/make syntax usable before compound literals.
+span_source = '''#include "hps/span.h"
+HPS_SPAN_DEFINE(size_t, test_sizes)
+static const size_t data[] = {1U, 2U};
+static const test_sizes_t initial = HPS_SPAN_STATIC_INIT(data, 2U);
+int main(void)
+{
+    test_sizes_t span;
+    span = test_sizes_make(data, 2U);
+    if (span.data != data || span.length != 2U || initial.length != 2U) { return 1; }
+    span = HPS_SPAN_MAKE(test_sizes, data, 2U);
+    return (span.data == data && span.length == 2U) ? 0 : 2;
+}
+'''
+for dialect in ['c89', 'c99', 'c11', 'c17', 'c2x']:
+    compile_source(span_source, dialect, run=True)
+# Without a builtin probe/GCC identity, both hint fallbacks still normalize/evaluate once.
+compile_source('''#include "hps/base/compiler.h"
+#undef HPS_HAS_BUILTIN
+#define HPS_HAS_BUILTIN(name) 0
+#undef HPS_COMPILER_IS_GCC
+#define HPS_COMPILER_IS_GCC 0
+#include "hps/base/expression.h"
+#include <stdint.h>
+int main(void)
+{
+    uint8_t calls = 0U;
+    if (HPS_LIKELY(++calls) != 1 || calls != 1U) { return 1; }
+    if (HPS_UNLIKELY(42) != 1 || HPS_LIKELY(0) != 0) { return 2; }
+    return 0;
+}
+''', run=True)
+# The supplied string-switch generator also keeps its definition body C89-style.
+enum_source = '''#include "hps/enum/cstr.h"
+#define KEYS(E,P) E(P,PORT,"port") E(P,MODE,"mode")
+HPS_CSTR_ENUM_DEFINE_STATIC(key_t, KEY, KEYS)
+int main(void)
+{
+    if (key_t_from_cstr("port", 5U) != KEY_PORT) { return 1; }
+    if (key_t_from_cstr("port", 4U) != KEY_UNKNOWN) { return 2; }
+    return (strcmp(key_t_to_cstr(KEY_MODE), "mode") == 0) ? 0 : 3;
+}
+'''
+compile_source(enum_source, 'c89', run=True)
+compile_source(enum_source, 'c99', run=True)
 print(f'HPS base: {checks} portability checks passed ({" ".join(CC)}).')

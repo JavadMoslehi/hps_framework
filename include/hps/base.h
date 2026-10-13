@@ -14,5 +14,6 @@
 #include "hps/base/architecture.h"
 #include "hps/base/features.h"
 #include "hps/base/attributes.h"
+#include "hps/base/expression.h"
 
 #endif /* HPS_BASE_H */

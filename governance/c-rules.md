@@ -135,7 +135,8 @@ or repeated declarations.
 HPS-C-019: Use the shared signed status namespace for framework/module results.
 Zero is success; errors are negative. Allocate stable `uint16_t` module IDs
 centrally and unique reason numbers in the module's reserved 65,536-code partition.
-IDs 0..2 are currently allocated; IDs 3..65,534 are available for future modules.
+IDs 0..3 are currently allocated to framework, memory, bytes and string;
+IDs 4..65,534 are available for future modules.
 UINT16_MAX is permanently reserved for UNKNOWN and must not own an error partition.
 Reasons 1..65,535 are available; reason zero is reserved. Publish typed constants
 and register every defined error in the static diagnostic registry with its module,
@@ -156,6 +157,8 @@ The HPS-C-004 amendment and HPS-C-017 through HPS-C-019 are prepared at the user
 request. The [status/policy change record](reviews/status-2026-10-11.md) records
 scope, migration and pending maintainer/reviewer disposition; these edits do not
 approve an external-standard deviation or establish release qualification.
+String module 3 allocation and current host verification are recorded in the
+[string review](reviews/string-2026-10-13.md); target acceptance remains pending.
 
 ## Automated subset
 

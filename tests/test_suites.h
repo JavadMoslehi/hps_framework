@@ -19,5 +19,14 @@ int test_bytes(void);
 int32_t test_reader(void);
 int32_t test_status(void);
 int32_t test_enum(void);
+int32_t test_string(void);
+int32_t test_string_extended(void);
+int32_t test_string_builder(void);
+int32_t test_span(void);
+int32_t test_cstr(void);
+int32_t test_cstr_convert(void);
+int32_t test_cstr_format(void);
+int32_t test_national_code(void);
+int32_t test_cstr_enum(void);
 
 #endif /* HPS_TESTS_TEST_SUITES_H */

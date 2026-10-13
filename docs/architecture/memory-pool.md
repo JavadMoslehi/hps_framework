@@ -130,15 +130,18 @@ update persisted numeric assumptions and never narrow an error to uint8_t. Old
 binaries cannot be mixed with the new headers/library. See
 [the shared-status change record](../../governance/reviews/status-2026-10-11.md).
 
-Prepared tests cover signatures, pre-init use, reinit rejection, zero/oversize,
+Tests cover signatures, pre-init use, reinit rejection, zero/oversize,
 calloc product overflow and clearing, realloc preservation, exhaustion/recovery,
-foreign/interior addresses and immediate double free. They have not been compiled
-or run under the user's no-build instruction. Earlier allocator test and review
-results do not validate this replacement. See [current review](misra-review.md)
+foreign/interior addresses and immediate double free. The current shared host
+suite passed with GCC and Clang; commands and evidence scope are in the
+[string review](../../governance/reviews/string-2026-10-13.md). Earlier allocator
+test and review results do not validate this replacement. See
+[source review](misra-review.md)
 and [pointer-pool change record](../../governance/reviews/pointer-pool-2026-10-11.md).
 Those records remain evidence for their respective earlier snapshots; the shared
-status representation requires its own current ABI and test evidence.
+status representation still requires qualified target ABI and resource evidence.
 
 The public header has independent standard dependencies and guarded extern "C"
-for declarations. C/C++ mixed compilation/linking and target ABI remain untested.
+for declarations. Qualified target C/C++ compilation/linking and ABI validation
+remain pending.
 No MISRA compliance, industrial qualification, thread-safety or timing claim is made.

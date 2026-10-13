@@ -74,7 +74,9 @@ work is not a measured performance, constant-time security or WCET claim.
 Tests are part of the existing callable `test_bytes(void)` suite, with no module
 `main`. Known wire bytes, high-bit/zero/max values, unaligned offsets, truncation,
 SIZE_MAX bounds, NULL/malformed arguments, exact capacity and failure preservation
-are prepared. They have not been compiled or run under the standing no-build
-constraint. Source review and lexical checks do not establish target ABI, MISRA
-essential-type results, sanitizer results or industrial qualification.
-See [the change record](../../governance/reviews/bytes-endian-2026-10-11.md).
+are covered. The current shared host suite passed with GCC and Clang; the
+[string review](../../governance/reviews/string-2026-10-13.md) records the commands
+and evidence scope. Host results do not establish qualified target ABI, MISRA
+essential-type results, timing or industrial qualification.
+The [endian change record](../../governance/reviews/bytes-endian-2026-10-11.md)
+retains its original snapshot and historical verification status.

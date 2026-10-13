@@ -53,7 +53,9 @@ static bool hps_test_enum_visit(hps_test_enum_type value, const char *name,
 static void hps_test_enum_names_and_parse(void)
 {
     hps_test_enum_type value = (hps_test_enum_type)INT32_C(99);
-    bool flag = hps_test_enum_inline_from_name("Negative", &value);
+    bool flag = hps_test_enum_inline_from_cstr("Ten", &value);
+    assert(flag == true && value == HPS_TEST_ENUM_TEN);
+    flag = hps_test_enum_inline_from_name("Negative", &value);
     assert(flag == true && value == HPS_TEST_ENUM_NEGATIVE);
     flag = hps_test_enum_inline_from_name_ignore_case("fOrTyTwO", &value);
     assert(flag == true && value == HPS_TEST_ENUM_FORTY_TWO);
@@ -100,6 +102,8 @@ static void hps_test_enum_ranges_and_values(void)
     assert(hps_test_enum_inline_is_valid(HPS_TEST_ENUM_NEGATIVE) == true);
     assert(hps_test_enum_inline_is_unknown(INT32_C(0)) == true);
     assert(hps_test_enum_inline_is_defined(INT32_C(0)) == false);
+    assert(hps_test_enum_inline_contains(HPS_TEST_ENUM_TEN) == true);
+    assert(hps_test_enum_inline_contains(INT32_C(0)) == false);
     assert(hps_test_enum_inline_is_first(HPS_TEST_ENUM_TEN) == true);
     assert(hps_test_enum_inline_is_first(HPS_TEST_ENUM_NEGATIVE) == false);
     assert(hps_test_enum_inline_is_last(HPS_TEST_ENUM_FORTY_TWO) == true);

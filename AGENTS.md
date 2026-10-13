@@ -39,3 +39,12 @@ repository. User task constraints on execution and scope remain authoritative.
 - Review any applicable policy exception using governance/charter.md. A proposed
   deviation is not an approved one. Prepare concrete reviewable work within the
   user's authorized scope; do not introduce unrelated approval requests.
+
+## Legacy framework migration
+
+Read [the legacy source inventory](docs/migration/legacy-sources.md) when reusing
+the user's previous frameworks. Both reference trees are strictly read-only;
+all edits and generated artifacts belong in HPS. Preserve imported API behavior
+and document proposed type/behavior changes explicitly instead of silently
+rewriting them during naming or placement work. Update the migration record so
+another session or machine can continue from project files.

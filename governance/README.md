@@ -8,8 +8,8 @@ user-requested readability, duplication and shared-status amendment is recorded
 in the [status change review](reviews/status-2026-10-11.md); project-role review
 and release acceptance remain pending.
 
-HPS is currently a development framework with an unverified replacement memory
-pool. This policy is an engineering baseline, not a certificate, a safety case,
+HPS is currently a development framework with host-tested modules and no qualified
+deployment target. This policy is an engineering baseline, not a certificate, a safety case,
 a PCI validation, or evidence that current code already satisfies every rule.
 No deployment profile is qualified yet. An unresolved finding remains visible
 and blocks the corresponding release claim.
@@ -33,6 +33,9 @@ and blocks the corresponding release claim.
 | [Endian bytes review](reviews/bytes-endian-2026-10-11.md) | Bounded integer encoding and pending target/test evidence |
 | [Integer codec review](reviews/bytes-codec-2026-10-13.md) | Order-selecting conversion APIs, integration and source-only evidence |
 | [Enum traits migration](reviews/enum-traits-2026-10-13.md) | CSEP naming migration, original API restoration and utility-layer placement |
+| [CSEP text migration](reviews/csep-text-2026-10-13.md) | Cstr, builder/policy, spans/string keys and current compiled evidence |
+| [String foundation review](reviews/string-2026-10-13.md) | Bounded text views/buffers, legacy adaptation and current host verification |
+| [Character storage proposal](reviews/string-storage-2026-10-13.md) | Counted text and actual char-array fixtures; release disposition pending |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |
 | [Bytes API naming review](reviews/bytes-api-names-2026-10-11.md) | Explicit byte operations, migration and source-only checks |
 | [Framework status review](reviews/status-2026-10-11.md) | Shared error namespaces, diagnostic strings and policy amendment |
@@ -58,7 +61,9 @@ It is not a MISRA analyzer. The [root agent rules](../AGENTS.md) and
 Repository hosting branch protection and required review settings must still be
 configured by maintainers; files cannot prevent someone bypassing review.
 
-Current scope is the base headers, shared status registry, static pool core, borrowed bytes module and named-value traits. Tests/examples follow the
+Current scope is the base headers, shared status registry, static pool core,
+borrowed bytes module, bounded string/Cstr utilities, typed spans, checksum
+validation and named-value traits. Tests/examples follow the
 same numerical type rules with a documented hosted `main` exception. OS adapters,
 cryptographic services, protocol stacks and payment applications are future or
 external integration responsibilities.

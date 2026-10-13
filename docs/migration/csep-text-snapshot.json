@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-13",
+  "source_base": "2dafeb9df1f70ca84418ba8348bae8ad688b97c9",
+  "scope": "Final HPS production/tests/build inputs; not original source backup or qualification",
+  "files": [
+    {
+      "path": "CMakeLists.txt",
+      "bytes": 4498,
+      "sha256": "d99e6bee09b0b61a87c42e421c836e0045b36640508116b8a003d02e076fba08"
+    },
+    {
+      "path": "Makefile",
+      "bytes": 1407,
+      "sha256": "e9e9851aa508829c9c157df02d45bb3c5eeeb2f3c4182509c59d095a0edae728"
+    },
+    {
+      "path": "include/hps/base/attributes.h",
+      "bytes": 3614,
+      "sha256": "65f340ddecef0362380e911fbcfad89bfebd20c45a3dc9aa05a7119816c14871"
+    },
+    {
+      "path": "include/hps/base/expression.h",
+      "bytes": 995,
+      "sha256": "c91db5394ea8f0b8f7f81db0cb825efd7280cdb9c35c5a26ab38c6f14cb2d5d8"
+    },
+    {
+      "path": "include/hps/base.h",
+      "bytes": 486,
+      "sha256": "1eee31baee961674f9350ecc5e1eaacb2eb2afc1b580c8cb49ed34fc10e142fd"
+    },
+    {
+      "path": "include/hps/cstr/algorithm.h",
+      "bytes": 6307,
+      "sha256": "396b2fa18e4790026d8777a4d2a09470ebf62bbece556216b7f09af2669733c1"
+    },
+    {
+      "path": "include/hps/cstr/convert.h",
+      "bytes": 4747,
+      "sha256": "6bf83525221b3e9c797f1a72aa0b6af0ae3b18b409a86fa38d95aae08af72b9e"
+    },
+    {
+      "path": "include/hps/cstr/core.h",
+      "bytes": 8682,
+      "sha256": "9ed60c3bf26db95776b22b7441339a275613e2b40233b94ab6a1291c1f9bd4a2"
+    },
+    {
+      "path": "include/hps/cstr/format.h",
+      "bytes": 3320,
+      "sha256": "bde98d9c41ce0b17ef49989e75aab78c2bf01dfbe503e4de468c1add3b1e9a52"
+    },
+    {
+      "path": "include/hps/cstr.h",
+      "bytes": 284,
+      "sha256": "d643cd9f4f5e9badd31a8e60ed947b58e188f578c1d34b471dbbbe076f92cba4"
+    },
+    {
+      "path": "include/hps/enum/cstr.h",
+      "bytes": 2623,
+      "sha256": "22a81b8d66884930f99347b36176276e5d99917df425c858adb44d7321e9cfd2"
+    },
+    {
+      "path": "include/hps/enum/traits.h",
+      "bytes": 18289,
+      "sha256": "46239bc45550317223c49bcbe9873b4b91550f69da200a858b7de7afebc769f4"
+    },
+    {
+      "path": "include/hps/span.h",
+      "bytes": 1537,
+      "sha256": "4d71a4dd4aa6e795a636a7c761aa0e75f2d97c15e459c5d4a2838b1afbe0fbea"
+    },
+    {
+      "path": "include/hps/status.h",
+      "bytes": 2503,
+      "sha256": "f0b674ee37f642841eaeab0d2e60c648e5d224bd75734e1083b140d7b13269de"
+    },
+    {
+      "path": "include/hps/string/buffer.h",
+      "bytes": 4133,
+      "sha256": "5e7e2f5e21ac24ee7a095502f6c4bdba54332505a71212bb73de59c88a73e046"
+    },
+    {
+      "path": "include/hps/string/builder.h",
+      "bytes": 5899,
+      "sha256": "6170c4fd5ee3f0757ea0ab5165b9805a061029c8aae54c8124b2d32551f6c51e"
+    },
+    {
+      "path": "include/hps/string/char.h",
+      "bytes": 1671,
+      "sha256": "d6733572f54d5f5f7ad33cdce64779e70faf852c244e6ada318759f702838b8e"
+    },
+    {
+      "path": "include/hps/string/fixed.h",
+      "bytes": 1898,
+      "sha256": "468453aca00b322d916ddbfa0d733783877a03bae938304e2e876fb60fd5efd7"
+    },
+    {
+      "path": "include/hps/string/policy.h",
+      "bytes": 4365,
+      "sha256": "686cc7dcda38a372552a064e5121f84a49284ecb9a338bc393383f0199156afa"
+    },
+    {
+      "path": "include/hps/string/view.h",
+      "bytes": 11232,
+      "sha256": "1ecc42034ff1b7fdeb47b081a8cabc9d11b47f71d56b49b63b34786f5af901dc"
+    },
+    {
+      "path": "include/hps/string.h",
+      "bytes": 351,
+      "sha256": "229c1f81d3f031c53e107ed6a73ab89e44efb4a94e0df6eb4f620b6ef4bbf334"
+    },
+    {
+      "path": "include/hps/validation/national_code.h",
+      "bytes": 1156,
+      "sha256": "72c2a1ad91115e4291ac6c60905261653859c68b1e3f3a8d7c4d1f93dc80b46f"
+    },
+    {
+      "path": "meson.build",
+      "bytes": 3158,
+      "sha256": "9e0e22bc02d53c88114add38ea57ecad59a57faa7de4316a34fed11d9be48924"
+    },
+    {
+      "path": "src/cstr/algorithm.c",
+      "bytes": 20785,
+      "sha256": "0bea196298601fdcc0b47d804b95673f34773466b714bcfb7f671fc376db0615"
+    },
+    {
+      "path": "src/cstr/convert.c",
+      "bytes": 16267,
+      "sha256": "e056b3cc8d43ab572f67218c501f50f8b742f4410ec4189ccacb411c1c1add4b"
+    },
+    {
+      "path": "src/cstr/core.c",
+      "bytes": 26298,
+      "sha256": "96a67e98c616ea8f68e4ed61e4e178af5afdfb733467b4aee13dce939f22da58"
+    },
+    {
+      "path": "src/cstr/format.c",
+      "bytes": 11639,
+      "sha256": "a667a7960e5bb594d9c3bbf406e5336ebe0663d459c7b89a860c14920266947f"
+    },
+    {
+      "path": "src/status.c",
+      "bytes": 4052,
+      "sha256": "4ee08022a9165b2337f9031b113ef1a4e93cb165db3a70c483ab3e5135d7ccaa"
+    },
+    {
+      "path": "src/string/buffer.c",
+      "bytes": 6650,
+      "sha256": "13c4a85168c790951cfc857359c7881ae959ada4fadcdc549992ebd56dc3df03"
+    },
+    {
+      "path": "src/string/builder.c",
+      "bytes": 20459,
+      "sha256": "2ba23238672813c85115f1da99f0fd97e57ed74f2782836ead38197bba200e8f"
+    },
+    {
+      "path": "src/string/char.c",
+      "bytes": 3330,
+      "sha256": "eac8c1c0387bebd9d1b31378138283779ebb8997021230be55145ceda2846b28"
+    },
+    {
+      "path": "src/string/internal.h",
+      "bytes": 898,
+      "sha256": "2b43aed8e8373085ef125c92091a667b78c9b7608783f7eb5b36a579de25aaad"
+    },
+    {
+      "path": "src/string/policy.c",
+      "bytes": 20030,
+      "sha256": "4c3fc7d4c50e3313ed273c7793ea7370f3b0a74eddfdd1c3e6a938cc3ba998b4"
+    },
+    {
+      "path": "src/string/view.c",
+      "bytes": 32533,
+      "sha256": "0ccdceecca9547300b630f9bff4e75b49113e6c0cb89ed327be667b5654dad62"
+    },
+    {
+      "path": "src/validation/national_code.c",
+      "bytes": 2230,
+      "sha256": "071e95acfc790fe81bacee4276ad1dbb35cdf4465ac915490b1d9bc92254da33"
+    },
+    {
+      "path": "tests/base/check_portability.py",
+      "bytes": 11081,
+      "sha256": "14c1b8af35c494e3911e53ecc38ab7d4962732a1d578a61a1f9b6f5e86184eb0"
+    },
+    {
+      "path": "tests/cstr/test_cstr.c",
+      "bytes": 21577,
+      "sha256": "eddadb964521982b7674762d8dc1eeacfedd953a020f82ecc01489c1d71b63f2"
+    },
+    {
+      "path": "tests/cstr/test_cstr_convert.c",
+      "bytes": 18961,
+      "sha256": "771f8adeef5ca5092a952036fff536c20d1dae93502c142f9a31ceae9deb2ae2"
+    },
+    {
+      "path": "tests/cstr/test_cstr_format.c",
+      "bytes": 8212,
+      "sha256": "66756020bc3d8fd3e723fef7addef409eac1704acec79d49b86bff2c89717581"
+    },
+    {
+      "path": "tests/enum/test_cstr_enum.c",
+      "bytes": 1682,
+      "sha256": "dfbc75a3b03bbcd8acf86deab8b3d783399f62e904e911bba2e6a2325756ed8a"
+    },
+    {
+      "path": "tests/enum/test_enum.c",
+      "bytes": 9584,
+      "sha256": "420ee6d0fbd44573ed254b6d2a39a97434839b7c3a68bb76c00713fc0bfe176c"
+    },
+    {
+      "path": "tests/main.c",
+      "bytes": 1006,
+      "sha256": "123703f3bf144ffa8f3cc31aa2cb6207b3317f1c43f64cea52f881df7432c0ab"
+    },
+    {
+      "path": "tests/span/test_span.c",
+      "bytes": 1299,
+      "sha256": "07e9b43c0a685f85e514afe660d0625a2ac930cba3c656e7157c1da8106d87dd"
+    },
+    {
+      "path": "tests/status/test_status.c",
+      "bytes": 8872,
+      "sha256": "bf412917c122f609e4714111320789b94e0a993e57987d334e10f0143d415687"
+    },
+    {
+      "path": "tests/string/policy_expectations.h",
+      "bytes": 10306,
+      "sha256": "f56461ae3120dcaba2bbdfe28f8b2c7f78eed411720087b22c4f57c0b5098b82"
+    },
+    {
+      "path": "tests/string/test_string.c",
+      "bytes": 32622,
+      "sha256": "58e5992534614ed57266e2e3123dbbcdc65004653ca6e06dfb8e7c2aa7b42809"
+    },
+    {
+      "path": "tests/string/test_string_builder.c",
+      "bytes": 11388,
+      "sha256": "2dbe0f59eb8b4b50817ed73a391f74a6acfadeb4ff9af2f99f2fa493de337439"
+    },
+    {
+      "path": "tests/string/test_string_extended.c",
+      "bytes": 10533,
+      "sha256": "ca260080164d2c7e112da9a5601850f589eff8a9fa44e628a785d9a422033d11"
+    },
+    {
+      "path": "tests/test_suites.h",
+      "bytes": 969,
+      "sha256": "3ce857dc8dfd9c995c6a7f6acef5ac106d0f1e333b4241174998c5086f55606a"
+    },
+    {
+      "path": "tests/validation/test_national_code.c",
+      "bytes": 1974,
+      "sha256": "7b9a5cbf113e400f8f6a68b57740ac8e37f4e0769d61662dd448ed978234884f"
+    }
+  ]
+}

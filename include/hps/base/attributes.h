@@ -37,10 +37,19 @@
     typedef size_t HPS_DETAIL_JOIN(hps_static_assert_line_, __LINE__)[(condition) ? 1 : -1]
 #endif
 
-#if HPS_C_IS_C99
-# define HPS_INLINE inline
+/* Use compiler inline spelling when the selected C dialect predates C99. */
+#ifndef HPS_INLINE
+#if defined(__cplusplus)
+#define HPS_INLINE inline
+#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#define HPS_INLINE inline
+#elif defined(_MSC_VER)
+#define HPS_INLINE __inline
+#elif defined(__GNUC__)
+#define HPS_INLINE __inline__
 #else
-# define HPS_INLINE
+#define HPS_INLINE
+#endif
 #endif
 
 #if HPS_ENABLE_RESTRICT && HPS_C_IS_C99

@@ -1,6 +1,7 @@
 #include "hps/status.h"
 #include "hps/bytes/view.h"
 #include "hps/memory/pool.h"
+#include "hps/string/view.h"
 
 /**
  * @file src/status.c
@@ -17,6 +18,8 @@
 #define HPS_MEMORY_ERROR_MAX (-INT64_C(65537))
 #define HPS_BYTES_ERROR_MIN (-INT64_C(196607))
 #define HPS_BYTES_ERROR_MAX (-INT64_C(131073))
+#define HPS_STRING_ERROR_MIN (-INT64_C(262143))
+#define HPS_STRING_ERROR_MAX (-INT64_C(196609))
 
 uint16_t hps_status_module(const hps_status_t status)
 {
@@ -31,6 +34,9 @@ uint16_t hps_status_module(const hps_status_t status)
     } else if ((status >= HPS_BYTES_ERROR_MIN) &&
                (status <= HPS_BYTES_ERROR_MAX)) {
         module = HPS_STATUS_MODULE_BYTES;
+    } else if ((status >= HPS_STRING_ERROR_MIN) &&
+               (status <= HPS_STRING_ERROR_MAX)) {
+        module = HPS_STATUS_MODULE_STRING;
     } else {
         /* Unknown/unallocated values retain UNKNOWN. */
     }
@@ -88,6 +94,21 @@ const char *hps_status_string(const hps_status_t status)
             break;
         case HPS_BYTE_INVALID_STATE:
             message = "bytes: invalid state";
+            break;
+        case HPS_STRING_INVALID_ARGUMENT:
+            message = "string: invalid argument";
+            break;
+        case HPS_STRING_OUT_OF_RANGE:
+            message = "string: out of range";
+            break;
+        case HPS_STRING_NO_SPACE:
+            message = "string: no space";
+            break;
+        case HPS_STRING_INVALID_STATE:
+            message = "string: invalid state";
+            break;
+        case HPS_STRING_NOT_TERMINATED:
+            message = "string: not terminated";
             break;
         default:
             /* Unregistered codes retain the immutable fallback. */

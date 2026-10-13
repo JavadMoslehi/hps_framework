@@ -88,13 +88,15 @@ defence overlays are not defined yet. The
 ecosystem mapping and the remaining obligations. No ecosystem is qualified by
 this module or by the existence of its directory.
 
-Prepared tests in `tests/bytes/test_reader.c` expose `int32_t test_reader(void)`
+Tests in `tests/bytes/test_reader.c` expose `int32_t test_reader(void)`
 through the shared runner, with no module main. They cover mixed byte/field/slice
 sequences, independent cursors, empty/end states, malformed arguments, truncation,
 failure preservation and SIZE_MAX arithmetic. The exact-width suite return avoids
-extending the existing proposed int exceptions. C builds/tests, analyzers,
-sanitizers/fuzzing, C++ linkage and target performance/resource checks remain
-deferred under the standing instruction.
+extending the existing proposed int exceptions. The current shared host suite
+passed with GCC and Clang; commands and evidence scope are in the
+[string review](../../governance/reviews/string-2026-10-13.md). Semantic analyzers,
+reader-specific fuzzing, qualified target C/C++ ABI and performance/resource
+checks remain pending.
 
 Synthetic-extent arithmetic probes and direct metadata mutation are deliberate
 test setup/fault injection outside normal application usage. They neither access

@@ -28,12 +28,37 @@ target_link_libraries(hps_bytes PUBLIC HPS::status)
 set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
+add_library(hps_string STATIC src/string/view.c src/string/buffer.c
+    src/string/char.c src/string/builder.c src/string/policy.c)
+add_library(HPS::string ALIAS hps_string)
+target_link_libraries(hps_string PUBLIC HPS::status)
+set_target_properties(hps_string PROPERTIES EXPORT_NAME string
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+
+add_library(hps_cstr STATIC src/cstr/core.c src/cstr/convert.c
+    src/cstr/algorithm.c src/cstr/format.c)
+add_library(HPS::cstr ALIAS hps_cstr)
+target_link_libraries(hps_cstr PUBLIC HPS::string)
+set_target_properties(hps_cstr PROPERTIES EXPORT_NAME cstr
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+
+add_library(hps_validation STATIC src/validation/national_code.c)
+add_library(HPS::validation ALIAS hps_validation)
+target_link_libraries(hps_validation PUBLIC HPS::string)
+set_target_properties(hps_validation PROPERTIES EXPORT_NAME validation
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+
 include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
         tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
-        tests/status/test_status.c tests/enum/test_enum.c)
-    target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes HPS::status)
+        tests/status/test_status.c tests/enum/test_enum.c tests/string/test_string.c
+        tests/string/test_string_extended.c tests/string/test_string_builder.c
+        tests/span/test_span.c tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
+        tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
+        tests/enum/test_cstr_enum.c)
+    target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes
+        HPS::status HPS::string HPS::cstr HPS::validation)
     set_target_properties(hps_tests PROPERTIES
         C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
     # Test assertions must remain active in Release builds.
@@ -58,7 +83,8 @@ configure_package_config_file(cmake/HPSConfig.cmake.in
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/HPSConfigVersion.cmake
     VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
 set_target_properties(hps_base PROPERTIES EXPORT_NAME base)
-install(TARGETS hps_base hps_status hps_memory hps_bytes EXPORT HPSTargets
+install(TARGETS hps_base hps_status hps_memory hps_bytes hps_string hps_cstr
+    hps_validation EXPORT HPSTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/hps DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT HPSTargets NAMESPACE HPS:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPS)

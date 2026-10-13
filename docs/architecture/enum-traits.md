@@ -10,10 +10,12 @@ API and helper behavior; this is a naming and placement migration.
 The original C89-style function bodies and declaration/implementation/header-only
 modes are retained. This does not establish strict C89 toolchain compatibility:
 `stdint.h` and `stdbool.h` are standard from C99 onward, and a C89 implementation
-needs compatible headers/extensions. `HPS_ENUM_STATIC_INLINE` preserves the
-original compatibility selection: `static inline` for C++/C99, compiler inline
-extensions for MSVC/GCC, or `static` otherwise. It can be defined by the caller
-before inclusion. No C configure/build, C89 probe or C++ ABI test has been run.
+needs compatible headers/extensions. Helpers and inline generation use
+`static HPS_INLINE`, sharing the selection in `hps/base/attributes.h`:
+`inline` for C++/C99, compiler inline extensions for MSVC/GCC, or an empty token
+otherwise. `HPS_INLINE` can be defined by the caller before inclusion.
+The current shared C host suite passed with GCC and Clang; this does not qualify
+strict C89 support or enum interoperability with C++.
 
 ## Native enum values and generation modes
 
@@ -43,7 +45,7 @@ HPS_ENUM_DEFINE_INLINE(demo_mode, demo_mode, DEMO_MODE_ITEMS)
 ```
 
 `HPS_ENUM_DEFINE_INLINE` emits both declarations and definitions with
-`HPS_ENUM_STATIC_INLINE` linkage. For separate implementation mode, put the enum,
+`static HPS_INLINE` linkage. For separate implementation mode, put the enum,
 item list and `HPS_ENUM_DECLARE(demo_mode, demo_mode, DEMO_MODE_ITEMS)` in the public
 module header. Include that header in exactly one `.c` file before invoking
 `HPS_ENUM_IMPLEMENT(demo_mode, demo_mode, DEMO_MODE_ITEMS)`. The declaration must
@@ -127,11 +129,11 @@ with the caller.
 ## Migration, resources and review status
 
 The migration maps `CSEP_ENUM_*` to `HPS_ENUM_*`, `csep_enum_*` to `hps_enum_*`, and
-`csep_static_inline` to `HPS_ENUM_STATIC_INLINE`. Of the original CSEP includes,
+`csep_static_inline` to `static HPS_INLINE`. Of the original CSEP includes,
 only the static-inline token was used; the C-string and container includes were
-unused. Its compatibility definition is now local, so there is no remaining
-CSEP dependency. Standard `stddef.h`, `stdint.h`, `stdbool.h` and `string.h`
-dependencies remain explicit.
+unused. Inline compatibility now comes from `hps/base/attributes.h`, so there is
+no remaining CSEP dependency. Standard `stddef.h`, `stdint.h`, `stdbool.h` and
+`string.h` dependencies remain explicit.
 
 Generated tables have static lifetime, with a separate original table in each
 function that needs one. Header-only generation can duplicate code and tables
@@ -147,5 +149,6 @@ exceptions. Native enum storage, `bool`/`int`/scalar `char`, unchecked arithmeti
 unbounded input scans and caller-side linkage remain visible review items under
 HPS-C-001/003/004/005/006/009/016/018 and HPS-HDR-004/005/006. See the
 [enum migration review](../../governance/reviews/enum-traits-2026-10-13.md) for the
-scoped record. There is no claim of MISRA compliance, C89/C++ qualification or
-release acceptance.
+scoped record. The [current string review](../../governance/reviews/string-2026-10-13.md)
+records shared host verification and its limits. There is no claim of MISRA
+compliance, C89/C++ qualification or release acceptance.

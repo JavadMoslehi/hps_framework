@@ -20,24 +20,16 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include "hps/base/attributes.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef HPS_ENUM_STATIC_INLINE
-#if defined(__cplusplus)
-#define HPS_ENUM_STATIC_INLINE static inline
-#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
-#define HPS_ENUM_STATIC_INLINE static inline
-#elif defined(_MSC_VER)
-#define HPS_ENUM_STATIC_INLINE static __inline
-#elif defined(__GNUC__)
-#define HPS_ENUM_STATIC_INLINE static __inline__
-#else
-#define HPS_ENUM_STATIC_INLINE static
-#endif
-#endif
+
+
+
+
 
 #ifndef HPS_ENUM_UNKNOWN_NAME
 #define HPS_ENUM_UNKNOWN_NAME "UNKNOWN"
@@ -58,7 +50,7 @@ extern "C" {
 	 * Small generic helpers
 	 *====================================================================================================================*/
 
-	HPS_ENUM_STATIC_INLINE size_t hps_enum_cstr_length(const char* str)
+	static HPS_INLINE size_t hps_enum_cstr_length(const char* str)
 	{
 		const char* p;
 
@@ -75,12 +67,12 @@ extern "C" {
 		return (size_t)(p - str);
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_is_empty(const char* str)
+	static HPS_INLINE bool hps_enum_cstr_is_empty(const char* str)
 	{
 		return (str == 0) || (str[0] == '\0');
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_equal(const char* left, const char* right)
+	static HPS_INLINE bool hps_enum_cstr_equal(const char* left, const char* right)
 	{
 		size_t left_len;
 		size_t right_len;
@@ -99,7 +91,7 @@ extern "C" {
 		return memcmp(left, right, left_len) == 0;
 	}
 
-	HPS_ENUM_STATIC_INLINE char hps_enum_ascii_to_lower(char ch)
+	static HPS_INLINE char hps_enum_ascii_to_lower(char ch)
 	{
 		if ((ch >= 'A') && (ch <= 'Z')) {
 			return (char)(ch - 'A' + 'a');
@@ -108,7 +100,7 @@ extern "C" {
 		return ch;
 	}
 
-	HPS_ENUM_STATIC_INLINE char hps_enum_ascii_to_upper(char ch)
+	static HPS_INLINE char hps_enum_ascii_to_upper(char ch)
 	{
 		if ((ch >= 'a') && (ch <= 'z')) {
 			return (char)(ch - 'a' + 'A');
@@ -117,7 +109,7 @@ extern "C" {
 		return ch;
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_equal_ignore_case(const char* left, const char* right)
+	static HPS_INLINE bool hps_enum_cstr_equal_ignore_case(const char* left, const char* right)
 	{
 		size_t i;
 
@@ -139,7 +131,7 @@ extern "C" {
 		return left[i] == right[i];
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_copy(char* out, size_t out_capacity, const char* src)
+	static HPS_INLINE bool hps_enum_cstr_copy(char* out, size_t out_capacity, const char* src)
 	{
 		size_t len;
 
@@ -160,7 +152,7 @@ extern "C" {
 		return true;
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_clear(char* out, size_t out_capacity)
+	static HPS_INLINE bool hps_enum_cstr_clear(char* out, size_t out_capacity)
 	{
 		if ((out == 0) || (out_capacity == 0u)) {
 			return false;
@@ -171,7 +163,7 @@ extern "C" {
 		return true;
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_append(char* out, size_t out_capacity, const char* src)
+	static HPS_INLINE bool hps_enum_cstr_append(char* out, size_t out_capacity, const char* src)
 	{
 		size_t out_len;
 		size_t src_len;
@@ -194,7 +186,7 @@ extern "C" {
 		return true;
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_cstr_append_char(char* out, size_t out_capacity, char ch)
+	static HPS_INLINE bool hps_enum_cstr_append_char(char* out, size_t out_capacity, char ch)
 	{
 		size_t out_len;
 
@@ -215,7 +207,7 @@ extern "C" {
 		return true;
 	}
 
-	HPS_ENUM_STATIC_INLINE bool hps_enum_format_name(const char* prefix_name,
+	static HPS_INLINE bool hps_enum_format_name(const char* prefix_name,
 		const char* enum_name,
 		char* out,
 		size_t out_capacity)
@@ -657,9 +649,10 @@ extern "C" {
 #define HPS_ENUM_IMPLEMENT(enum_type, prefix, item_list) \
 	HPS_ENUM_DEFINE_METHODS_WITH_LINKAGE(enum_type, prefix, item_list, HPS_ENUM_EXTERNAL)
 
+
 #define HPS_ENUM_DEFINE_INLINE(enum_type, prefix, item_list) \
-	HPS_ENUM_DECLARE_WITH_LINKAGE(enum_type, prefix, HPS_ENUM_STATIC_INLINE) \
-	HPS_ENUM_DEFINE_METHODS_WITH_LINKAGE(enum_type, prefix, item_list, HPS_ENUM_STATIC_INLINE)
+	HPS_ENUM_DECLARE_WITH_LINKAGE(enum_type, prefix, static HPS_INLINE) \
+	HPS_ENUM_DEFINE_METHODS_WITH_LINKAGE(enum_type, prefix, item_list, static HPS_INLINE)
 
 #ifdef __cplusplus
 }

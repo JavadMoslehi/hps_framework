@@ -121,9 +121,10 @@ The view implementation has no runtime library dependency in its source.
 
 Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson, with the corresponding
 status library dependency. The shared `hps_tests` runner invokes `test_bytes(void)`
-alongside the base, pool, reader and status suites in all three build systems.
-Public headers are picked up automatically by the
-independent-inclusion portability suite. These manifests are prepared, not built.
+alongside the base, pool, reader, status, enum and string suites in all three build
+systems. Public headers are picked up automatically by the independent-inclusion
+portability suite. Current host build and test results are recorded in the
+[string review](../../governance/reviews/string-2026-10-13.md).
 
 ## API name migration
 
@@ -162,13 +163,14 @@ headers/library. See [the shared-status change record](../../governance/reviews/
 
 ## Validation status
 
-Prepared tests cover embedded-zero/high-byte payloads, empty and full buffers,
+Tests cover embedded-zero/high-byte payloads, empty and full buffers,
 NULL/malformed metadata, SIZE_MAX bounds, unchanged outputs on failure,
 self-descriptor slicing and 2,025 append plus 2,025 assign snapshot-model cases
-covering overlapping and disjoint ranges. They have not been compiled or run:
-the user's no-build instruction remains active. No sanitizer/analyzer, mixed C/C++
-ABI, target timing or industrial qualification evidence is supplied.
-See [the change review](../../governance/reviews/bytes-2026-10-11.md).
-That review covers its original snapshot; the
+covering overlapping and disjoint ranges. The current shared host suite passed
+with GCC and Clang; exact commands and evidence scope are in the
+[string review](../../governance/reviews/string-2026-10-13.md). Semantic analyzer
+assessment, qualified target ABI/timing and industrial acceptance remain open.
+The [bytes change review](../../governance/reviews/bytes-2026-10-11.md) covers its
+original snapshot; the
 [shared-status review](../../governance/reviews/status-2026-10-11.md) records the
-current representation change and pending checks.
+original representation change and its historical verification status.

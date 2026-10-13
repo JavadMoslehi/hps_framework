@@ -60,8 +60,9 @@ Qualification must specify C/C++ compiler versions/modes and verify independent
 and repeated inclusion in both languages, then link a C++ caller with objects
 compiled as C. Check layouts, alignment, status representation and callback ABI
 on each promised target. C++ compatibility must not enable C-only features merely
-because C++ has superficially similar syntax. Such builds/tests remain deferred
-for this revision under the current user instruction.
+because C++ has superficially similar syntax. Current host text/span/key include/link checks are recorded in the
+[text migration review](reviews/csep-text-2026-10-13.md); other target support
+remains unqualified.
 
 The [C++ working draft's linkage section](https://eel.is/c++draft/dcl.link)
 is the reference for language linkage; target interoperability still requires

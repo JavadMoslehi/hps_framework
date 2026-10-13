@@ -63,30 +63,34 @@ compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
-`test_reader`, `test_status` and `test_enum` once, in that order, and stops on the first failure.
+`test_reader`, `test_status`, `test_enum`, `test_string`, `test_string_extended`,
+`test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
+`test_cstr_format`, `test_national_code` and `test_cstr_enum` once, in that order,
+and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
 `tests/main.c`. Make, CMake and Meson now use this executable instead of the three
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-This runner change has not been compiled or executed.
+The current shared runner and all fifteen suites passed on the development host
+with GCC and Clang. See the [current verification record](governance/reviews/csep-text-2026-10-13.md)
+for flags, build systems, sanitizer results and remaining target/policy gaps.
 
 ## Status diagnostics
 
 `hps/status.h` defines the shared `int64_t` status type `hps_status_t`: success is
-zero and errors are negative. Framework, memory and bytes errors occupy distinct
+zero and errors are negative. Framework, memory, bytes and string errors occupy distinct
 registered module ranges. `hps_status_module` identifies an allocated range;
 `hps_status_string` returns an immutable NUL-terminated diagnostic message of at
 most 31 characters, or `"unknown status"` for an unregistered code. No allocation
 or runtime registration is involved.
 
 Link `HPS::status` in CMake or use `hps-status` in Meson; memory/bytes targets
-include this dependency. Module status aliases and constants retain their names
+include this dependency, as does the string target. Module status aliases and constants retain their names
 but now use this signed representation and module-specific negative values.
 Consumers must rebuild and update stored numeric status assumptions. See
-[the status contract and migration](docs/architecture/status.md). Its prepared C
-tests have not been compiled or run.
+[the status contract and migration](docs/architecture/status.md).
 
 ## Named-value traits
 
@@ -97,7 +101,39 @@ declaration/implementation and header-only modes. It is a general utility beside
 bytes and memory; its runtime operations are outside the base umbrella.
 See [the enum traits contract and CSEP migration](docs/architecture/enum-traits.md).
 The original bool/int/char signatures and legacy string behavior are retained at
-the user's request. The prepared tests remain unbuilt and unexecuted.
+the user's request. Its suite is included in the current host verification.
+
+## Strings
+
+`hps/string.h` includes borrowed text views and fixed-capacity C-string buffers.
+Views support exact slicing, comparison, prefix/suffix tests, forward/backward
+search, trimming and bounded C-string import/export. Buffers use caller-owned
+storage for assign, append, erase, truncate and clear; capacity includes the NUL
+terminator. Failures preserve outputs and payloads; overlapping copies use memmove.
+No heap, pool, OS or global mutable state is involved.
+
+Link `HPS::string` in CMake or use `hps-string` in Meson. See
+[the string contract and legacy behavior mapping](docs/architecture/string.md).
+Counted text and real character-array test storage have a
+[proposed scoped policy exception](governance/reviews/string-storage-2026-10-13.md);
+release acceptance remains pending. Bounded builders, JSON composition, typed fixed storage, ASCII helpers and alphabet
+policies are now included. Native heap growth and Unicode interpretation require
+separate contracts.
+
+## C strings, spans and string keys
+
+`hps/cstr.h` provides bounded C-string transformations, parsing/rendering, byte
+encoding, split/join, lexical path helpers, diagnostics and typed formatting.
+Link `HPS::cstr`/`hps-cstr`; it depends on string/status. Formatting uses exact-width
+arguments and fixed decimal coefficient/scale, with no printf varargs or native
+floating point. See [the contract](docs/architecture/cstr.md) and
+[legacy family migration](docs/migration/csep-text.md).
+
+`hps/span.h` generates typed borrowed read-only spans with C89-style constructors
+and C99 compound-literal support. `hps/base/expression.h` supplies single-evaluation
+branch hints and LVALUE. See [span construction](docs/architecture/span.md).
+The native string-key enum generator lives beside traits in `hps/enum/cstr.h`;
+[its bounded switch example](docs/architecture/cstr-enum.md) includes input capacity.
 
 ## Static memory pool
 
@@ -109,7 +145,7 @@ Only byte-buffer use is supported, with explicit exhaustion and error diagnostic
 
 See [the API and embedded deployment contract](docs/architecture/memory-pool.md).
 This replaces the handle/index pool. There is no thread-safe variant. The rewritten
-C tests have not been built or run. Industry compliance requires the selected
+C tests passed in the current host verification. Industry compliance requires the selected
 profile and [review evidence](docs/architecture/misra-review.md).
 
 ## Bytes
@@ -130,12 +166,13 @@ assumption is used. See [integer byte encoding](docs/architecture/bytes-endian.m
 skip, `take_view` borrowed slices and u8/u16/u32/u64 reads. Failed operations
 preserve cursor and output; taking a slice copies no payload. See
 [the reader contract](docs/architecture/bytes-reader.md) for ownership, bounded
-work and ecosystem integration limits. Its C tests have not been built or run.
+work and ecosystem integration limits. Its suite passed in the current host verification.
 
 Link `HPS::bytes` in CMake or use `hps-bytes` in Meson. See
 [the bytes contract](docs/architecture/bytes.md) for lifetimes, bounds, target libc
-requirements, API name migration and prepared-test status. C builds/tests remain
-deferred.
+requirements and API name migration. The current host verification includes all
+bytes/codec and reader tests; target library, ABI, resource and timing qualification
+remains open.
 
 ## Numeric type policy
 
