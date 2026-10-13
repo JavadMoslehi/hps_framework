@@ -4,8 +4,8 @@ CPPFLAGS += -Iinclude
 CFLAGS ?= -std=c99 -Wall -Wextra -Wpedantic
 BUILD_DIR ?= build/make
 .PHONY: all test clean
-TEST_SOURCES := tests/main.c tests/base/test_base.c tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c tests/status/test_status.c
-CORE_SOURCES := src/status.c src/memory/pool.c src/bytes/view.c src/bytes/buffer.c src/bytes/endian.c src/bytes/reader.c
+TEST_SOURCES := tests/main.c tests/base/test_base.c tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c tests/status/test_status.c tests/enum/test_enum.c
+CORE_SOURCES := src/status.c src/memory/pool.c src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c src/bytes/reader.c
 TEST_HEADERS := tests/test_suites.h $(shell find include/hps -name '*.h')
 all: $(BUILD_DIR)/hps_tests
 $(BUILD_DIR)/hps_tests: $(TEST_SOURCES) $(CORE_SOURCES) $(TEST_HEADERS)

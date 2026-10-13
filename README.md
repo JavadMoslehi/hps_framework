@@ -63,7 +63,7 @@ compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
-`test_reader` and `test_status` once, in that order, and stops on the first failure.
+`test_reader`, `test_status` and `test_enum` once, in that order, and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
 `tests/main.c`. Make, CMake and Meson now use this executable instead of the three
@@ -87,6 +87,17 @@ but now use this signed representation and module-specific negative values.
 Consumers must rebuild and update stored numeric status assumptions. See
 [the status contract and migration](docs/architecture/status.md). Its prepared C
 tests have not been compiled or run.
+
+## Named-value traits
+
+`hps/enum/traits.h` preserves the imported enum API for name lookup, parsing,
+formatting and ordered traversal from an X-macro list of native enum values.
+It supports separate
+declaration/implementation and header-only modes. It is a general utility beside
+bytes and memory; its runtime operations are outside the base umbrella.
+See [the enum traits contract and CSEP migration](docs/architecture/enum-traits.md).
+The original bool/int/char signatures and legacy string behavior are retained at
+the user's request. The prepared tests remain unbuilt and unexecuted.
 
 ## Static memory pool
 

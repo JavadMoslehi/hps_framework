@@ -1,115 +1,54 @@
+#ifndef HPS_BYTES_CODEC_H
+#define HPS_BYTES_CODEC_H
+
+/**
+ * @file hps/bytes/codec.h
+ * @brief Fixed-width unsigned integer conversion with explicit byte order.
+ */
 
 #include <stdint.h>
-#include <stddef.h>
+#include "hps/bytes/order.h"
 
-/* ========================================================================= */
-/*                          DECODE (Bytes -> Integers)                       */
-/* ========================================================================= */
+typedef uint8_t hps_codec_type;
+#define HPS_CODEC_TYPE_ENCODE ((hps_codec_type)UINT8_C(0))
+#define HPS_CODEC_TYPE_DECODE ((hps_codec_type)UINT8_C(1))
 
-static inline uint16_t hps_decode_u16_le(const uint8_t src[2])
-{
-    return (uint16_t)((uint32_t)src[0] |
-                     ((uint32_t)src[1] << 8U));
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static inline uint16_t hps_decode_u16_be(const uint8_t src[2])
-{
-    return (uint16_t)(((uint32_t)src[0] << 8U) |
-                       (uint32_t)src[1]);
-}
+/* Shared contract: exact-width uint8_t/uint16_t/uint32_t/uint64_t must exist.
+ * The caller owns all storage and guarantees its extent and lifetime during
+ * the call; array parameters do not validate capacity. Byte storage needs no
+ * uint16_t/uint32_t/uint64_t alignment; uint8_t elements are accessed. No pointer is
+ * retained and no allocation, global state, blocking or synchronization is used.
+ * Caller serializes access against conflicting storage access or release.
+ * Each call performs fixed work bounded by eight byte reads or writes, with no
+ * local payload array; target stack and runtime helpers remain unverified.
+ */
 
-static inline uint32_t hps_decode_u32_le(const uint8_t src[4])
-{
-    return  (uint32_t)src[0] |
-           ((uint32_t)src[1] << 8U) |
-           ((uint32_t)src[2] << 16U) |
-           ((uint32_t)src[3] << 24U);
-}
+/* Read exactly 2, 4 or 8 initialized, readable bytes from non-NULL src.
+ * order selects little or big endian. NULL src or an unsupported order returns
+ * zero without accessing storage; a valid zero value has the same result.
+ * No input is modified. Use the checked byte-view APIs when extent validation
+ * or a distinguishable error is required.
+ */
+uint16_t hps_codec_bytes_to_u16(const uint8_t src[2], hps_byte_order order);
+uint32_t hps_codec_bytes_to_u32(const uint8_t src[4], hps_byte_order order);
+uint64_t hps_codec_bytes_to_u64(const uint8_t src[8], hps_byte_order order);
 
-static inline uint32_t hps_decode_u32_be(const uint8_t src[4])
-{
-    return ((uint32_t)src[0] << 24U) |
-           ((uint32_t)src[1] << 16U) |
-           ((uint32_t)src[2] << 8U) |
-            (uint32_t)src[3];
-}
+/* Write exactly 2, 4 or 8 bytes to writable non-NULL dst; prior initialization
+ * is unnecessary and bytes outside the field are preserved. All uintN_t values
+ * are supported. NULL dst or an unsupported order causes no write. value and
+ * order are passed by value, with no separate output/input alias restriction.
+ * Use the checked byte-buffer APIs when capacity validation is required.
+ */
+void hps_codec_u16_to_bytes(uint8_t dst[2], uint16_t value, hps_byte_order order);
+void hps_codec_u32_to_bytes(uint8_t dst[4], uint32_t value, hps_byte_order order);
+void hps_codec_u64_to_bytes(uint8_t dst[8], uint64_t value, hps_byte_order order);
 
-static inline uint64_t hps_decode_u64_le(const uint8_t src[8])
-{
-    return  (uint64_t)src[0] |
-           ((uint64_t)src[1] << 8U) |
-           ((uint64_t)src[2] << 16U) |
-           ((uint64_t)src[3] << 24U) |
-           ((uint64_t)src[4] << 32U) |
-           ((uint64_t)src[5] << 40U) |
-           ((uint64_t)src[6] << 48U) |
-           ((uint64_t)src[7] << 56U);
-}
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
-static inline uint64_t hps_decode_u64_be(const uint8_t src[8])
-{
-    return ((uint64_t)src[0] << 56U) |
-           ((uint64_t)src[1] << 48U) |
-           ((uint64_t)src[2] << 40U) |
-           ((uint64_t)src[3] << 32U) |
-           ((uint64_t)src[4] << 24U) |
-           ((uint64_t)src[5] << 16U) |
-           ((uint64_t)src[6] << 8U) |
-            (uint64_t)src[7];
-}
-
-/* ========================================================================= */
-/*                          ENCODE (Integers -> Bytes)                       */
-/* ========================================================================= */
-
-static inline void hps_encode_u16_le(uint8_t dst[2], const uint16_t value)
-{
-    dst[0] = (uint8_t)(value & UINT16_C(0xFF));
-    dst[1] = (uint8_t)((value >> 8U) & UINT16_C(0xFF));
-}
-
-static inline void hps_encode_u16_be(uint8_t dst[2], const uint16_t value)
-{
-    dst[0] = (uint8_t)((value >> 8U) & UINT16_C(0xFF));
-    dst[1] = (uint8_t)(value & UINT16_C(0xFF));
-}
-
-static inline void hps_encode_u32_le(uint8_t dst[4], const uint32_t value)
-{
-    dst[0] = (uint8_t)(value & UINT32_C(0xFF));
-    dst[1] = (uint8_t)((value >> 8U) & UINT32_C(0xFF));
-    dst[2] = (uint8_t)((value >> 16U) & UINT32_C(0xFF));
-    dst[3] = (uint8_t)((value >> 24U) & UINT32_C(0xFF));
-}
-
-static inline void hps_encode_u32_be(uint8_t dst[4], const uint32_t value)
-{
-    dst[0] = (uint8_t)((value >> 24U) & UINT32_C(0xFF));
-    dst[1] = (uint8_t)((value >> 16U) & UINT32_C(0xFF));
-    dst[2] = (uint8_t)((value >> 8U) & UINT32_C(0xFF));
-    dst[3] = (uint8_t)(value & UINT32_C(0xFF));
-}
-
-static inline void hps_encode_u64_le(uint8_t dst[8], const uint64_t value)
-{
-    dst[0] = (uint8_t)(value & UINT64_C(0xFF));
-    dst[1] = (uint8_t)((value >> 8U) & UINT64_C(0xFF));
-    dst[2] = (uint8_t)((value >> 16U) & UINT64_C(0xFF));
-    dst[3] = (uint8_t)((value >> 24U) & UINT64_C(0xFF));
-    dst[4] = (uint8_t)((value >> 32U) & UINT64_C(0xFF));
-    dst[5] = (uint8_t)((value >> 40U) & UINT64_C(0xFF));
-    dst[6] = (uint8_t)((value >> 48U) & UINT64_C(0xFF));
-    dst[7] = (uint8_t)((value >> 56U) & UINT64_C(0xFF));
-}
-
-static inline void hps_encode_u64_be(uint8_t dst[8], const uint64_t value)
-{
-    dst[0] = (uint8_t)((value >> 56U) & UINT64_C(0xFF));
-    dst[1] = (uint8_t)((value >> 48U) & UINT64_C(0xFF));
-    dst[2] = (uint8_t)((value >> 40U) & UINT64_C(0xFF));
-    dst[3] = (uint8_t)((value >> 32U) & UINT64_C(0xFF));
-    dst[4] = (uint8_t)((value >> 24U) & UINT64_C(0xFF));
-    dst[5] = (uint8_t)((value >> 16U) & UINT64_C(0xFF));
-    dst[6] = (uint8_t)((value >> 8U) & UINT64_C(0xFF));
-    dst[7] = (uint8_t)(value & UINT64_C(0xFF));
-}
+#endif /* HPS_BYTES_CODEC_H */

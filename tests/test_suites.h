@@ -18,5 +18,6 @@ int test_pool(void);
 int test_bytes(void);
 int32_t test_reader(void);
 int32_t test_status(void);
+int32_t test_enum(void);
 
 #endif /* HPS_TESTS_TEST_SUITES_H */

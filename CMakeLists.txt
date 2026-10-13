@@ -21,7 +21,7 @@ target_link_libraries(hps_memory PUBLIC HPS::status)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
-add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c src/bytes/endian.c
+add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c
     src/bytes/reader.c)
 add_library(HPS::bytes ALIAS hps_bytes)
 target_link_libraries(hps_bytes PUBLIC HPS::status)
@@ -32,7 +32,7 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
         tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
-        tests/status/test_status.c)
+        tests/status/test_status.c tests/enum/test_enum.c)
     target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes HPS::status)
     set_target_properties(hps_tests PROPERTIES
         C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)

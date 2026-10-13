@@ -24,7 +24,7 @@ hps_memory = declare_dependency(link_with: hps_memory_library,
   dependencies: hps_status)
 meson.override_dependency('hps-memory', hps_memory)
 
-hps_bytes_library = static_library('hps_bytes', 'src/bytes/view.c', 'src/bytes/buffer.c', 'src/bytes/endian.c', 'src/bytes/reader.c',
+hps_bytes_library = static_library('hps_bytes', 'src/bytes/view.c', 'src/bytes/buffer.c', 'src/bytes/codec.c', 'src/bytes/endian.c', 'src/bytes/reader.c',
   dependencies: hps_status, install: true)
 hps_bytes = declare_dependency(link_with: hps_bytes_library,
   dependencies: hps_status)
@@ -33,6 +33,6 @@ meson.override_dependency('hps-bytes', hps_bytes)
 test_assertion_args = cc.get_id() in ['msvc', 'clang-cl'] ? ['/UNDEBUG'] : ['-UNDEBUG']
 hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/memory/test_pool.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
-  'tests/status/test_status.c',
+  'tests/status/test_status.c', 'tests/enum/test_enum.c',
   dependencies: [hps_base, hps_memory, hps_bytes, hps_status], c_args: test_assertion_args)
 test('hps_tests', hps_tests)

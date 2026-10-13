@@ -31,6 +31,8 @@ and blocks the corresponding release claim.
 | [Validation record](validation.md) | Reproducible subset checks and their limitations |
 | [Bytes review](reviews/bytes-2026-10-11.md) | Borrowed views, fixed-capacity buffers and pending evidence |
 | [Endian bytes review](reviews/bytes-endian-2026-10-11.md) | Bounded integer encoding and pending target/test evidence |
+| [Integer codec review](reviews/bytes-codec-2026-10-13.md) | Order-selecting conversion APIs, integration and source-only evidence |
+| [Enum traits migration](reviews/enum-traits-2026-10-13.md) | CSEP naming migration, original API restoration and utility-layer placement |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |
 | [Bytes API naming review](reviews/bytes-api-names-2026-10-11.md) | Explicit byte operations, migration and source-only checks |
 | [Framework status review](reviews/status-2026-10-11.md) | Shared error namespaces, diagnostic strings and policy amendment |
@@ -56,7 +58,7 @@ It is not a MISRA analyzer. The [root agent rules](../AGENTS.md) and
 Repository hosting branch protection and required review settings must still be
 configured by maintainers; files cannot prevent someone bypassing review.
 
-Current scope is the base headers, shared status registry, static pool core and borrowed bytes module. Tests/examples follow the
+Current scope is the base headers, shared status registry, static pool core, borrowed bytes module and named-value traits. Tests/examples follow the
 same numerical type rules with a documented hosted `main` exception. OS adapters,
 cryptographic services, protocol stacks and payment applications are future or
 external integration responsibilities.

@@ -1,12 +1,13 @@
 #include "../test_suites.h"
 #include "hps/bytes/buffer.h"
+#include "hps/bytes/codec.h"
 #include "hps/bytes/endian.h"
 #include "hps/bytes/view.h"
 #include <assert.h>
 
 /**
  * @file tests/bytes/test_bytes.c
- * @brief Prepared byte-view, buffer, overlap-model and endian tests.
+ * @brief Prepared byte-view, buffer, overlap-model, codec and endian tests.
  */
 
 static void test_views(void)
@@ -222,6 +223,100 @@ static const uint8_t test_zero_wire[8] = {0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U};
 static const uint8_t test_ones_wire[8] = {
     0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU
 };
+static const uint8_t wire_u16_le[4] = {0xA5U, 0x23U, 0x81U, 0x5AU};
+static const uint8_t wire_u16_be[4] = {0xA5U, 0x81U, 0x23U, 0x5AU};
+static const uint8_t wire_u32_le[6] = {0xA5U, 0x67U, 0x45U, 0x23U, 0x81U, 0x5AU};
+static const uint8_t wire_u32_be[6] = {0xA5U, 0x81U, 0x23U, 0x45U, 0x67U, 0x5AU};
+static const uint8_t wire_u64_le[10] = {
+    0xA5U, 0xEFU, 0xCDU, 0xABU, 0x89U, 0x67U, 0x45U, 0x23U, 0x81U, 0x5AU
+};
+static const uint8_t wire_u64_be[10] = {
+    0xA5U, 0x81U, 0x23U, 0x45U, 0x67U, 0x89U, 0xABU, 0xCDU, 0xEFU, 0x5AU
+};
+
+/* Callers provide ten-byte storage and width 0/2/4/8. Width zero checks that
+ * an invalid-order call preserved every sentinel, without reading expected. */
+static void assert_codec_output(const uint8_t *data, size_t width,
+                                const uint8_t *expected)
+{
+    assert(data[0] == 0xD7U);
+    for (size_t index = 0U; index < width; index += 1U) {
+        assert(data[index + 1U] == expected[index]);
+    }
+    for (size_t index = width + 1U; index < 10U; index += 1U) {
+        assert(data[index] == 0xD7U);
+    }
+}
+
+static void fill_codec_sentinels(uint8_t data[10])
+{
+    for (size_t index = 0U; index < 10U; index += 1U) {
+        data[index] = 0xD7U;
+    }
+}
+
+static void test_codec(void)
+{
+    const hps_byte_order orders[2] = {
+        HPS_BYTE_ORDER_LITTLE_ENDIAN, HPS_BYTE_ORDER_BIG_ENDIAN
+    };
+    const uint8_t *const u16_wire[2] = {&wire_u16_le[1], &wire_u16_be[1]};
+    const uint8_t *const u32_wire[2] = {&wire_u32_le[1], &wire_u32_be[1]};
+    const uint8_t *const u64_wire[2] = {&wire_u64_le[1], &wire_u64_be[1]};
+    const hps_byte_order invalid_order = UINT8_C(255);
+    uint8_t data[10];
+    uint16_t u16 = UINT16_C(0);
+    uint32_t u32 = UINT32_C(0);
+    uint64_t u64 = UINT64_C(0);
+
+    for (size_t fixture = 0U; fixture < 2U; fixture += 1U) {
+        u16 = hps_codec_bytes_to_u16(u16_wire[fixture], orders[fixture]);
+        u32 = hps_codec_bytes_to_u32(u32_wire[fixture], orders[fixture]);
+        u64 = hps_codec_bytes_to_u64(u64_wire[fixture], orders[fixture]);
+        assert(u16 == UINT16_C(0x8123));
+        assert(u32 == UINT32_C(0x81234567));
+        assert(u64 == UINT64_C(0x8123456789ABCDEF));
+
+        u16 = hps_codec_bytes_to_u16(test_zero_wire, orders[fixture]);
+        u32 = hps_codec_bytes_to_u32(test_zero_wire, orders[fixture]);
+        u64 = hps_codec_bytes_to_u64(test_zero_wire, orders[fixture]);
+        assert(u16 == UINT16_C(0) && u32 == UINT32_C(0) && u64 == UINT64_C(0));
+        u16 = hps_codec_bytes_to_u16(test_ones_wire, orders[fixture]);
+        u32 = hps_codec_bytes_to_u32(test_ones_wire, orders[fixture]);
+        u64 = hps_codec_bytes_to_u64(test_ones_wire, orders[fixture]);
+        assert(u16 == UINT16_MAX && u32 == UINT32_MAX && u64 == UINT64_MAX);
+
+        u16 = hps_codec_bytes_to_u16(NULL, orders[fixture]);
+        u32 = hps_codec_bytes_to_u32(NULL, orders[fixture]);
+        u64 = hps_codec_bytes_to_u64(NULL, orders[fixture]);
+        assert(u16 == UINT16_C(0) && u32 == UINT32_C(0) && u64 == UINT64_C(0));
+        hps_codec_u16_to_bytes(NULL, UINT16_C(0x8123), orders[fixture]);
+        hps_codec_u32_to_bytes(NULL, UINT32_C(0x81234567), orders[fixture]);
+        hps_codec_u64_to_bytes(NULL, UINT64_C(0x8123456789ABCDEF), orders[fixture]);
+
+        fill_codec_sentinels(data);
+        hps_codec_u16_to_bytes(&data[1], UINT16_C(0x8123), orders[fixture]);
+        assert_codec_output(data, 2U, u16_wire[fixture]);
+        fill_codec_sentinels(data);
+        hps_codec_u32_to_bytes(&data[1], UINT32_C(0x81234567), orders[fixture]);
+        assert_codec_output(data, 4U, u32_wire[fixture]);
+        fill_codec_sentinels(data);
+        hps_codec_u64_to_bytes(&data[1], UINT64_C(0x8123456789ABCDEF), orders[fixture]);
+        assert_codec_output(data, 8U, u64_wire[fixture]);
+    }
+
+    u16 = hps_codec_bytes_to_u16(&wire_u16_le[1], invalid_order);
+    u32 = hps_codec_bytes_to_u32(&wire_u32_le[1], invalid_order);
+    u64 = hps_codec_bytes_to_u64(&wire_u64_le[1], invalid_order);
+    assert(u16 == UINT16_C(0) && u32 == UINT32_C(0) && u64 == UINT64_C(0));
+    fill_codec_sentinels(data);
+    hps_codec_u16_to_bytes(&data[1], UINT16_C(0x8123), invalid_order);
+    assert_codec_output(data, 0U, NULL);
+    hps_codec_u32_to_bytes(&data[1], UINT32_C(0x81234567), invalid_order);
+    assert_codec_output(data, 0U, NULL);
+    hps_codec_u64_to_bytes(&data[1], UINT64_C(0x8123456789ABCDEF), invalid_order);
+    assert_codec_output(data, 0U, NULL);
+}
 
 static void assert_endian_snapshot(const uint8_t *data, const uint8_t *snapshot)
 {
@@ -598,16 +693,6 @@ static void test_endian_append_u64(
 
 static void test_endian(void)
 {
-    const uint8_t wire_u16_le[4] = {0xA5U, 0x23U, 0x81U, 0x5AU};
-    const uint8_t wire_u16_be[4] = {0xA5U, 0x81U, 0x23U, 0x5AU};
-    const uint8_t wire_u32_le[6] = {0xA5U, 0x67U, 0x45U, 0x23U, 0x81U, 0x5AU};
-    const uint8_t wire_u32_be[6] = {0xA5U, 0x81U, 0x23U, 0x45U, 0x67U, 0x5AU};
-    const uint8_t wire_u64_le[10] = {
-        0xA5U, 0xEFU, 0xCDU, 0xABU, 0x89U, 0x67U, 0x45U, 0x23U, 0x81U, 0x5AU
-    };
-    const uint8_t wire_u64_be[10] = {
-        0xA5U, 0x81U, 0x23U, 0x45U, 0x67U, 0x89U, 0xABU, 0xCDU, 0xEFU, 0x5AU
-    };
     test_endian_read_u16(hps_byte_view_read_u16_le, wire_u16_le, UINT16_C(0x8123));
     test_endian_read_u16(hps_byte_view_read_u16_be, wire_u16_be, UINT16_C(0x8123));
     test_endian_read_u32(hps_byte_view_read_u32_le, wire_u32_le, UINT32_C(0x81234567));
@@ -631,6 +716,7 @@ int test_bytes(void)
     test_views();
     test_buffers();
     test_overlap_model();
+    test_codec();
     test_endian();
     return 0;
 }

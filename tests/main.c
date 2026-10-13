@@ -22,5 +22,8 @@ int main(void)
     if (test_status() != 0) {
         return 5;
     }
+    if (test_enum() != 0) {
+        return 6;
+    }
     return 0;
 }
