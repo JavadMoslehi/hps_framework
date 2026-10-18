@@ -3,10 +3,11 @@
 This directory is the normative engineering policy for HPS. It defines what a
 contributor must demonstrate before a change or release can be accepted. The
 policy is written in English so that external reviewers and integrators can use
-the same requirements. Policy version: 0.2.0; established: 2026-10-11. The
-user-requested readability, duplication and shared-status amendment is recorded
-in the [status change review](reviews/status-2026-10-11.md); project-role review
-and release acceptance remain pending.
+the same requirements. Policy version: 0.3.0; established: 2026-10-11; amended:
+2026-10-18. The user-requested removal of the shared status system is recorded in
+the [removal review](reviews/status-removal-2026-10-18.md). Readability and
+duplication rules remain in force; project-role review and release acceptance
+remain pending.
 
 HPS is currently a development framework with host-tested modules and no qualified
 deployment target. This policy is an engineering baseline, not a certificate, a safety case,
@@ -38,7 +39,8 @@ and blocks the corresponding release claim.
 | [Character storage proposal](reviews/string-storage-2026-10-13.md) | Counted text and actual char-array fixtures; release disposition pending |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |
 | [Bytes API naming review](reviews/bytes-api-names-2026-10-11.md) | Explicit byte operations, migration and source-only checks |
-| [Framework status review](reviews/status-2026-10-11.md) | Shared error namespaces, diagnostic strings and policy amendment |
+| [Local error results review](reviews/status-removal-2026-10-18.md) | Shared status removal, ordinary return types and API/ABI migration |
+| [Historical shared status review](reviews/status-2026-10-11.md) | Superseded namespace/diagnostic proposal and retained source evidence |
 | [Test entry-point review](reviews/test-entrypoints-2026-10-11.md) | Shared runner and proposed test-only numerical exception |
 | [Pointer-pool review](reviews/pointer-pool-2026-10-11.md) | Current allocator contract, changes and open findings |
 | [Earlier source review](reviews/source-review-2026-10-11.md) | Historical inventory and earlier handle-pool snapshot |
@@ -61,7 +63,7 @@ It is not a MISRA analyzer. The [root agent rules](../AGENTS.md) and
 Repository hosting branch protection and required review settings must still be
 configured by maintainers; files cannot prevent someone bypassing review.
 
-Current scope is the base headers, shared status registry, static pool core,
+Current scope is the base headers, static pool core,
 borrowed bytes module, bounded string/Cstr utilities, typed spans, checksum
 validation and named-value traits. Tests/examples follow the
 same numerical type rules with a documented hosted `main` exception. OS adapters,

@@ -21,9 +21,9 @@ extern "C" {
  * NUL => NOT_TERMINATED. Those errors preserve result. Wrong text => OK/0.
  * Input/result metadata are disjoint; caller proves initialized extent/lifetime.
  * No heap/OS/global state. Work O(capacity) for import, then at most ten digits. */
-hps_string_status hps_iran_national_code_validate(const char *text,
-                                                size_t capacity,
-                                                uint8_t *result);
+int32_t hps_iran_national_code_validate(const char *text,
+                                        size_t capacity,
+                                        uint8_t *result);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -1,6 +1,7 @@
 # Legacy source inventory and continuation
 
-Snapshot date: 2026-10-13. HPS base revision: 2dafeb9df1f70ca84418ba8348bae8ad688b97c9.
+Snapshot date: 2026-10-13; continuation updated: 2026-10-18.
+HPS inventory base revision: 2dafeb9df1f70ca84418ba8348bae8ad688b97c9.
 This is a source inventory and migration handoff. Module implementation and host
 verification are recorded separately; no target qualification is inferred. The user authorizes reading the two legacy frameworks and
 reusing selected code in HPS. Both reference trees are strictly read-only: no
@@ -120,6 +121,16 @@ than a namespace-only import. The subsequent [CSEP text migration](csep-text.md)
 splitting/joining, numerical conversion, builder composition, fixed storage and
 all 59 alphabet policies. Heap ownership, persistence schemas and Unicode remain
 separate contracts.
+
+The subsequent user-requested
+[shared status removal](../../governance/reviews/status-removal-2026-10-18.md)
+replaces status typedefs and registered codes with direct `int32_t` results and
+module-local negative errors. String/Cstr/validation share the documented string
+error domain; bytes and pool have their own domains. Preserve that API context,
+update consumer return/storage types and rebuild rather than carrying old numeric
+codes or diagnostic lookup calls forward. Historical string/text build results
+do not verify the changed representation. The source manifest and original
+reference hashes remain unchanged by this HPS-only migration.
 
 Correction to the initial inventory: CSEP `tests/hal/utils/test_stringview.c` and
 MyLibraries `tests/utils/test_stringview.c` test a different mutable/heap-owning

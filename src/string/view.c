@@ -7,10 +7,10 @@
  * @brief Extent-checked borrowed text operations and exact C-string export.
  */
 
-hps_string_status hps_string_view_init(hps_string_view *result,
-                                        const char *data, const size_t length)
+int32_t hps_string_view_init(hps_string_view *result,
+                             const char *data, const size_t length)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     const hps_string_view input = {data, length};
     if (result != NULL) {
         status = hps_string_check_view(input);
@@ -22,11 +22,11 @@ hps_string_status hps_string_view_init(hps_string_view *result,
     return status;
 }
 
-hps_string_status hps_string_view_init_cstr(hps_string_view *result,
-                                             const char *data,
-                                             const size_t capacity)
+int32_t hps_string_view_init_cstr(hps_string_view *result,
+                                  const char *data,
+                                  const size_t capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (data != NULL) && (capacity != 0U)) {
         size_t length = 0U;
         status = HPS_STRING_NOT_TERMINATED;
@@ -41,11 +41,11 @@ hps_string_status hps_string_view_init_cstr(hps_string_view *result,
     return status;
 }
 
-hps_string_status hps_string_view_slice(const hps_string_view view,
-                                         const size_t offset, const size_t count,
-                                         hps_string_view *result)
+int32_t hps_string_view_slice(const hps_string_view view,
+                              const size_t offset, const size_t count,
+                              hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -60,11 +60,11 @@ hps_string_status hps_string_view_slice(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_equal(const hps_string_view left,
-                                         const hps_string_view right,
-                                         uint8_t *result)
+int32_t hps_string_view_equal(const hps_string_view left,
+                              const hps_string_view right,
+                              uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(left);
         if (status == HPS_STRING_OK) {
@@ -82,11 +82,11 @@ hps_string_status hps_string_view_equal(const hps_string_view left,
     return status;
 }
 
-hps_string_status hps_string_view_compare(const hps_string_view left,
-                                           const hps_string_view right,
-                                           int32_t *result)
+int32_t hps_string_view_compare(const hps_string_view left,
+                                const hps_string_view right,
+                                int32_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(left);
         if (status == HPS_STRING_OK) {
@@ -124,12 +124,12 @@ hps_string_status hps_string_view_compare(const hps_string_view left,
 
 /* Both edge predicates have the same validation/output and bounded-copy
  * contracts; from_end is private and always 0 or 1. */
-static hps_string_status view_match_edge(const hps_string_view view,
-                                          const hps_string_view pattern,
-                                          const uint8_t from_end,
-                                          uint8_t *result)
+static int32_t view_match_edge(const hps_string_view view,
+                               const hps_string_view pattern,
+                               const uint8_t from_end,
+                               uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -150,25 +150,25 @@ static hps_string_status view_match_edge(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_starts_with(const hps_string_view view,
-                                               const hps_string_view prefix,
-                                               uint8_t *result)
+int32_t hps_string_view_starts_with(const hps_string_view view,
+                                    const hps_string_view prefix,
+                                    uint8_t *result)
 {
     return view_match_edge(view, prefix, 0U, result);
 }
 
-hps_string_status hps_string_view_ends_with(const hps_string_view view,
-                                             const hps_string_view suffix,
-                                             uint8_t *result)
+int32_t hps_string_view_ends_with(const hps_string_view view,
+                                  const hps_string_view suffix,
+                                  uint8_t *result)
 {
     return view_match_edge(view, suffix, 1U, result);
 }
 
-hps_string_status hps_string_view_find(const hps_string_view view,
-                                        const hps_string_view needle,
-                                        const size_t offset, size_t *result)
+int32_t hps_string_view_find(const hps_string_view view,
+                             const hps_string_view needle,
+                             const size_t offset, size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -201,11 +201,11 @@ hps_string_status hps_string_view_find(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_rfind(const hps_string_view view,
-                                         const hps_string_view needle,
-                                         const size_t position, size_t *result)
+int32_t hps_string_view_rfind(const hps_string_view view,
+                              const hps_string_view needle,
+                              const size_t position, size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -237,11 +237,11 @@ hps_string_status hps_string_view_rfind(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_contains(const hps_string_view view,
-                                            const hps_string_view needle,
-                                            uint8_t *result)
+int32_t hps_string_view_contains(const hps_string_view view,
+                                 const hps_string_view needle,
+                                 uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t found = HPS_STRING_NPOS;
         status = hps_string_view_find(view, needle, 0U, &found);
@@ -267,11 +267,11 @@ static uint8_t view_character_in_set(const char *character,
     return found;
 }
 
-hps_string_status hps_string_view_trim(const hps_string_view view,
-                                        const hps_string_view chars,
-                                        hps_string_view *result)
+int32_t hps_string_view_trim(const hps_string_view view,
+                             const hps_string_view chars,
+                             hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -294,18 +294,18 @@ hps_string_status hps_string_view_trim(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_trim_whitespace(const hps_string_view view,
-                                                   hps_string_view *result)
+int32_t hps_string_view_trim_whitespace(const hps_string_view view,
+                                        hps_string_view *result)
 {
     const hps_string_view whitespace = {" \t\n\r\v\f", 6U};
     return hps_string_view_trim(view, whitespace, result);
 }
 
-hps_string_status hps_string_view_copy_cstr(const hps_string_view view,
-                                             char *output,
-                                             const size_t capacity)
+int32_t hps_string_view_copy_cstr(const hps_string_view view,
+                                  char *output,
+                                  const size_t capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (output != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -323,10 +323,10 @@ hps_string_status hps_string_view_copy_cstr(const hps_string_view view,
     }
     return status;
 }
-hps_string_status hps_string_view_at(const hps_string_view view,
-                                     const size_t index, uint8_t *result)
+int32_t hps_string_view_at(const hps_string_view view,
+                           const size_t index, uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -337,12 +337,12 @@ hps_string_status hps_string_view_at(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_front(const hps_string_view view, uint8_t *result)
+int32_t hps_string_view_front(const hps_string_view view, uint8_t *result)
 {
     return hps_string_view_at(view, 0U, result);
 }
 
-hps_string_status hps_string_view_back(const hps_string_view view, uint8_t *result)
+int32_t hps_string_view_back(const hps_string_view view, uint8_t *result)
 {
     const size_t index = (view.length == 0U) ? 0U : view.length - 1U;
     return hps_string_view_at(view, index, result);
@@ -353,9 +353,9 @@ uint8_t hps_string_view_is_valid(const hps_string_view view)
     return (uint8_t)(hps_string_check_view(view) == HPS_STRING_OK);
 }
 
-hps_string_status hps_string_view_data(const hps_string_view view, const char * *result)
+int32_t hps_string_view_data(const hps_string_view view, const char * *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) { *result = (view.length == 0U) ? NULL : view.data; }
@@ -363,9 +363,9 @@ hps_string_status hps_string_view_data(const hps_string_view view, const char * 
     return status;
 }
 
-hps_string_status hps_string_view_length(const hps_string_view view, size_t *result)
+int32_t hps_string_view_length(const hps_string_view view, size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) { *result = view.length; }
@@ -373,9 +373,9 @@ hps_string_status hps_string_view_length(const hps_string_view view, size_t *res
     return status;
 }
 
-hps_string_status hps_string_view_is_empty(const hps_string_view view, uint8_t *result)
+int32_t hps_string_view_is_empty(const hps_string_view view, uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) { *result = (uint8_t)(view.length == 0U); }
@@ -383,16 +383,16 @@ hps_string_status hps_string_view_is_empty(const hps_string_view view, uint8_t *
     return status;
 }
 
-hps_string_status hps_string_view_left(const hps_string_view view,
-                                       const size_t count, hps_string_view *result)
+int32_t hps_string_view_left(const hps_string_view view,
+                             const size_t count, hps_string_view *result)
 {
     return hps_string_view_slice(view, 0U, count, result);
 }
 
-hps_string_status hps_string_view_right(const hps_string_view view,
-                                        const size_t count, hps_string_view *result)
+int32_t hps_string_view_right(const hps_string_view view,
+                              const size_t count, hps_string_view *result)
 {
-    hps_string_status status = hps_string_check_view(view);
+    int32_t status = hps_string_check_view(view);
     if (result == NULL) { status = HPS_STRING_INVALID_ARGUMENT; }
     if (status == HPS_STRING_OK) {
         if (count > view.length) { status = HPS_STRING_OUT_OF_RANGE; }
@@ -401,10 +401,10 @@ hps_string_status hps_string_view_right(const hps_string_view view,
     return status;
 }
 
-static hps_string_status view_remove(hps_string_view *view, const size_t count,
-                                     const uint8_t prefix)
+static int32_t view_remove(hps_string_view *view, const size_t count,
+                           const uint8_t prefix)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (view != NULL) {
         status = hps_string_check_view(*view);
         if (status == HPS_STRING_OK) {
@@ -418,21 +418,21 @@ static hps_string_status view_remove(hps_string_view *view, const size_t count,
     return status;
 }
 
-hps_string_status hps_string_view_remove_prefix(hps_string_view *view, const size_t count)
+int32_t hps_string_view_remove_prefix(hps_string_view *view, const size_t count)
 {
     return view_remove(view, count, 1U);
 }
 
-hps_string_status hps_string_view_remove_suffix(hps_string_view *view, const size_t count)
+int32_t hps_string_view_remove_suffix(hps_string_view *view, const size_t count)
 {
     return view_remove(view, count, 0U);
 }
 
-static hps_string_status view_trim_char(const hps_string_view view,
-                                         const uint8_t value, const uint8_t prefix,
-                                         const uint8_t suffix, hps_string_view *result)
+static int32_t view_trim_char(const hps_string_view view,
+                              const uint8_t value, const uint8_t prefix,
+                              const uint8_t suffix, hps_string_view *result)
 {
-    hps_string_status status = hps_string_check_view(view);
+    int32_t status = hps_string_check_view(view);
     if (result == NULL) { status = HPS_STRING_INVALID_ARGUMENT; }
     if (status == HPS_STRING_OK) {
         size_t start = 0U;
@@ -444,29 +444,29 @@ static hps_string_status view_trim_char(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_trim_prefix_char(hps_string_view *view, const uint8_t value)
+int32_t hps_string_view_trim_prefix_char(hps_string_view *view, const uint8_t value)
 {
     return (view == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         view_trim_char(*view, value, 1U, 0U, view);
 }
 
-hps_string_status hps_string_view_trim_suffix_char(hps_string_view *view, const uint8_t value)
+int32_t hps_string_view_trim_suffix_char(hps_string_view *view, const uint8_t value)
 {
     return (view == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         view_trim_char(*view, value, 0U, 1U, view);
 }
 
-hps_string_status hps_string_view_trim_char(const hps_string_view view,
-                                           const uint8_t value, hps_string_view *result)
+int32_t hps_string_view_trim_char(const hps_string_view view,
+                                  const uint8_t value, hps_string_view *result)
 {
     return view_trim_char(view, value, 1U, 1U, result);
 }
 
-hps_string_status hps_string_view_copy(const hps_string_view view, char *output,
-                                       const size_t capacity, const size_t count,
-                                       const size_t offset, size_t *copied)
+int32_t hps_string_view_copy(const hps_string_view view, char *output,
+                             const size_t capacity, const size_t count,
+                             const size_t offset, size_t *copied)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((copied != NULL) && ((output != NULL) || (capacity == 0U))) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -481,11 +481,11 @@ hps_string_status hps_string_view_copy(const hps_string_view view, char *output,
     return status;
 }
 
-static hps_string_status view_find_byte(const hps_string_view view, const uint8_t value,
-                                        const size_t position, const uint8_t reverse,
-                                        size_t *result)
+static int32_t view_find_byte(const hps_string_view view, const uint8_t value,
+                              const size_t position, const uint8_t reverse,
+                              size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) {
@@ -508,22 +508,22 @@ static hps_string_status view_find_byte(const hps_string_view view, const uint8_
     return status;
 }
 
-hps_string_status hps_string_view_find_char(const hps_string_view view, const uint8_t value,
-                                            const size_t offset, size_t *result)
+int32_t hps_string_view_find_char(const hps_string_view view, const uint8_t value,
+                                  const size_t offset, size_t *result)
 {
     return view_find_byte(view, value, offset, 0U, result);
 }
 
-hps_string_status hps_string_view_rfind_char(const hps_string_view view, const uint8_t value,
-                                             const size_t position, size_t *result)
+int32_t hps_string_view_rfind_char(const hps_string_view view, const uint8_t value,
+                                   const size_t position, size_t *result)
 {
     return view_find_byte(view, value, position, 1U, result);
 }
 
-hps_string_status hps_string_view_contains_char(const hps_string_view view,
-                                                const uint8_t value, uint8_t *result)
+int32_t hps_string_view_contains_char(const hps_string_view view,
+                                      const uint8_t value, uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t found = HPS_STRING_NPOS;
         status = hps_string_view_find_char(view, value, 0U, &found);
@@ -532,12 +532,12 @@ hps_string_status hps_string_view_contains_char(const hps_string_view view,
     return status;
 }
 
-static hps_string_status view_find_set(const hps_string_view view,
-                                       const hps_string_view chars, const size_t position,
-                                       const uint8_t reverse, const uint8_t want_member,
-                                       size_t *result)
+static int32_t view_find_set(const hps_string_view view,
+                             const hps_string_view chars, const size_t position,
+                             const uint8_t reverse, const uint8_t want_member,
+                             size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = hps_string_check_view(view);
         if (status == HPS_STRING_OK) { status = hps_string_check_view(chars); }
@@ -563,113 +563,113 @@ static hps_string_status view_find_set(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_find_first_of(const hps_string_view view,
-                                               const hps_string_view chars,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_find_first_of(const hps_string_view view,
+                                      const hps_string_view chars,
+                                      const size_t position, size_t *result)
 {
     return view_find_set(view, chars, position, 0U, 1U, result);
 }
 
-hps_string_status hps_string_view_find_first_not_of(const hps_string_view view,
-                                               const hps_string_view chars,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_find_first_not_of(const hps_string_view view,
+                                          const hps_string_view chars,
+                                          const size_t position, size_t *result)
 {
     return view_find_set(view, chars, position, 0U, 0U, result);
 }
 
-hps_string_status hps_string_view_find_last_of(const hps_string_view view,
-                                               const hps_string_view chars,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_find_last_of(const hps_string_view view,
+                                     const hps_string_view chars,
+                                     const size_t position, size_t *result)
 {
     return view_find_set(view, chars, position, 1U, 1U, result);
 }
 
-hps_string_status hps_string_view_find_last_not_of(const hps_string_view view,
-                                               const hps_string_view chars,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_find_last_not_of(const hps_string_view view,
+                                         const hps_string_view chars,
+                                         const size_t position, size_t *result)
 {
     return view_find_set(view, chars, position, 1U, 0U, result);
 }
 
-hps_string_status hps_string_view_equals_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               uint8_t *result)
+int32_t hps_string_view_equals_cstr(const hps_string_view view,
+                                    const char *text, const size_t capacity,
+                                    uint8_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_equal(view, other, result); }
     return status;
 }
 
-hps_string_status hps_string_view_starts_with_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               uint8_t *result)
+int32_t hps_string_view_starts_with_cstr(const hps_string_view view,
+                                         const char *text, const size_t capacity,
+                                         uint8_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_starts_with(view, other, result); }
     return status;
 }
 
-hps_string_status hps_string_view_ends_with_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               uint8_t *result)
+int32_t hps_string_view_ends_with_cstr(const hps_string_view view,
+                                       const char *text, const size_t capacity,
+                                       uint8_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_ends_with(view, other, result); }
     return status;
 }
 
-hps_string_status hps_string_view_contains_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               uint8_t *result)
+int32_t hps_string_view_contains_cstr(const hps_string_view view,
+                                      const char *text, const size_t capacity,
+                                      uint8_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_contains(view, other, result); }
     return status;
 }
 
-hps_string_status hps_string_view_find_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_find_cstr(const hps_string_view view,
+                                  const char *text, const size_t capacity,
+                                  const size_t position, size_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_find(view, other, position, result); }
     return status;
 }
 
-hps_string_status hps_string_view_rfind_cstr(const hps_string_view view,
-                                               const char *text, const size_t capacity,
-                                               const size_t position, size_t *result)
+int32_t hps_string_view_rfind_cstr(const hps_string_view view,
+                                   const char *text, const size_t capacity,
+                                   const size_t position, size_t *result)
 {
     hps_string_view other = {NULL, 0U};
-    hps_string_status status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (result == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_check_view(view);
     if (status == HPS_STRING_OK) { status = hps_string_view_init_cstr(&other, text, capacity); }
     if (status == HPS_STRING_OK) { status = hps_string_view_rfind(view, other, position, result); }
     return status;
 }
 
-static hps_string_status view_split_next(const hps_string_view view,
-                                         const hps_string_view delimiter,
-                                         const uint8_t byte_mode, const uint8_t byte,
-                                         size_t *cursor, hps_string_view *part,
-                                         const uint8_t keep_empty, uint8_t *found)
+static int32_t view_split_next(const hps_string_view view,
+                               const hps_string_view delimiter,
+                               const uint8_t byte_mode, const uint8_t byte,
+                               size_t *cursor, hps_string_view *part,
+                               const uint8_t keep_empty, uint8_t *found)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((cursor != NULL) && (part != NULL) && (found != NULL) && (keep_empty <= 1U)) {
         status = hps_string_check_view(view);
         if ((status == HPS_STRING_OK) && (byte_mode == 0U)) {
@@ -707,30 +707,30 @@ static hps_string_status view_split_next(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_split_next(const hps_string_view view,
-                                             const hps_string_view delimiter, size_t *cursor,
-                                             hps_string_view *part, const uint8_t keep_empty,
-                                             uint8_t *found)
+int32_t hps_string_view_split_next(const hps_string_view view,
+                                   const hps_string_view delimiter, size_t *cursor,
+                                   hps_string_view *part, const uint8_t keep_empty,
+                                   uint8_t *found)
 {
     return view_split_next(view, delimiter, 0U, 0U, cursor, part, keep_empty, found);
 }
 
-hps_string_status hps_string_view_split_next_char(const hps_string_view view,
-                                                  const uint8_t delimiter, size_t *cursor,
-                                                  hps_string_view *part,
-                                                  const uint8_t keep_empty, uint8_t *found)
+int32_t hps_string_view_split_next_char(const hps_string_view view,
+                                        const uint8_t delimiter, size_t *cursor,
+                                        hps_string_view *part,
+                                        const uint8_t keep_empty, uint8_t *found)
 {
     const hps_string_view unused = {NULL, 0U};
     return view_split_next(view, unused, 1U, delimiter, cursor, part, keep_empty, found);
 }
 
-static hps_string_status view_split_list(const hps_string_view view,
-                                         const hps_string_view delimiter,
-                                         const uint8_t byte_mode, const uint8_t byte,
-                                         hps_string_view *list, const size_t capacity,
-                                         const uint8_t keep_empty, size_t *count)
+static int32_t view_split_list(const hps_string_view view,
+                               const hps_string_view delimiter,
+                               const uint8_t byte_mode, const uint8_t byte,
+                               hps_string_view *list, const size_t capacity,
+                               const uint8_t keep_empty, size_t *count)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((count != NULL) && ((list != NULL) || (capacity == 0U))) {
         size_t cursor = 0U;
         size_t required = 0U;
@@ -759,18 +759,18 @@ static hps_string_status view_split_list(const hps_string_view view,
     return status;
 }
 
-hps_string_status hps_string_view_split(const hps_string_view view,
-                                        const hps_string_view delimiter,
-                                        hps_string_view *list, const size_t capacity,
-                                        const uint8_t keep_empty, size_t *count)
+int32_t hps_string_view_split(const hps_string_view view,
+                              const hps_string_view delimiter,
+                              hps_string_view *list, const size_t capacity,
+                              const uint8_t keep_empty, size_t *count)
 {
     return view_split_list(view, delimiter, 0U, 0U, list, capacity, keep_empty, count);
 }
 
-hps_string_status hps_string_view_split_char(const hps_string_view view,
-                                             const uint8_t delimiter,
-                                             hps_string_view *list, const size_t capacity,
-                                             const uint8_t keep_empty, size_t *count)
+int32_t hps_string_view_split_char(const hps_string_view view,
+                                   const uint8_t delimiter,
+                                   hps_string_view *list, const size_t capacity,
+                                   const uint8_t keep_empty, size_t *count)
 {
     const hps_string_view unused = {NULL, 0U};
     return view_split_list(view, unused, 1U, delimiter, list, capacity, keep_empty, count);

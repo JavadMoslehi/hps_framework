@@ -9,29 +9,23 @@ target_include_directories(hps_base INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(hps_base INTERFACE c_std_99)
 
-add_library(hps_status STATIC src/status.c)
-add_library(HPS::status ALIAS hps_status)
-target_link_libraries(hps_status PUBLIC HPS::base)
-set_target_properties(hps_status PROPERTIES EXPORT_NAME status
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
-
 add_library(hps_memory STATIC src/memory/pool.c)
 add_library(HPS::memory ALIAS hps_memory)
-target_link_libraries(hps_memory PUBLIC HPS::status)
+target_link_libraries(hps_memory PUBLIC HPS::base)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c
     src/bytes/reader.c)
 add_library(HPS::bytes ALIAS hps_bytes)
-target_link_libraries(hps_bytes PUBLIC HPS::status)
+target_link_libraries(hps_bytes PUBLIC HPS::base)
 set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_string STATIC src/string/view.c src/string/buffer.c
     src/string/char.c src/string/builder.c src/string/policy.c)
 add_library(HPS::string ALIAS hps_string)
-target_link_libraries(hps_string PUBLIC HPS::status)
+target_link_libraries(hps_string PUBLIC HPS::base)
 set_target_properties(hps_string PROPERTIES EXPORT_NAME string
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
@@ -52,13 +46,13 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
         tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
-        tests/status/test_status.c tests/enum/test_enum.c tests/string/test_string.c
+        tests/enum/test_enum.c tests/string/test_string.c
         tests/string/test_string_extended.c tests/string/test_string_builder.c
         tests/span/test_span.c tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
         tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
         tests/enum/test_cstr_enum.c)
     target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes
-        HPS::status HPS::string HPS::cstr HPS::validation)
+        HPS::string HPS::cstr HPS::validation)
     set_target_properties(hps_tests PROPERTIES
         C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
     # Test assertions must remain active in Release builds.
@@ -83,7 +77,7 @@ configure_package_config_file(cmake/HPSConfig.cmake.in
 write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/HPSConfigVersion.cmake
     VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
 set_target_properties(hps_base PROPERTIES EXPORT_NAME base)
-install(TARGETS hps_base hps_status hps_memory hps_bytes hps_string hps_cstr
+install(TARGETS hps_base hps_memory hps_bytes hps_string hps_cstr
     hps_validation EXPORT HPSTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/hps DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

@@ -4,8 +4,8 @@ CPPFLAGS += -Iinclude
 CFLAGS ?= -std=c99 -Wall -Wextra -Wpedantic
 BUILD_DIR ?= build/make
 .PHONY: all test clean
-TEST_SOURCES := tests/main.c tests/base/test_base.c tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c tests/status/test_status.c tests/enum/test_enum.c tests/string/test_string.c tests/string/test_string_extended.c tests/string/test_string_builder.c tests/span/test_span.c tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c tests/cstr/test_cstr_format.c tests/validation/test_national_code.c tests/enum/test_cstr_enum.c
-CORE_SOURCES := src/status.c src/memory/pool.c src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c src/bytes/reader.c src/string/view.c src/string/buffer.c src/string/char.c src/string/builder.c src/string/policy.c src/cstr/core.c src/cstr/convert.c src/cstr/algorithm.c src/cstr/format.c src/validation/national_code.c
+TEST_SOURCES := tests/main.c tests/base/test_base.c tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c tests/enum/test_enum.c tests/string/test_string.c tests/string/test_string_extended.c tests/string/test_string_builder.c tests/span/test_span.c tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c tests/cstr/test_cstr_format.c tests/validation/test_national_code.c tests/enum/test_cstr_enum.c
+CORE_SOURCES := src/memory/pool.c src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c src/bytes/reader.c src/string/view.c src/string/buffer.c src/string/char.c src/string/builder.c src/string/policy.c src/cstr/core.c src/cstr/convert.c src/cstr/algorithm.c src/cstr/format.c src/validation/national_code.c
 TEST_HEADERS := tests/test_suites.h tests/string/policy_expectations.h src/string/internal.h $(shell find include/hps -name '*.h')
 all: $(BUILD_DIR)/hps_tests
 $(BUILD_DIR)/hps_tests: $(TEST_SOURCES) $(CORE_SOURCES) $(TEST_HEADERS)

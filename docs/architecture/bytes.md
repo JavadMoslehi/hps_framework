@@ -69,12 +69,12 @@ static uint8_t message_storage[MESSAGE_CAPACITY];
 static hps_byte_buffer message;
 
 /* Exclusive startup: caller owns both descriptor and storage lifetimes. */
-hps_byte_status message_init(void)
+int32_t message_init(void)
 {
     return hps_byte_buffer_init(&message, message_storage, MESSAGE_CAPACITY);
 }
 
-hps_byte_status message_append_bytes(hps_byte_view payload)
+int32_t message_append_bytes(hps_byte_view payload)
 {
     return hps_byte_buffer_append_bytes(&message, payload);
 }
@@ -88,18 +88,19 @@ budgets; size_t alone is not admission control.
 
 ## Errors, bounds and dependencies
 
-`hps_byte_status` is a semantic alias of the shared `int64_t` `hps_status_t`.
-Bytes owns module ID two; its typed constants occupy that module's reserved
-negative range. See [shared status diagnostics](status.md) for classification,
-immutable messages and registration.
+Checked byte APIs return `int32_t` directly from `<stdint.h>`. Zero means
+success; local negative values distinguish the errors below. Constants are typed
+as `int32_t` in `hps/bytes/view.h`; there is no result typedef, module registry,
+diagnostic-string lookup or shared result-library dependency. Codes are local to
+the bytes API and may overlap other APIs; compare the named byte constants.
 
 | Condition | Status | Value |
 | --- | --- | --- |
 | Successful operation | HPS_BYTE_OK | 0 |
-| NULL required argument or malformed source/view | HPS_BYTE_INVALID_ARGUMENT | -131073 |
-| Slice/index/truncate outside active length | HPS_BYTE_OUT_OF_RANGE | -131074 |
-| Copy/append exceeds destination capacity | HPS_BYTE_NO_SPACE | -131075 |
-| Buffer length > capacity or NULL data with positive capacity | HPS_BYTE_INVALID_STATE | -131076 |
+| NULL required argument or malformed source/view | HPS_BYTE_INVALID_ARGUMENT | -1 |
+| Slice/index/truncate outside active length | HPS_BYTE_OUT_OF_RANGE | -2 |
+| Copy/append exceeds destination capacity | HPS_BYTE_NO_SPACE | -3 |
+| Buffer length > capacity or NULL data with positive capacity | HPS_BYTE_INVALID_STATE | -4 |
 
 Failed operations preserve payloads, descriptors and scalar/descriptor outputs.
 Buffer state validation precedes source validation; API comments specify applicable
@@ -119,12 +120,12 @@ transitive no-heap behavior and timing/stack must be reviewed for the target.
 There is no linked-product no-heap or freestanding-libc-availability guarantee.
 The view implementation has no runtime library dependency in its source.
 
-Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson, with the corresponding
-status library dependency. The shared `hps_tests` runner invokes `test_bytes(void)`
-alongside the base, pool, reader, status, enum and string suites in all three build
-systems. Public headers are picked up automatically by the independent-inclusion
-portability suite. Current host build and test results are recorded in the
-[string review](../../governance/reviews/string-2026-10-13.md).
+Targets are `HPS::bytes` in CMake and `hps-bytes` in Meson. The shared
+`hps_tests` runner invokes `test_bytes(void)` alongside the base, pool, reader,
+enum and text suites in all three build systems. Public headers are picked up
+automatically by the independent-inclusion portability suite. The
+[string review](../../governance/reviews/string-2026-10-13.md) records historical
+host results for the earlier representation; it does not verify this migration.
 
 ## API name migration
 
@@ -146,31 +147,32 @@ at that step. Symbol compatibility with the earlier names is not preserved. See
 [the API naming review](../../governance/reviews/bytes-api-names-2026-10-11.md)
 for that historical change scope and deferred validation.
 
-## Status ABI migration
+## Result API/ABI migration
 
-The current shared-status change preserves function names, status alias spelling
-and byte ownership/bounds/failure behavior. It changes `hps_byte_status` from
-uint8_t to int64_t and replaces positive error values 1..4 with -131073..-131076.
-Use named constants; do not narrow errors into uint8_t or continue serializing the
-earlier numeric values. Byte view, buffer and reader structure layouts are
-unchanged because they contain no status member.
+The shared result abstraction has been removed at the user's request. All checked
+byte, buffer, endian and reader APIs now return `int32_t` directly; remove uses
+of the earlier byte result alias from callers. The previous `int64_t` result ABI
+and global values -131073..-131076 have changed to local values -1..-4. Function
+names, parameters, ownership, bounds checks, validation priorities and failure
+preservation are unchanged. View, buffer and reader structure layouts are
+unchanged because they contain no result member.
 
 Rebuild the library and every consumer together, including callbacks, wrappers
-and foreign-language bindings that return or store this alias. The existing
-typed endian header and implementation are unchanged, but their status-return
-ABI widens through the alias as well. Old binaries cannot be mixed with the new
-headers/library. See [the shared-status change record](../../governance/reviews/status-2026-10-11.md).
+and foreign-language bindings. Update any persisted numeric assumptions and keep
+error results in `int32_t`; do not narrow them into `uint8_t`. Old binaries cannot
+be mixed with these headers/library. Policy/MISRA mapping, evidence and pending
+target qualification are recorded in the
+[result-removal review](../../governance/reviews/status-removal-2026-10-18.md).
 
 ## Validation status
 
 Tests cover embedded-zero/high-byte payloads, empty and full buffers,
 NULL/malformed metadata, SIZE_MAX bounds, unchanged outputs on failure,
 self-descriptor slicing and 2,025 append plus 2,025 assign snapshot-model cases
-covering overlapping and disjoint ranges. The current shared host suite passed
-with GCC and Clang; exact commands and evidence scope are in the
-[string review](../../governance/reviews/string-2026-10-13.md). Semantic analyzer
-assessment, qualified target ABI/timing and industrial acceptance remain open.
-The [bytes change review](../../governance/reviews/bytes-2026-10-11.md) covers its
-original snapshot; the
-[shared-status review](../../governance/reviews/status-2026-10-11.md) records the
-original representation change and its historical verification status.
+covering overlapping and disjoint ranges. Existing suites also check direct
+`int32_t` function/callback signatures and local result values. Current migration
+verification is recorded in the
+[result-removal review](../../governance/reviews/status-removal-2026-10-18.md).
+Semantic analyzer assessment, qualified target ABI/timing and industrial acceptance
+remain open. Earlier bytes, endian and shared-result reviews retain their
+historical scope; they do not establish current target qualification.

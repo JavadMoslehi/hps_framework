@@ -10,12 +10,37 @@
  * @brief Prepared byte-view, buffer, overlap-model, codec and endian tests.
  */
 
+/* Check the public result representation and local codes independently of the
+ * operations that produce them. Function pointers check declared result types. */
+static void test_results(void)
+{
+    int32_t (*initialize)(hps_byte_view *result, const uint8_t *data,
+                          size_t length) =
+        hps_byte_view_init;
+    int32_t (*clear)(hps_byte_buffer *buffer) = hps_byte_buffer_clear;
+    hps_byte_view empty = {NULL, 0U};
+    hps_byte_buffer buffer = {NULL, 0U, 0U};
+    int32_t result = initialize(&empty, NULL, 0U);
+    assert(sizeof(hps_byte_view_init(&empty, NULL, 0U)) == sizeof(int32_t));
+    assert(sizeof(HPS_BYTE_INVALID_ARGUMENT) == sizeof(int32_t));
+    assert(HPS_BYTE_OK == INT32_C(0));
+    assert(HPS_BYTE_INVALID_ARGUMENT == -INT32_C(1));
+    assert(HPS_BYTE_OUT_OF_RANGE == -INT32_C(2));
+    assert(HPS_BYTE_NO_SPACE == -INT32_C(3));
+    assert(HPS_BYTE_INVALID_STATE == -INT32_C(4));
+    assert(result == INT32_C(0));
+    result = clear(&buffer);
+    assert(result == INT32_C(0));
+    result = initialize(NULL, NULL, 0U);
+    assert(result == -INT32_C(1));
+}
+
 static void test_views(void)
 {
     const uint8_t data[4] = {0U, 7U, 0U, 255U};
     hps_byte_view view = {NULL, 0U};
     hps_byte_view slice = {data, 4U};
-    hps_byte_status status = hps_byte_view_init(&view, data, 4U);
+    int32_t status = hps_byte_view_init(&view, data, 4U);
     assert(status == HPS_BYTE_OK);
     status = hps_byte_view_slice(view, 1U, 2U, &slice);
     assert(status == HPS_BYTE_OK && slice.data == &data[1] && slice.length == 2U);
@@ -83,7 +108,7 @@ static void test_buffers(void)
 {
     uint8_t data[4] = {1U, 2U, 3U, 91U};
     hps_byte_buffer buffer = {NULL, 0U, 0U};
-    hps_byte_status status = hps_byte_buffer_init(&buffer, data, 4U);
+    int32_t status = hps_byte_buffer_init(&buffer, data, 4U);
     assert(status == HPS_BYTE_OK && buffer.length == 0U && data[3] == 91U);
     const hps_byte_view initial = {data, 3U};
     status = hps_byte_buffer_assign_bytes(&buffer, initial);
@@ -187,7 +212,7 @@ static void test_overlap_model(void)
                         expected[index] = (uint8_t)index;
                     }
                     hps_byte_buffer buffer = {NULL, 0U, 0U};
-                    hps_byte_status status = hps_byte_buffer_init(
+                    int32_t status = hps_byte_buffer_init(
                         &buffer, &data[destination], 16U - destination);
                     assert(status == HPS_BYTE_OK);
                     const hps_byte_view prefix = {&data[destination], initial};
@@ -341,12 +366,12 @@ static void assert_endian_append(const hps_byte_buffer *buffer, const uint8_t *d
 }
 
 static void test_endian_read_u16(
-    hps_byte_status (*read)(hps_byte_view view, size_t offset, uint16_t *result),
+    int32_t (*read)(hps_byte_view view, size_t offset, uint16_t *result),
     const uint8_t *wire, uint16_t expected)
 {
     const hps_byte_view view = {wire, 4U};
     uint16_t value = UINT16_C(0);
-    hps_byte_status status = read(view, 1U, &value);
+    int32_t status = read(view, 1U, &value);
     assert(status == HPS_BYTE_OK && value == expected);
 
     const hps_byte_view exact = {wire, 3U};
@@ -388,12 +413,12 @@ static void test_endian_read_u16(
 }
 
 static void test_endian_read_u32(
-    hps_byte_status (*read)(hps_byte_view view, size_t offset, uint32_t *result),
+    int32_t (*read)(hps_byte_view view, size_t offset, uint32_t *result),
     const uint8_t *wire, uint32_t expected)
 {
     const hps_byte_view view = {wire, 6U};
     uint32_t value = UINT32_C(0);
-    hps_byte_status status = read(view, 1U, &value);
+    int32_t status = read(view, 1U, &value);
     assert(status == HPS_BYTE_OK && value == expected);
 
     const hps_byte_view exact = {wire, 5U};
@@ -435,12 +460,12 @@ static void test_endian_read_u32(
 }
 
 static void test_endian_read_u64(
-    hps_byte_status (*read)(hps_byte_view view, size_t offset, uint64_t *result),
+    int32_t (*read)(hps_byte_view view, size_t offset, uint64_t *result),
     const uint8_t *wire, uint64_t expected)
 {
     const hps_byte_view view = {wire, 10U};
     uint64_t value = UINT64_C(0);
-    hps_byte_status status = read(view, 1U, &value);
+    int32_t status = read(view, 1U, &value);
     assert(status == HPS_BYTE_OK && value == expected);
 
     const hps_byte_view exact = {wire, 9U};
@@ -482,7 +507,7 @@ static void test_endian_read_u64(
 }
 
 static void test_endian_append_u16(
-    hps_byte_status (*append)(hps_byte_buffer *buffer, uint16_t value),
+    int32_t (*append)(hps_byte_buffer *buffer, uint16_t value),
     const uint8_t *wire, uint16_t expected)
 {
     const uint16_t values[3] = {expected, UINT16_C(0), UINT16_MAX};
@@ -490,7 +515,7 @@ static void test_endian_append_u16(
     uint8_t data[11];
     uint8_t snapshot[11];
     hps_byte_buffer buffer = {NULL, 0U, 0U};
-    hps_byte_status status = HPS_BYTE_OK;
+    int32_t status = HPS_BYTE_OK;
     for (size_t fixture = 0U; fixture < 3U; fixture += 1U) {
         for (size_t spare = 0U; spare <= 1U; spare += 1U) {
             for (size_t index = 0U; index < 11U; index += 1U) {
@@ -552,7 +577,7 @@ static void test_endian_append_u16(
 }
 
 static void test_endian_append_u32(
-    hps_byte_status (*append)(hps_byte_buffer *buffer, uint32_t value),
+    int32_t (*append)(hps_byte_buffer *buffer, uint32_t value),
     const uint8_t *wire, uint32_t expected)
 {
     const uint32_t values[3] = {expected, UINT32_C(0), UINT32_MAX};
@@ -560,7 +585,7 @@ static void test_endian_append_u32(
     uint8_t data[11];
     uint8_t snapshot[11];
     hps_byte_buffer buffer = {NULL, 0U, 0U};
-    hps_byte_status status = HPS_BYTE_OK;
+    int32_t status = HPS_BYTE_OK;
     for (size_t fixture = 0U; fixture < 3U; fixture += 1U) {
         for (size_t spare = 0U; spare <= 1U; spare += 1U) {
             for (size_t index = 0U; index < 11U; index += 1U) {
@@ -622,7 +647,7 @@ static void test_endian_append_u32(
 }
 
 static void test_endian_append_u64(
-    hps_byte_status (*append)(hps_byte_buffer *buffer, uint64_t value),
+    int32_t (*append)(hps_byte_buffer *buffer, uint64_t value),
     const uint8_t *wire, uint64_t expected)
 {
     const uint64_t values[3] = {expected, UINT64_C(0), UINT64_MAX};
@@ -630,7 +655,7 @@ static void test_endian_append_u64(
     uint8_t data[11];
     uint8_t snapshot[11];
     hps_byte_buffer buffer = {NULL, 0U, 0U};
-    hps_byte_status status = HPS_BYTE_OK;
+    int32_t status = HPS_BYTE_OK;
     for (size_t fixture = 0U; fixture < 3U; fixture += 1U) {
         for (size_t spare = 0U; spare <= 1U; spare += 1U) {
             for (size_t index = 0U; index < 11U; index += 1U) {
@@ -713,6 +738,7 @@ static void test_endian(void)
 
 int test_bytes(void)
 {
+    test_results();
     test_views();
     test_buffers();
     test_overlap_model();

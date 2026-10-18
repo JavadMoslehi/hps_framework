@@ -5,8 +5,8 @@ view and a caller-owned fixed-capacity C-string buffer. Their public contracts a
 in `include/hps/string/view.h` and `include/hps/string/buffer.h`; implementations
 are in `src/string/view.c` and `src/string/buffer.c`. This utility layer sits beside
 bytes and memory, outside the environment-detection responsibilities of
-`hps/base.h`. It uses the shared status registry and the C library's `memcmp` and
-`memmove`; it does not use the pool, allocate storage, or call OS services.
+`hps/base.h`. It uses local `int32_t` result codes and the C library's `memcmp`
+and `memmove`; it does not use the pool, allocate storage, or call OS services.
 
 The initial foundation below contains 23 functions. The subsequent user-authorized
 [extension and C-string migration](cstr.md) adds the remaining view/search/split
@@ -17,7 +17,7 @@ contracts. The original foundation contracts described here still apply.
 ## Public operations
 
 The following suffixes follow the indicated prefix. Each function returns
-`hps_string_status`; predicates, comparisons and searches write their values
+`int32_t`; predicates, comparisons and searches write their values
 through explicitly typed output parameters.
 
 | Prefix | Purpose | Function suffixes |
@@ -111,14 +111,21 @@ terminator.
 Every failed public operation preserves descriptor fields, payload and output
 objects. This guarantee is per call: a sequence of successful operations followed
 by a failure does not roll back earlier successful calls. All scalar/descriptor
-outputs designate writable objects of their declared types; callers check status
+outputs designate writable objects of their declared types; callers check results
 before using them.
 
-Strings own registered status module 3, reasons 1..5: `INVALID_ARGUMENT`,
-`OUT_OF_RANGE`, `NO_SPACE`, `INVALID_STATE` and `NOT_TERMINATED`. Zero is success.
-`hps_string_status` aliases the existing `int64_t`-based `hps_status_t`; its width
-is unchanged. The new registered range and immutable diagnostic messages extend
-status lookup behavior. Compare status constants rather than diagnostic text.
+String, C-string and dependent text operations return `int32_t` directly.
+`HPS_STRING_OK` is zero; `HPS_STRING_INVALID_ARGUMENT`,
+`HPS_STRING_OUT_OF_RANGE`, `HPS_STRING_NO_SPACE`, `HPS_STRING_INVALID_STATE`
+and `HPS_STRING_NOT_TERMINATED` are -1 through -5 respectively. These codes are
+local to the text APIs; callers compare the named constants in that context.
+There is no shared registry or diagnostic lookup dependency.
+
+Replacing the previous 64-bit result representation with `int32_t` changes the
+return ABI, and replacing the previous partitioned error numbers changes their
+numeric values. Rebuild consumers and update any stored error codes explicitly;
+do not mix objects compiled against the previous declarations. Output types,
+failure priority, preservation guarantees and resource bounds are unchanged.
 
 ## Using caller-owned storage
 
@@ -130,17 +137,18 @@ initialized buffer; failed import or assignment preserves the buffer.
 
 ```c
 #include "hps/string.h"
+#include <stdint.h>
 
-static hps_string_status demo_assign_cstr(hps_string_buffer *buffer,
-                                          const char *text, size_t capacity)
+static int32_t demo_assign_cstr(hps_string_buffer *buffer,
+                                const char *text, size_t capacity)
 {
     hps_string_view source = {NULL, 0U};
-    hps_string_status status =
+    int32_t result =
         hps_string_view_init_cstr(&source, text, capacity);
-    if (status == HPS_STRING_OK) {
-        status = hps_string_buffer_assign(buffer, source);
+    if (result == HPS_STRING_OK) {
+        result = hps_string_buffer_assign(buffer, source);
     }
-    return status;
+    return result;
 }
 ```
 
@@ -157,13 +165,13 @@ does not rename every legacy function into an API-compatible replacement.
 | Concern | Legacy source behavior | HPS foundation |
 | --- | --- | --- |
 | Representation | CSEP view has `const char *data` and `size_t length`; MyLibraries view/buffer use `uint8_t` pointers and `len` | Counted text uses actual character pointers and `length`; binary data belongs to bytes |
-| Results and input descriptors | CSEP commonly takes descriptor pointers and returns `bool`, `int`, indexes or descriptors; MyLibraries has mixed return conventions | Common status plus typed outputs; view descriptors passed by value; flags are `uint8_t`, comparison is `int32_t` |
+| Results and input descriptors | CSEP commonly takes descriptor pointers and returns `bool`, `int`, indexes or descriptors; MyLibraries has mixed return conventions | Local `int32_t` result codes plus typed outputs; view descriptors passed by value; flags are `uint8_t`, comparison is `int32_t` |
 | Empty and invalid construction | CSEP empty view borrows `""`; NULL C-string becomes empty; `init(out, NULL, positive_length)` can write empty before reporting failure | Empty output is `{NULL, 0}`; NULL C-string input is invalid; failure preserves outputs; `length == NPOS` is rejected |
 | C-string import | Both legacy view families scan with `strlen` without an explicit input bound | `init_cstr` requires a real capacity including NUL and rejects missing termination within it |
 | Slicing | CSEP clamps count and uses NPOS for the available suffix; MyLibraries clamps start/count | Exact offset/count bounds; oversized requests return `OUT_OF_RANGE` |
 | C-string export | CSEP clears then truncates to capacity; MyLibraries clears the full output on a successful copy and has an unchecked zero-capacity subtraction | Complete exact copy, checked space, NUL rejection and failure preservation; bytes after the new terminator stay unchanged |
 | Comparison | CSEP can return the raw nonzero `memcmp` result | Comparison normalizes to -1/0/1 with unsigned-byte ordering |
-| Search | CSEP provides substring/reverse searches and NPOS; MyLibraries `cstrview_find` searches one character and returns signed index/-1 | Selected substring/reverse searches use status plus `size_t` index/NPOS; empty-needle semantics are explicit |
+| Search | CSEP provides substring/reverse searches and NPOS; MyLibraries `cstrview_find` searches one character and returns signed index/-1 | Selected substring/reverse searches use local result codes plus `size_t` index/NPOS; empty-needle semantics are explicit |
 | Buffer capacity | MyLibraries header describes capacity excluding NUL, while implementation reserves NUL inside capacity | Capacity consistently includes NUL; minimum capacity one; remaining payload space excludes the terminator |
 | Copy arithmetic and overlap | MyLibraries append adds lengths before checking space and uses `memcpy` | Subtraction proves available space; overlapping assign/append use `memmove`; no partial writes |
 | Buffer text validity | MyLibraries can append views containing NUL and does not validate length/termination state | Active prefix contains no NUL; state is checked before mutation and source NUL is rejected |
@@ -196,10 +204,13 @@ evidence.
 empty/NULL/NPOS handling, embedded NUL, unsigned ordering, exact-fit/overflow
 boundaries, state/output preservation and overlapping copies. The overlap model
 uses independent immutable source snapshots across all substrings and three
-capacity bounds. `tests/status/test_status.c` covers the new registry values,
-range boundaries and diagnostic strings. Current commands, tools, results and
-remaining limitations belong to the change review; the existence of tests alone
-is not passing evidence.
+capacity bounds. The same suite checks the direct `int32_t` return width, typed
+local constants and exact success/error values. Current commands, tools, results,
+C/C++ interoperability checks and remaining limitations are recorded in the
+[result-API replacement review](../../governance/reviews/status-removal-2026-10-18.md).
+The earlier [string review](../../governance/reviews/string-2026-10-13.md) records
+historical implementation evidence; it does not verify the current result ABI.
+The existence of tests alone is not passing evidence.
 
 The core implementation mode is C99 with the required exact-width integer types.
 The legacy frameworks' C89-style intent and base-layer dialect detection do not

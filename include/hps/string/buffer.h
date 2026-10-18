@@ -7,6 +7,7 @@
  */
 
 #include <stddef.h>
+#include <stdint.h>
 #include "hps/string/view.h"
 
 typedef struct {
@@ -34,13 +35,13 @@ extern "C" {
 
 /* Bind capacity storage as empty, writing only storage[0]. NULL arguments or
  * zero capacity => INVALID_ARGUMENT. O(1); no storage initialization needed. */
-hps_string_status hps_string_buffer_init(hps_string_buffer *buffer,
-                                          char *storage, size_t capacity);
+int32_t hps_string_buffer_init(hps_string_buffer *buffer,
+                               char *storage, size_t capacity);
 
 /* Adopt an existing terminated string within capacity, without payload writes.
  * Same argument errors; missing NUL => NOT_TERMINATED. O(capacity). */
-hps_string_status hps_string_buffer_init_cstr(hps_string_buffer *buffer,
-                                               char *storage, size_t capacity);
+int32_t hps_string_buffer_init_cstr(hps_string_buffer *buffer,
+                                    char *storage, size_t capacity);
 
 /* Validate buffer first, then source shape, then capacity, then embedded NUL.
  * NULL buffer/malformed source/embedded NUL => INVALID_ARGUMENT;
@@ -48,33 +49,33 @@ hps_string_status hps_string_buffer_init_cstr(hps_string_buffer *buffer,
  * Copy whole source with memmove, committing length/NUL only on success.
  * assign replaces active text; append preserves the old prefix. Self/subview
  * overlap is supported. O(old length + source.length); tail after NUL preserved. */
-hps_string_status hps_string_buffer_assign(hps_string_buffer *buffer,
-                                            hps_string_view source);
-hps_string_status hps_string_buffer_append(hps_string_buffer *buffer,
-                                            hps_string_view source);
+int32_t hps_string_buffer_assign(hps_string_buffer *buffer,
+                                 hps_string_view source);
+int32_t hps_string_buffer_append(hps_string_buffer *buffer,
+                                 hps_string_view source);
 
 /* Erase count at offset; offset <= length and count <= length-offset, otherwise
  * OUT_OF_RANGE. Move tail INCLUDING NUL once. Zero count is a successful no-op.
  * O(old length); no erasure guarantee for discarded text. */
-hps_string_status hps_string_buffer_erase(hps_string_buffer *buffer,
-                                           size_t offset, size_t count);
+int32_t hps_string_buffer_erase(hps_string_buffer *buffer,
+                                size_t offset, size_t count);
 
 /* Shrink only; length > current length => OUT_OF_RANGE. Clear is truncate(0).
  * O(old length) validation, then one NUL write. Discarded bytes are not wiped. */
-hps_string_status hps_string_buffer_truncate(hps_string_buffer *buffer,
-                                              size_t length);
-hps_string_status hps_string_buffer_clear(hps_string_buffer *buffer);
+int32_t hps_string_buffer_truncate(hps_string_buffer *buffer,
+                                   size_t length);
+int32_t hps_string_buffer_clear(hps_string_buffer *buffer);
 
 /* Borrow active text as a normalized view, or a const C string (including empty
  * storage's terminator). Mutation/rebinding/release invalidates borrowed results.
  * NULL output => INVALID_ARGUMENT. Bad state => INVALID_STATE.
  * remaining reports capacity-length-1 payload space. O(length) validation. */
-hps_string_status hps_string_buffer_as_view(const hps_string_buffer *buffer,
-                                             hps_string_view *result);
-hps_string_status hps_string_buffer_cstr(const hps_string_buffer *buffer,
-                                          const char **result);
-hps_string_status hps_string_buffer_remaining(const hps_string_buffer *buffer,
-                                               size_t *result);
+int32_t hps_string_buffer_as_view(const hps_string_buffer *buffer,
+                                  hps_string_view *result);
+int32_t hps_string_buffer_cstr(const hps_string_buffer *buffer,
+                               const char **result);
+int32_t hps_string_buffer_remaining(const hps_string_buffer *buffer,
+                                    size_t *result);
 
 #ifdef __cplusplus
 } /* extern "C" */

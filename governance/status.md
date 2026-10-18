@@ -1,8 +1,12 @@
 # Current adoption status
 
-Baseline date: 2026-10-11; host evidence updated 2026-10-13. This is a gap
-register, not a progress estimate. Current host verification is recorded in
-[the text migration review](reviews/csep-text-2026-10-13.md); it does not close target gates.
+Baseline date: 2026-10-11; status-system migration updated 2026-10-18. This is a
+gap register, not a progress estimate. Earlier host results below belong to
+[the text migration snapshot](reviews/csep-text-2026-10-13.md). The changed error
+representation invalidates those results for affected sources; current evidence
+and remaining checks belong to the
+[removal review](reviews/status-removal-2026-10-18.md). Host checks do not close
+target gates.
 No qualified production target, approved external-standard compliance summary,
 industrial certification or release evidence bundle is currently established.
 
@@ -17,14 +21,14 @@ industrial certification or release evidence bundle is currently established.
 | GAP-007 | Hosting review/branch-protection/CI settings are not established by repository files | Configure actual hosting enforcement and retain its record | Open |
 | GAP-008 | Public release license/security contact/support policy not selected in this task | Select and publish them before a supported distribution | Open |
 | GAP-009 | Payment, telecom and automotive product standards/scope unselected | Integration owner establishes profile-specific assessments and responsibilities | Open |
-| GAP-011 | String/status repeated headers and mixed C/C++ include/link passed on this host; other modules and target ABIs remain unqualified | Qualify the chosen consumer and C library toolchain/ABI across its actual scope | Open |
+| GAP-011 | Changed text headers and a C++17 consumer linked to fresh C99 archives passed on this host; other consumers and target ABIs remain unqualified | Qualify the selected consumer/toolchain/target ABI across its actual scope | Open |
 | GAP-012 | Bytes overlap/boundary suite passed on the current host; target memmove remains unqualified | Qualify target copy implementation, ABI, stack, timing and whole-program analysis | Open |
 | GAP-013 | Shared runner passed on GCC/Clang and all three build systems; existing native int suite signatures still exceed numerical policy | Review the [proposed test-only exception](reviews/test-entrypoints-2026-10-11.md) before release acceptance | Open |
 | GAP-014 | Endian/codec integer byte fixtures passed on this host; target 64-bit arithmetic helpers/stack/ABI remain assumptions | Assess the [endian change](reviews/bytes-endian-2026-10-11.md) and codec on the actual target | Open |
 | GAP-015 | Sequential reader cursor/failure suite passed on this host; target ABI, stack and timing remain unverified | Complete the [reader target evidence](reviews/bytes-reader-2026-10-11.md) and scoped analysis | Open |
 | GAP-016 | Ecosystem directories are placeholders; industrial/medical/defence overlays and concrete target contracts for all eight ecosystems are unset | Select product scope, system safety/security requirements, standards and target profiles before adoption | Open |
 | GAP-017 | Updated bytes names compile/link in the current shared host suite; external stored consumers and target compatibility remain unqualified | Apply the [name migration](reviews/bytes-api-names-2026-10-11.md) to each supported consumer | Open |
-| GAP-018 | Shared int64_t status registry and integration suite passed on this host, now including module 3; policy 0.2.0 project-role review is pending | Assess target resources/ABI and review the [status amendment](reviews/status-2026-10-11.md) before release | Open |
+| GAP-018 | Shared status registry is removed; direct int32_t module-local errors change public return ABI and numeric codes under policy 0.3.0 | Review the [removal/migration record](reviews/status-removal-2026-10-18.md), rebuild consumers and assess target resources/ABI before release | Open |
 | GAP-019 | Original enum API suite passed on GCC/Clang host; native enum/bool/int/char policy conflicts and strict C89/target linkage assessment remain open | Review the [scoped migration](reviews/enum-traits-2026-10-13.md), policy disposition and target dependencies | Open |
 | GAP-020 | String foundation passed host/API/overlap tests; counted text and real char-array fixtures exceed the current char-pointer-only policy | Resolve the [scoped storage proposal](reviews/string-storage-2026-10-13.md) and qualify target library/ABI/resources before release | Open |
 | GAP-021 | Supplied native string-key enum generator is bounded and host-tested but exceeds numerical enum policy; borrowed/fixed strings use proposed text storage scope | Resolve the [scoped migration dispositions](reviews/csep-text-2026-10-13.md) and qualify actual ABI/resources/libraries before release | Open |

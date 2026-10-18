@@ -18,7 +18,7 @@ static void assert_text(const hps_string_buffer *buffer, const char *text,
 static void bind_text(hps_string_buffer *buffer, char *storage, size_t capacity,
                        const char *text, size_t length)
 {
-    hps_string_status status = hps_string_buffer_init(buffer, storage, capacity);
+    int32_t status = hps_string_buffer_init(buffer, storage, capacity);
     assert(status == HPS_STRING_OK);
     const hps_string_view source = {text, length};
     status = hps_string_buffer_assign(buffer, source);
@@ -31,7 +31,7 @@ static void test_inspection(void)
     char storage[8] = "abc";
     size_t length = 97U;
     uint8_t flag = 97U;
-    hps_string_status status = hps_cstr_length(storage, sizeof(storage), &length);
+    int32_t status = hps_cstr_length(storage, sizeof(storage), &length);
     assert(status == HPS_STRING_OK && length == 3U);
     status = hps_cstr_length(unterminated, sizeof(unterminated), &length);
     assert(status == HPS_STRING_NOT_TERMINATED && length == 3U);
@@ -102,7 +102,7 @@ static void test_clear_and_compare(void)
     char storage[8] = "abc#def";
     storage[3] = '\0';
     hps_string_buffer buffer = {storage, 3U, sizeof(storage)};
-    hps_string_status status = hps_cstr_clear_tail(&buffer);
+    int32_t status = hps_cstr_clear_tail(&buffer);
     assert(status == HPS_STRING_OK);
     assert_text(&buffer, "abc", 3U);
     assert(memcmp(storage + 3U, "\0\0\0\0", 5U) == 0);
@@ -142,7 +142,7 @@ static void test_copy_and_search(void)
     char storage[16] = "###############";
     hps_string_buffer buffer = {NULL, 0U, 0U};
     bind_text(&buffer, storage, sizeof(storage), "keep", 4U);
-    hps_string_status status = hps_cstr_copy_range(&buffer, "aZ9\x80", 5U,
+    int32_t status = hps_cstr_copy_range(&buffer, "aZ9\x80", 5U,
                                                    0U, HPS_STRING_NPOS,
                                                    HPS_CSTR_LOWER_CASE);
     assert(status == HPS_STRING_OK);
@@ -218,7 +218,7 @@ static void test_reverse_replace_filter(void)
     char storage[16] = "###############";
     hps_string_buffer buffer = {NULL, 0U, 0U};
     bind_text(&buffer, storage, sizeof(storage), "abcdef", 6U);
-    hps_string_status status = hps_cstr_reverse(&buffer, 1U, 4U);
+    int32_t status = hps_cstr_reverse(&buffer, 1U, 4U);
     assert(status == HPS_STRING_OK);
     assert_text(&buffer, "aedcbf", 6U);
     status = hps_cstr_reverse(&buffer, 0U, HPS_STRING_NPOS);
@@ -278,7 +278,7 @@ static void test_remove_and_trim(void)
     char storage[32] = "###############################";
     hps_string_buffer buffer = {NULL, 0U, 0U};
     bind_text(&buffer, storage, sizeof(storage), "ababaxaba", 9U);
-    hps_string_status status = hps_cstr_remove_substring(&buffer, "aba", 4U);
+    int32_t status = hps_cstr_remove_substring(&buffer, "aba", 4U);
     assert(status == HPS_STRING_OK);
     assert_text(&buffer, "bax", 3U);
     status = hps_cstr_remove_substring(&buffer, "", 1U);
@@ -328,7 +328,7 @@ static void test_padding(void)
     const hps_string_view left = {"xy", 2U};
     const hps_string_view right = {"!", 1U};
     const hps_string_view empty = {NULL, 0U};
-    hps_string_status status = hps_cstr_pad(&buffer, left, 2U, right, 1U);
+    int32_t status = hps_cstr_pad(&buffer, left, 2U, right, 1U);
     assert(status == HPS_STRING_OK);
     assert_text(&buffer, "xyxyabc!", 8U);
     char snapshot[16];
@@ -388,7 +388,7 @@ static void test_mutation_failures(void)
     hps_string_buffer buffer = {storage, SIZE_MAX, sizeof(storage)};
     const hps_string_view empty = {NULL, 0U};
     const hps_string_view one = {"a", 1U};
-    hps_string_status status = hps_cstr_reverse(&buffer, 0U, 1U);
+    int32_t status = hps_cstr_reverse(&buffer, 0U, 1U);
     assert(status == HPS_STRING_INVALID_STATE);
     status = hps_cstr_replace_char(&buffer, one, one);
     assert(status == HPS_STRING_INVALID_STATE);

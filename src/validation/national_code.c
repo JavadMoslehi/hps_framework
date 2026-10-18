@@ -5,11 +5,11 @@
  * @brief Length-checked legacy checksum using bounded exact-width arithmetic.
  */
 
-hps_string_status hps_iran_national_code_validate(const char *text,
-                                                const size_t capacity,
-                                                uint8_t *result)
+int32_t hps_iran_national_code_validate(const char *text,
+                                        const size_t capacity,
+                                        uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view view = {NULL, 0U};
         status = hps_string_view_init_cstr(&view, text, capacity);

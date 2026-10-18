@@ -45,24 +45,25 @@ HPS namespace; all definitions include their own public header before other
 implementation dependencies. Avoid ABI changes driven by undisclosed macros,
 packing pragmas or compiler-specific calling conventions.
 
-Headers declaring or directly using `hps_status_t` include `hps/status.h`
-explicitly. Headers using a semantic module alias explicitly include its defining
-header, such as `hps/bytes/view.h` for `hps_byte_status`, under HPS-HDR-003.
-Headers defining module errors document their registered namespace and keep
-constants typed; follow HPS-C-004/HPS-C-019 in [the C rules](c-rules.md).
-A public diagnostic-string API documents the returned
-pointer's immutability, lifetime, NUL termination, character set, maximum capacity
-and unknown-code behavior. Width changes to a status alias are ABI changes even
-when function names and alias spelling are unchanged.
+Headers declaring `int32_t` error results include `<stdint.h>` explicitly under
+HPS-HDR-003. Headers using module-local error constants explicitly include their
+defining header, such as `hps/bytes/view.h` for `HPS_BYTE_*`. Document the error
+domain and keep constants typed; follow HPS-C-004/HPS-C-019 in
+[the C rules](c-rules.md). Do not add a shared status typedef or registry
+dependency. Return-type width changes and numeric-code changes need an explicit
+API/ABI migration record even when function and error names remain unchanged.
 
 HPS-HDR-006: Guarded language linkage does not establish full C++ or ABI compatibility.
 Qualification must specify C/C++ compiler versions/modes and verify independent
 and repeated inclusion in both languages, then link a C++ caller with objects
 compiled as C. Check layouts, alignment, status representation and callback ABI
 on each promised target. C++ compatibility must not enable C-only features merely
-because C++ has superficially similar syntax. Current host text/span/key include/link checks are recorded in the
-[text migration review](reviews/csep-text-2026-10-13.md); other target support
-remains unqualified.
+because C++ has superficially similar syntax. Earlier host text/span/key
+include/link checks are recorded in the
+[text migration review](reviews/csep-text-2026-10-13.md); the changed error-result
+ABI requires current verification in the
+[removal review](reviews/status-removal-2026-10-18.md). Other target support remains
+unqualified.
 
 The [C++ working draft's linkage section](https://eel.is/c++draft/dcl.link)
 is the reference for language linkage; target interoperability still requires
@@ -72,9 +73,9 @@ this exact comment style or C++ support.
 ## Template
 
 See [the public-header template](templates/public-header.h). It demonstrates a
-semantic alias of the common exact-width status type and a guarded C API. Replace
-names, guard and contract with those of the actual module and register any new
-module/error constants; the example is not an implemented API.
+direct `int32_t` result, typed local errors and a guarded C API. Replace names,
+guard and contract with those of the actual module; the example is not an
+implemented API and requires no framework registration.
 
 The lightweight checker verifies the expected guard/file metadata and a limited
 pattern for linkage blocks around HPS function/extern declarations. It does not

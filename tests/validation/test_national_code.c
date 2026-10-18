@@ -11,7 +11,7 @@ int32_t test_national_code(void)
 {
     /* For prefix123456789 the weighted sum210 leaves remainder1. */
     uint8_t valid = 97U;
-    hps_string_status status = hps_iran_national_code_validate("1234567891", 11U, &valid);
+    int32_t status = hps_iran_national_code_validate("1234567891", 11U, &valid);
     assert(status == HPS_STRING_OK && valid == 1U);
     status = hps_iran_national_code_validate("1234567892", 11U, &valid);
     assert(status == HPS_STRING_OK && valid == 0U);

@@ -17,7 +17,7 @@ static hps_pool_block storage[HPS_POOL_MAX_BUFFERS];
 static hps_pool_block *free_head = NULL;
 static size_t available = 0U;
 static uint8_t initialized = 0U;
-static hps_pool_status last_status = HPS_POOL_NOT_INITIALIZED;
+static int32_t last_status = HPS_POOL_NOT_INITIALIZED;
 
 /* Compare only: never dereference a caller-supplied address. The bounded lookup
  * deliberately avoids pointer subtraction, ordering and pointer/integer casts. */
@@ -31,9 +31,9 @@ static size_t pool_find(const void *ptr)
     return index;
 }
 
-static hps_pool_status pool_check(void)
+static int32_t pool_check(void)
 {
-    hps_pool_status status = HPS_POOL_NOT_INITIALIZED;
+    int32_t status = HPS_POOL_NOT_INITIALIZED;
     if (initialized == 1U) {
         status = HPS_POOL_CORRUPT;
         if (available <= HPS_POOL_MAX_BUFFERS) {
@@ -46,9 +46,9 @@ static hps_pool_status pool_check(void)
     return status;
 }
 
-static hps_pool_status pool_validate(const void *ptr, size_t *index)
+static int32_t pool_validate(const void *ptr, size_t *index)
 {
-    hps_pool_status status = pool_check();
+    int32_t status = pool_check();
     if (status == HPS_POOL_OK) {
         const size_t found = pool_find(ptr);
         if (found == HPS_POOL_MAX_BUFFERS) {
@@ -102,7 +102,7 @@ static void pool_put(const size_t index)
     available += 1U;
 }
 
-hps_pool_status hps_pool_init(void)
+int32_t hps_pool_init(void)
 {
     last_status = HPS_POOL_ALREADY_INITIALIZED;
     if (initialized == 0U) {
@@ -187,14 +187,14 @@ void *hps_calloc(const size_t count, const size_t size)
     return result;
 }
 
-hps_pool_status hps_pool_last_status(void)
+int32_t hps_pool_last_status(void)
 {
     return last_status;
 }
 
-hps_pool_status hps_pool_get_stats(hps_pool_stats *result)
+int32_t hps_pool_get_stats(hps_pool_stats *result)
 {
-    hps_pool_status status = HPS_POOL_INVALID_ARGUMENT;
+    int32_t status = HPS_POOL_INVALID_ARGUMENT;
     if (result != NULL) {
         status = pool_check();
         if (status == HPS_POOL_OK) {

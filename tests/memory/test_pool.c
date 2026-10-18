@@ -12,7 +12,7 @@
 static void test_startup(void)
 {
     hps_pool_stats stats = {0U, 0U, 0U, 0U};
-    hps_pool_status status = hps_pool_get_stats(&stats);
+    int32_t status = hps_pool_get_stats(&stats);
     assert(status == HPS_POOL_NOT_INITIALIZED);
     assert(stats.capacity == 0U);
     void *ptr = hps_malloc(1U);
@@ -55,7 +55,7 @@ static void test_sizes_and_resize(void)
     ptr = hps_realloc(bytes, HPS_POOL_BUFFER_SIZE);
     assert(ptr == bytes);
     assert(bytes[0] == 91U);
-    hps_pool_status status = hps_pool_init();
+    int32_t status = hps_pool_init();
     assert(status == HPS_POOL_ALREADY_INITIALIZED);
     assert(bytes[0] == 91U);
     ptr = hps_realloc(bytes, 0U);
@@ -109,7 +109,7 @@ static void test_exhaustion(void)
                 assert(blocks[index] != blocks[other]);
             }
         }
-        hps_pool_status status = hps_pool_get_stats(&stats);
+        int32_t status = hps_pool_get_stats(&stats);
         assert(status == HPS_POOL_OK);
         assert(stats.available == 0U && stats.allocated == HPS_POOL_MAX_BUFFERS);
         void *extra = hps_malloc(1U);
@@ -132,6 +132,31 @@ static void test_exhaustion(void)
 /* These function-pointer assignments verify the requested signatures when built. */
 static void test_signatures(void)
 {
+    int32_t (*initialize)(void) = hps_pool_init;
+    int32_t (*last_result)(void) = hps_pool_last_status;
+    int32_t (*get_stats)(hps_pool_stats *result) = hps_pool_get_stats;
+    hps_pool_stats stats = {0U, 0U, 0U, 0U};
+    int32_t result = initialize();
+    assert(sizeof(hps_pool_init()) == sizeof(int32_t));
+    assert(sizeof(hps_pool_last_status()) == sizeof(int32_t));
+    assert(sizeof(hps_pool_get_stats(&stats)) == sizeof(int32_t));
+    assert(sizeof(HPS_POOL_CORRUPT) == sizeof(int32_t));
+    assert(HPS_POOL_OK == INT32_C(0));
+    assert(HPS_POOL_INVALID_ARGUMENT == -INT32_C(1));
+    assert(HPS_POOL_EXHAUSTED == -INT32_C(2));
+    assert(HPS_POOL_INVALID_POINTER == -INT32_C(3));
+    assert(HPS_POOL_DOUBLE_FREE == -INT32_C(4));
+    assert(HPS_POOL_NOT_INITIALIZED == -INT32_C(5));
+    assert(HPS_POOL_ALREADY_INITIALIZED == -INT32_C(6));
+    assert(HPS_POOL_CORRUPT == -INT32_C(7));
+    assert(result == -INT32_C(6));
+    result = last_result();
+    assert(result == -INT32_C(6));
+    result = get_stats(&stats);
+    assert(result == INT32_C(0));
+    assert(stats.available == HPS_POOL_MAX_BUFFERS && stats.allocated == 0U);
+    result = last_result();
+    assert(result == -INT32_C(6));
     void *(*allocate)(size_t) = hps_malloc;
     void (*release)(void *) = hps_free;
     void *(*resize)(void *, size_t) = hps_realloc;

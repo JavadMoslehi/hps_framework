@@ -8,22 +8,21 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include "hps/status.h"
 
 /* Fixed ABI/resource budget; these are not per-translation-unit overrides. */
 #define HPS_POOL_MAX_BUFFERS 32U
 #define HPS_POOL_BUFFER_SIZE 128U
 
-/* Memory owns status module 1, reasons 1..7; all success aliases share zero. */
-typedef hps_status_t hps_pool_status;
-#define HPS_POOL_OK HPS_STATUS_OK
-#define HPS_POOL_INVALID_ARGUMENT ((hps_pool_status)-INT64_C(65537))
-#define HPS_POOL_EXHAUSTED ((hps_pool_status)-INT64_C(65538))
-#define HPS_POOL_INVALID_POINTER ((hps_pool_status)-INT64_C(65539))
-#define HPS_POOL_DOUBLE_FREE ((hps_pool_status)-INT64_C(65540))
-#define HPS_POOL_NOT_INITIALIZED ((hps_pool_status)-INT64_C(65541))
-#define HPS_POOL_ALREADY_INITIALIZED ((hps_pool_status)-INT64_C(65542))
-#define HPS_POOL_CORRUPT ((hps_pool_status)-INT64_C(65543))
+/* Local int32_t results: zero is success; negative values identify pool errors.
+ * These codes belong to the pool API and are not globally unique. */
+#define HPS_POOL_OK ((int32_t)INT32_C(0))
+#define HPS_POOL_INVALID_ARGUMENT ((int32_t)-INT32_C(1))
+#define HPS_POOL_EXHAUSTED ((int32_t)-INT32_C(2))
+#define HPS_POOL_INVALID_POINTER ((int32_t)-INT32_C(3))
+#define HPS_POOL_DOUBLE_FREE ((int32_t)-INT32_C(4))
+#define HPS_POOL_NOT_INITIALIZED ((int32_t)-INT32_C(5))
+#define HPS_POOL_ALREADY_INITIALIZED ((int32_t)-INT32_C(6))
+#define HPS_POOL_CORRUPT ((int32_t)-INT32_C(7))
 
 typedef struct {
     size_t capacity;
@@ -43,6 +42,7 @@ extern "C" {
  * Only byte-buffer use is supported. Do not cast payloads to structures/scalars.
  * Discard all aliases after free; a stale address reused by a new allocation
  * cannot be distinguished from its current owner. No pointer is a capability.
+ * Result-returning functions use int32_t and the HPS_POOL_* constants above.
  * Failures preserve live allocations and payloads; last-status is updated.
  * CORRUPT requires system fault handling, not reinitialization. No RAM-fault
  * containment, secret erasure or concurrency guarantee is provided.
@@ -51,7 +51,7 @@ extern "C" {
 /* Call once before allocating. OK initializes the free list, not payload bytes.
  * A later call returns ALREADY_INITIALIZED without resetting live ownership.
  * O(MAX_BUFFERS) startup work, bounded automatic storage. */
-hps_pool_status hps_pool_init(void);
+int32_t hps_pool_init(void);
 
 /* Signatures match the corresponding C allocation functions; symbols remain
  * namespaced. Each successful request owns one complete BUFFER_SIZE-byte block.
@@ -83,12 +83,12 @@ void *hps_calloc(size_t count, size_t size);
 
 /* Most recent init/allocation/free/reallocation result. Read-only, O(1).
  * Stats reads do not change this value. Shared single-context diagnostic state. */
-hps_pool_status hps_pool_last_status(void);
+int32_t hps_pool_last_status(void);
 
 /* result designates one writable, correctly aligned stats object. Success writes
  * every field; failure leaves it unchanged. Returns OK, INVALID_ARGUMENT,
  * NOT_INITIALIZED or CORRUPT. O(1); available + allocated == capacity. */
-hps_pool_status hps_pool_get_stats(hps_pool_stats *result);
+int32_t hps_pool_get_stats(hps_pool_stats *result);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -21,12 +21,12 @@ static uint8_t member_of(const char *character, const char *members,
     return found;
 }
 
-hps_string_status hps_cstr_validate(const char *input,
-                                    const size_t input_capacity,
-                                    const uint8_t character_class,
-                                    uint8_t *result)
+int32_t hps_cstr_validate(const char *input,
+                          const size_t input_capacity,
+                          const uint8_t character_class,
+                          uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (character_class <= HPS_CSTR_CLASS_ALNUM)) {
         hps_string_view text = {NULL, 0U};
         status = hps_string_view_init_cstr(&text, input, input_capacity);
@@ -72,14 +72,14 @@ hps_string_status hps_cstr_validate(const char *input,
     return status;
 }
 
-static hps_string_status split_inputs(const char *input,
-                                       const size_t input_capacity,
-                                       const char *delimiter,
-                                       const size_t delimiter_capacity,
-                                       hps_string_view *text,
-                                       hps_string_view *separator)
+static int32_t split_inputs(const char *input,
+                            const size_t input_capacity,
+                            const char *delimiter,
+                            const size_t delimiter_capacity,
+                            hps_string_view *text,
+                            hps_string_view *separator)
 {
-    hps_string_status status = hps_string_view_init_cstr(text, input,
+    int32_t status = hps_string_view_init_cstr(text, input,
                                                        input_capacity);
     if (status == HPS_STRING_OK) {
         status = hps_string_view_init_cstr(separator, delimiter,
@@ -137,13 +137,13 @@ static size_t token_count(const hps_string_view text,
     return count;
 }
 
-hps_string_status hps_cstr_split_count(const char *input,
-                                       const size_t input_capacity,
-                                       const char *delimiter,
-                                       const size_t delimiter_capacity,
-                                       size_t *result)
+int32_t hps_cstr_split_count(const char *input,
+                             const size_t input_capacity,
+                             const char *delimiter,
+                             const size_t delimiter_capacity,
+                             size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view text = {NULL, 0U};
         hps_string_view separator = {NULL, 0U};
@@ -156,13 +156,13 @@ hps_string_status hps_cstr_split_count(const char *input,
     return status;
 }
 
-hps_string_status hps_cstr_split_at(const char *input,
-                                    const size_t input_capacity,
-                                    const char *delimiter,
-                                    const size_t delimiter_capacity,
-                                    const size_t index, hps_string_view *result)
+int32_t hps_cstr_split_at(const char *input,
+                          const size_t input_capacity,
+                          const char *delimiter,
+                          const size_t delimiter_capacity,
+                          const size_t index, hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view text = {NULL, 0U};
         hps_string_view separator = {NULL, 0U};
@@ -187,13 +187,13 @@ hps_string_status hps_cstr_split_at(const char *input,
     return status;
 }
 
-hps_string_status hps_cstr_split(const char *input, const size_t input_capacity,
-                                 const char *delimiter,
-                                 const size_t delimiter_capacity,
-                                 hps_string_view *tokens,
-                                 const size_t token_capacity, size_t *written)
+int32_t hps_cstr_split(const char *input, const size_t input_capacity,
+                       const char *delimiter,
+                       const size_t delimiter_capacity,
+                       hps_string_view *tokens,
+                       const size_t token_capacity, size_t *written)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((written != NULL) && ((tokens != NULL) || (token_capacity == 0U))) {
         hps_string_view text = {NULL, 0U};
         hps_string_view separator = {NULL, 0U};
@@ -215,9 +215,9 @@ hps_string_status hps_cstr_split(const char *input, const size_t input_capacity,
     return status;
 }
 
-static hps_string_status reserve_length(size_t *length, const size_t additional)
+static int32_t reserve_length(size_t *length, const size_t additional)
 {
-    hps_string_status status = HPS_STRING_OUT_OF_RANGE;
+    int32_t status = HPS_STRING_OUT_OF_RANGE;
     if (additional <= (SIZE_MAX - *length)) {
         *length += additional;
         status = HPS_STRING_OK;
@@ -225,9 +225,9 @@ static hps_string_status reserve_length(size_t *length, const size_t additional)
     return status;
 }
 
-static hps_string_status token_valid(const hps_string_view token)
+static int32_t token_valid(const hps_string_view token)
 {
-    hps_string_status status = hps_string_check_view(token);
+    int32_t status = hps_string_check_view(token);
     if (status == HPS_STRING_OK) {
         for (size_t index = 0U;
              (index < token.length) && (status == HPS_STRING_OK); index += 1U) {
@@ -247,12 +247,12 @@ static void write_view(char *output, size_t *position, const hps_string_view tex
     }
 }
 
-hps_string_status hps_cstr_join(char *output, const size_t output_capacity,
-                                const hps_string_view *tokens, const size_t count,
-                                const char *delimiter,
-                                const size_t delimiter_capacity)
+int32_t hps_cstr_join(char *output, const size_t output_capacity,
+                      const hps_string_view *tokens, const size_t count,
+                      const char *delimiter,
+                      const size_t delimiter_capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && ((tokens != NULL) || (count == 0U))) {
         hps_string_view separator = {NULL, 0U};
         status = hps_string_view_init_cstr(&separator, delimiter,
@@ -285,13 +285,13 @@ hps_string_status hps_cstr_join(char *output, const size_t output_capacity,
     return status;
 }
 
-hps_string_status hps_cstr_group(char *output, const size_t output_capacity,
-                                 const char *input, const size_t input_capacity,
-                                 const size_t group_length,
-                                 const char *separator,
-                                 const size_t separator_capacity)
+int32_t hps_cstr_group(char *output, const size_t output_capacity,
+                       const char *input, const size_t input_capacity,
+                       const size_t group_length,
+                       const char *separator,
+                       const size_t separator_capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && (group_length > 0U)) {
         hps_string_view text = {NULL, 0U};
         hps_string_view between = {NULL, 0U};
@@ -327,11 +327,11 @@ hps_string_status hps_cstr_group(char *output, const size_t output_capacity,
     return status;
 }
 
-hps_string_status hps_cstr_filename(const char *path, const size_t path_capacity,
-                                    const uint8_t remove_extension,
-                                    hps_string_view *result)
+int32_t hps_cstr_filename(const char *path, const size_t path_capacity,
+                          const uint8_t remove_extension,
+                          hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (remove_extension <= 1U)) {
         hps_string_view text = {NULL, 0U};
         status = hps_string_view_init_cstr(&text, path, path_capacity);
@@ -356,12 +356,12 @@ hps_string_status hps_cstr_filename(const char *path, const size_t path_capacity
     return status;
 }
 
-hps_string_status hps_cstr_select(const char *left, const size_t left_capacity,
-                                  const char *right, const size_t right_capacity,
-                                  const uint8_t maximum,
-                                  hps_string_view *result)
+int32_t hps_cstr_select(const char *left, const size_t left_capacity,
+                        const char *right, const size_t right_capacity,
+                        const uint8_t maximum,
+                        hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (maximum <= 1U)) {
         hps_string_view lhs = {NULL, 0U};
         hps_string_view rhs = {NULL, 0U};
@@ -383,17 +383,17 @@ hps_string_status hps_cstr_select(const char *left, const size_t left_capacity,
     return status;
 }
 
-hps_string_status hps_cstr_title_value(char *output,
-                                       const size_t output_capacity,
-                                       const char *title,
-                                       const size_t title_capacity,
-                                       const char *fill,
-                                       const size_t fill_capacity,
-                                       const char *value,
-                                       const size_t value_capacity,
-                                       const size_t width)
+int32_t hps_cstr_title_value(char *output,
+                             const size_t output_capacity,
+                             const char *title,
+                             const size_t title_capacity,
+                             const char *fill,
+                             const size_t fill_capacity,
+                             const char *value,
+                             const size_t value_capacity,
+                             const size_t width)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (output != NULL) {
         hps_string_view heading = {NULL, 0U};
         hps_string_view middle = {NULL, 0U};
@@ -426,12 +426,12 @@ hps_string_status hps_cstr_title_value(char *output,
     return status;
 }
 
-hps_string_status hps_cstr_dump_i64(char *output, const size_t output_capacity,
-                                    const char *field,
-                                    const size_t field_capacity,
-                                    const int64_t value)
+int32_t hps_cstr_dump_i64(char *output, const size_t output_capacity,
+                          const char *field,
+                          const size_t field_capacity,
+                          const int64_t value)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (output != NULL) {
         hps_string_view name = {NULL, 0U};
         status = hps_string_view_init_cstr(&name, field, field_capacity);
@@ -455,12 +455,12 @@ hps_string_status hps_cstr_dump_i64(char *output, const size_t output_capacity,
     return status;
 }
 
-hps_string_status hps_cstr_dump_bytes(char *output, const size_t output_capacity,
-                                      const char *field,
-                                      const size_t field_capacity,
-                                      const uint8_t *data, const size_t length)
+int32_t hps_cstr_dump_bytes(char *output, const size_t output_capacity,
+                            const char *field,
+                            const size_t field_capacity,
+                            const uint8_t *data, const size_t length)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && ((data != NULL) || (length == 0U))) {
         hps_string_view name = {NULL, 0U};
         status = hps_string_view_init_cstr(&name, field, field_capacity);

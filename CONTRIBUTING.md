@@ -31,14 +31,15 @@ only where the contracts and resource bounds match; record justified repetition
 or specialization (HPS-C-018). Do not weaken checks or couple an independent test
 oracle to production code to reduce repetition.
 
-Framework/module status APIs use `hps_status_t` (`int64_t`) from `hps/status.h` or
-a module alias; flags remain `uint8_t`. Allocate module IDs and negative reasons
-centrally, register bounded immutable diagnostic messages and document ABI/code
-migration under HPS-C-004/HPS-C-019. See
-[the status contract](docs/architecture/status.md) and
-[the user-requested policy change](governance/reviews/status-2026-10-11.md).
-Maintainer/reviewer disposition remains pending; this policy edit does not approve
-a MISRA deviation.
+Choose ordinary return/output types for each API's contract. APIs reporting
+several errors use `int32_t` directly from `<stdint.h>`, with zero success and
+typed negative module-local constants; flags remain `uint8_t`. Codes are interpreted
+with the called API and may overlap between modules. Do not add a shared status
+typedef, module-ID registry or diagnostic lookup dependency. Document API/ABI and
+numeric-code migration under HPS-C-004/HPS-C-019. See the
+[user-requested removal review](governance/reviews/status-removal-2026-10-18.md).
+Project-role/release disposition remains pending; this policy edit does not
+approve a MISRA deviation.
 
 For a qualified-target release, additionally run
 `python3 tools/check_policy.py --require-assessed`. This record gate currently

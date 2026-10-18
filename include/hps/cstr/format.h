@@ -48,22 +48,22 @@ extern "C" {
  * No allocation/OS/global state; O(format length + emitted length + old length),
  * with each argument bounded by its declared extent, plus fixed numeric storage.
  * Output is complete or fails; no truncation. Callers serialize conflicting use. */
-hps_string_status hps_cstr_format(hps_string_buffer *destination,
-                                 char *scratch, size_t scratch_capacity,
-                                 const char *format, size_t format_capacity,
-                                 const hps_cstr_format_arg *arguments,
-                                 size_t argument_count);
-hps_string_status hps_cstr_append_format(hps_string_buffer *destination,
-                                        char *scratch, size_t scratch_capacity,
-                                        const char *format, size_t format_capacity,
-                                        const hps_cstr_format_arg *arguments,
-                                        size_t argument_count);
+int32_t hps_cstr_format(hps_string_buffer *destination,
+                        char *scratch, size_t scratch_capacity,
+                        const char *format, size_t format_capacity,
+                        const hps_cstr_format_arg *arguments,
+                        size_t argument_count);
+int32_t hps_cstr_append_format(hps_string_buffer *destination,
+                               char *scratch, size_t scratch_capacity,
+                               const char *format, size_t format_capacity,
+                               const hps_cstr_format_arg *arguments,
+                               size_t argument_count);
 
 /* Render an exact fixed decimal, replacing destination. scale0..18; INT64_MIN
  * handled without signed negation overflow. Invalid scale/state/no space preserve
  * destination. No rounding, binary floating interpretation or locale. */
-hps_string_status hps_cstr_render_decimal(hps_string_buffer *destination,
-                                         int64_t coefficient, uint8_t scale);
+int32_t hps_cstr_render_decimal(hps_string_buffer *destination,
+                                int64_t coefficient, uint8_t scale);
 
 #ifdef __cplusplus
 } /* extern "C" */

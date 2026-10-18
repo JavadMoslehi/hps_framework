@@ -2,12 +2,30 @@
 #include "hps/string/buffer.h"
 #include "hps/string/view.h"
 #include <assert.h>
+#include <stdint.h>
 #include <string.h>
 
 /**
  * @file tests/string/test_string.c
  * @brief Independent bounded text, failure preservation and overlap checks.
  */
+
+static void test_result_representation(void)
+{
+    assert(sizeof(hps_string_view_init(NULL, NULL, 0U)) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_OK) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_INVALID_ARGUMENT) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_OUT_OF_RANGE) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_NO_SPACE) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_INVALID_STATE) == sizeof(int32_t));
+    assert(sizeof(HPS_STRING_NOT_TERMINATED) == sizeof(int32_t));
+    assert(HPS_STRING_OK == INT32_C(0));
+    assert(HPS_STRING_INVALID_ARGUMENT == -INT32_C(1));
+    assert(HPS_STRING_OUT_OF_RANGE == -INT32_C(2));
+    assert(HPS_STRING_NO_SPACE == -INT32_C(3));
+    assert(HPS_STRING_INVALID_STATE == -INT32_C(4));
+    assert(HPS_STRING_NOT_TERMINATED == -INT32_C(5));
+}
 
 static void assert_view(hps_string_view view, const char *data, size_t length)
 {
@@ -28,7 +46,7 @@ static void test_view_construction_and_slicing(void)
     const char *text = "a\0bc";
     const hps_string_view sentinel = {"keep", 4U};
     hps_string_view view = sentinel;
-    hps_string_status status = hps_string_view_init(&view, text, 4U);
+    int32_t status = hps_string_view_init(&view, text, 4U);
     assert(status == HPS_STRING_OK);
     assert_view(view, text, 4U);
 
@@ -103,7 +121,7 @@ static void test_view_comparison(void)
     const hps_string_view low = {"\x7f", 1U};
     uint8_t flag = 97U;
     int32_t order = INT32_C(97);
-    hps_string_status status = hps_string_view_equal(abc, abc, &flag);
+    int32_t status = hps_string_view_equal(abc, abc, &flag);
     assert(status == HPS_STRING_OK && flag == 1U);
     status = hps_string_view_equal(abc, abd, &flag);
     assert(status == HPS_STRING_OK && flag == 0U);
@@ -162,7 +180,7 @@ static void test_view_searches(void)
     const hps_string_view empty = {NULL, 0U};
     size_t index = 97U;
     uint8_t flag = 97U;
-    hps_string_status status = hps_string_view_find(haystack, needle, 0U, &index);
+    int32_t status = hps_string_view_find(haystack, needle, 0U, &index);
     assert(status == HPS_STRING_OK && index == 0U);
     status = hps_string_view_find(haystack, needle, 1U, &index);
     assert(status == HPS_STRING_OK && index == 2U);
@@ -220,7 +238,7 @@ static void test_view_trimming(void)
     const char *text = "\t\n\v\f\r hello \t\n\v\f\r";
     const hps_string_view view = {text, 17U};
     hps_string_view result = {"keep", 4U};
-    hps_string_status status = hps_string_view_trim_whitespace(view, &result);
+    int32_t status = hps_string_view_trim_whitespace(view, &result);
     assert(status == HPS_STRING_OK);
     assert_view(result, text + 6U, 5U);
     assert_view(view, text, 17U);
@@ -259,7 +277,7 @@ static void test_view_export(void)
 {
     char output[8] = "#######";
     const hps_string_view source = {"abcd", 4U};
-    hps_string_status status = hps_string_view_copy_cstr(source, output, 5U);
+    int32_t status = hps_string_view_copy_cstr(source, output, 5U);
     assert(status == HPS_STRING_OK);
     assert(memcmp(output, "abcd\0##", sizeof(output)) == 0);
     status = hps_string_view_copy_cstr(source, output, 4U);
@@ -299,7 +317,7 @@ static void test_view_argument_failures(void)
     int32_t order = INT32_C(97);
     size_t index = 97U;
     char output[3] = "##";
-    hps_string_status status = hps_string_view_init(NULL, good.data, good.length);
+    int32_t status = hps_string_view_init(NULL, good.data, good.length);
     assert(status == HPS_STRING_INVALID_ARGUMENT);
     status = hps_string_view_init_cstr(NULL, "a", 2U);
     assert(status == HPS_STRING_INVALID_ARGUMENT);
@@ -389,7 +407,7 @@ static void test_buffer_construction(void)
 {
     char storage[8] = "abcdef#";
     hps_string_buffer buffer = {storage, 6U, sizeof(storage)};
-    hps_string_status status = hps_string_buffer_init(&buffer, storage, 0U);
+    int32_t status = hps_string_buffer_init(&buffer, storage, 0U);
     assert(status == HPS_STRING_INVALID_ARGUMENT);
     assert_buffer(&buffer, storage, 6U, sizeof(storage));
     assert(memcmp(storage, "abcdef#", sizeof(storage)) == 0);
@@ -443,7 +461,7 @@ static void test_buffer_mutation_and_borrowing(void)
 {
     char storage[8] = "#######";
     hps_string_buffer buffer = {NULL, 0U, 0U};
-    hps_string_status status = hps_string_buffer_init(&buffer, storage, sizeof(storage));
+    int32_t status = hps_string_buffer_init(&buffer, storage, sizeof(storage));
     assert(status == HPS_STRING_OK);
     const hps_string_view abc = {"abc", 3U};
     status = hps_string_buffer_assign(&buffer, abc);
@@ -539,7 +557,7 @@ static void test_buffer_state_failures(void)
     hps_string_view result = {"keep", 4U};
     const char *cstr = result.data;
     size_t remaining = 97U;
-    hps_string_status status = hps_string_buffer_assign(&buffer, empty);
+    int32_t status = hps_string_buffer_assign(&buffer, empty);
     assert(status == HPS_STRING_INVALID_STATE);
     status = hps_string_buffer_append(&buffer, empty);
     assert(status == HPS_STRING_INVALID_STATE);
@@ -589,7 +607,7 @@ static void test_buffer_argument_failures(void)
     hps_string_view result = {"keep", 4U};
     const char *cstr = result.data;
     size_t remaining = 97U;
-    hps_string_status status = hps_string_buffer_assign(NULL, empty);
+    int32_t status = hps_string_buffer_assign(NULL, empty);
     assert(status == HPS_STRING_INVALID_ARGUMENT);
     status = hps_string_buffer_append(NULL, empty);
     assert(status == HPS_STRING_INVALID_ARGUMENT);
@@ -649,7 +667,7 @@ static void test_buffer_overlap_model(void)
                     const hps_string_view source = {storage + offset, count};
                     const size_t start = (append == 1U) ? 6U : 0U;
                     const size_t result_length = start + count;
-                    hps_string_status status;
+                    int32_t status;
                     if (append == 1U) {
                         status = hps_string_buffer_append(&buffer, source);
                     } else {
@@ -675,6 +693,7 @@ static void test_buffer_overlap_model(void)
 
 int32_t test_string(void)
 {
+    test_result_representation();
     test_view_construction_and_slicing();
     test_view_comparison();
     test_view_searches();

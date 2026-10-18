@@ -13,45 +13,45 @@
 #error "HPS string builder requires an ASCII-compatible execution character set"
 #endif
 
-hps_string_status hps_string_builder_init(hps_string_builder *builder, char *storage, const size_t capacity)
+int32_t hps_string_builder_init(hps_string_builder *builder, char *storage, const size_t capacity)
 {
     return hps_string_buffer_init(builder, storage, capacity);
 }
 
-hps_string_status hps_string_builder_clear(hps_string_builder *builder)
+int32_t hps_string_builder_clear(hps_string_builder *builder)
 {
     return hps_string_buffer_clear(builder);
 }
 
-hps_string_status hps_string_builder_as_view(const hps_string_builder *builder, hps_string_view *result)
+int32_t hps_string_builder_as_view(const hps_string_builder *builder, hps_string_view *result)
 {
     return hps_string_buffer_as_view(builder, result);
 }
 
-hps_string_status hps_string_builder_assign_view(hps_string_builder *builder, const hps_string_view source)
+int32_t hps_string_builder_assign_view(hps_string_builder *builder, const hps_string_view source)
 {
     return hps_string_buffer_assign(builder, source);
 }
 
-hps_string_status hps_string_builder_append_view(hps_string_builder *builder, const hps_string_view source)
+int32_t hps_string_builder_append_view(hps_string_builder *builder, const hps_string_view source)
 {
     return hps_string_buffer_append(builder, source);
 }
 
-hps_string_status hps_string_builder_reserve(const hps_string_builder *builder, const size_t usable_capacity)
+int32_t hps_string_builder_reserve(const hps_string_builder *builder, const size_t usable_capacity)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if ((status == HPS_STRING_OK) && (usable_capacity >= builder->capacity)) {
         status = HPS_STRING_NO_SPACE;
     }
     return status;
 }
 
-hps_string_status hps_string_builder_swap(hps_string_builder *left, hps_string_builder *right)
+int32_t hps_string_builder_swap(hps_string_builder *left, hps_string_builder *right)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(left, &active);
+    int32_t status = hps_string_buffer_as_view(left, &active);
     if (status == HPS_STRING_OK) { status = hps_string_buffer_as_view(right, &active); }
     if (status == HPS_STRING_OK) {
         const hps_string_builder temporary = *left;
@@ -61,11 +61,11 @@ hps_string_status hps_string_builder_swap(hps_string_builder *left, hps_string_b
     return status;
 }
 
-hps_string_status hps_string_builder_append_repeat_char(hps_string_builder *builder,
-                                                       const uint8_t value, const size_t count)
+int32_t hps_string_builder_append_repeat_char(hps_string_builder *builder,
+                                              const uint8_t value, const size_t count)
 {
     size_t remaining = 0U;
-    hps_string_status status = hps_string_buffer_remaining(builder, &remaining);
+    int32_t status = hps_string_buffer_remaining(builder, &remaining);
     if (status == HPS_STRING_OK) {
         if ((value == 0U) || (value > 127U)) { status = HPS_STRING_INVALID_ARGUMENT; }
         else if (count > remaining) { status = HPS_STRING_NO_SPACE; }
@@ -80,21 +80,21 @@ hps_string_status hps_string_builder_append_repeat_char(hps_string_builder *buil
     return status;
 }
 
-hps_string_status hps_string_builder_append_char(hps_string_builder *builder, const uint8_t value)
+int32_t hps_string_builder_append_char(hps_string_builder *builder, const uint8_t value)
 {
     return hps_string_builder_append_repeat_char(builder, value, 1U);
 }
 
-hps_string_status hps_string_builder_append_newline(hps_string_builder *builder)
+int32_t hps_string_builder_append_newline(hps_string_builder *builder)
 {
     return hps_string_builder_append_char(builder, UINT8_C(10));
 }
 
-hps_string_status hps_string_builder_resize(hps_string_builder *builder,
-                                           const size_t length, const uint8_t fill)
+int32_t hps_string_builder_resize(hps_string_builder *builder,
+                                  const size_t length, const uint8_t fill)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) {
         if ((fill == 0U) || (fill > 127U)) { status = HPS_STRING_INVALID_ARGUMENT; }
         else if (length <= active.length) { status = hps_string_buffer_truncate(builder, length); }
@@ -105,13 +105,13 @@ hps_string_status hps_string_builder_resize(hps_string_builder *builder,
 
 /* Structural/extent validation always precedes scratch writes. Source NUL is
  * checked only after the resulting length fits builder and scratch capacities. */
-hps_string_status hps_string_builder_replace_range_view(hps_string_builder *builder,
-                                                        const size_t offset, const size_t count,
-                                                        const hps_string_view replacement,
-                                                        char *scratch, const size_t scratch_capacity)
+int32_t hps_string_builder_replace_range_view(hps_string_builder *builder,
+                                              const size_t offset, const size_t count,
+                                              const hps_string_view replacement,
+                                              char *scratch, const size_t scratch_capacity)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_check_view(replacement); }
     if (status == HPS_STRING_OK) {
         if (scratch == NULL) { status = HPS_STRING_INVALID_ARGUMENT; }
@@ -140,32 +140,32 @@ hps_string_status hps_string_builder_replace_range_view(hps_string_builder *buil
     return status;
 }
 
-hps_string_status hps_string_builder_insert_view(hps_string_builder *builder, const size_t offset,
-                                                 const hps_string_view source, char *scratch,
-                                                 const size_t scratch_capacity)
+int32_t hps_string_builder_insert_view(hps_string_builder *builder, const size_t offset,
+                                       const hps_string_view source, char *scratch,
+                                       const size_t scratch_capacity)
 {
     return hps_string_builder_replace_range_view(builder, offset, 0U, source, scratch, scratch_capacity);
 }
 
-hps_string_status hps_string_builder_prepend_view(hps_string_builder *builder, const hps_string_view source,
-                                                  char *scratch, const size_t scratch_capacity)
+int32_t hps_string_builder_prepend_view(hps_string_builder *builder, const hps_string_view source,
+                                        char *scratch, const size_t scratch_capacity)
 {
     return hps_string_builder_insert_view(builder, 0U, source, scratch, scratch_capacity);
 }
 
-hps_string_status hps_string_builder_erase(hps_string_builder *builder,
-                                           const size_t offset, const size_t count)
+int32_t hps_string_builder_erase(hps_string_builder *builder,
+                                 const size_t offset, const size_t count)
 {
     return hps_string_buffer_erase(builder, offset, count);
 }
 
-hps_string_status hps_string_builder_replace_first(hps_string_builder *builder,
-                                                   const hps_string_view pattern,
-                                                   const hps_string_view replacement, char *scratch,
-                                                   const size_t scratch_capacity, uint8_t *changed)
+int32_t hps_string_builder_replace_first(hps_string_builder *builder,
+                                         const hps_string_view pattern,
+                                         const hps_string_view replacement, char *scratch,
+                                         const size_t scratch_capacity, uint8_t *changed)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = (changed == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (changed == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_check_view(pattern); }
     if (status == HPS_STRING_OK) { status = hps_string_check_view(replacement); }
@@ -186,14 +186,14 @@ hps_string_status hps_string_builder_replace_first(hps_string_builder *builder,
 
 /* Count and size original nonoverlapping matches before writing scratch. This
  * avoids replacement cascades and makes aliases into the original builder safe. */
-hps_string_status hps_string_builder_replace_all(hps_string_builder *builder,
-                                                 const hps_string_view pattern,
-                                                 const hps_string_view replacement,
-                                                 char *scratch, const size_t scratch_capacity,
-                                                 size_t *count)
+int32_t hps_string_builder_replace_all(hps_string_builder *builder,
+                                       const hps_string_view pattern,
+                                       const hps_string_view replacement,
+                                       char *scratch, const size_t scratch_capacity,
+                                       size_t *count)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = (count == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (count == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_check_view(pattern); }
     if (status == HPS_STRING_OK) { status = hps_string_check_view(replacement); }
@@ -253,12 +253,12 @@ hps_string_status hps_string_builder_replace_all(hps_string_builder *builder,
     return status;
 }
 
-hps_string_status hps_string_builder_replace_char_all(hps_string_builder *builder,
-                                                      const uint8_t old_value,
-                                                      const uint8_t new_value, size_t *count)
+int32_t hps_string_builder_replace_char_all(hps_string_builder *builder,
+                                            const uint8_t old_value,
+                                            const uint8_t new_value, size_t *count)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = (count == NULL) ? HPS_STRING_INVALID_ARGUMENT :
+    int32_t status = (count == NULL) ? HPS_STRING_INVALID_ARGUMENT :
         hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) {
         if ((new_value == 0U) || (new_value > 127U)) { status = HPS_STRING_INVALID_ARGUMENT; }
@@ -278,30 +278,30 @@ hps_string_status hps_string_builder_replace_char_all(hps_string_builder *builde
     return status;
 }
 
-hps_string_status hps_string_builder_trim_ascii_whitespace(hps_string_builder *builder)
+int32_t hps_string_builder_trim_ascii_whitespace(hps_string_builder *builder)
 {
     hps_string_view active = {NULL, 0U};
     hps_string_view trimmed = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_view_trim_whitespace(active, &trimmed); }
     if (status == HPS_STRING_OK) { status = hps_string_buffer_assign(builder, trimmed); }
     return status;
 }
 
-hps_string_status hps_string_builder_trim_char(hps_string_builder *builder, const uint8_t value)
+int32_t hps_string_builder_trim_char(hps_string_builder *builder, const uint8_t value)
 {
     hps_string_view active = {NULL, 0U};
     hps_string_view trimmed = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_view_trim_char(active, value, &trimmed); }
     if (status == HPS_STRING_OK) { status = hps_string_buffer_assign(builder, trimmed); }
     return status;
 }
 
-static hps_string_status builder_fold(hps_string_builder *builder, const uint8_t upper)
+static int32_t builder_fold(hps_string_builder *builder, const uint8_t upper)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) {
         size_t index = 0U;
         while (index < active.length) {
@@ -317,24 +317,24 @@ static hps_string_status builder_fold(hps_string_builder *builder, const uint8_t
     return status;
 }
 
-hps_string_status hps_string_builder_to_upper_ascii(hps_string_builder *builder)
+int32_t hps_string_builder_to_upper_ascii(hps_string_builder *builder)
 {
     return builder_fold(builder, 1U);
 }
 
-hps_string_status hps_string_builder_to_lower_ascii(hps_string_builder *builder)
+int32_t hps_string_builder_to_lower_ascii(hps_string_builder *builder)
 {
     return builder_fold(builder, 0U);
 }
 
 /* One preflight/commit engine handles plain lines/quotes and JSON escapes.
  * Modes: 0 plain quoted, 1 escaped, 2 JSON quoted, 3 plain line. */
-static hps_string_status builder_compose(hps_string_builder *builder,
-                                          const hps_string_view source, char *scratch,
-                                          const size_t scratch_capacity, const uint8_t mode)
+static int32_t builder_compose(hps_string_builder *builder,
+                               const hps_string_view source, char *scratch,
+                               const size_t scratch_capacity, const uint8_t mode)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(builder, &active);
+    int32_t status = hps_string_buffer_as_view(builder, &active);
     if (status == HPS_STRING_OK) { status = hps_string_check_view(source); }
     if (status == HPS_STRING_OK) {
         if (scratch == NULL) { status = HPS_STRING_INVALID_ARGUMENT; }
@@ -401,28 +401,28 @@ static hps_string_status builder_compose(hps_string_builder *builder,
     return status;
 }
 
-hps_string_status hps_string_builder_append_quoted(hps_string_builder *builder, const hps_string_view source,
-                                                   char *scratch, const size_t scratch_capacity)
+int32_t hps_string_builder_append_quoted(hps_string_builder *builder, const hps_string_view source,
+                                         char *scratch, const size_t scratch_capacity)
 {
     return builder_compose(builder, source, scratch, scratch_capacity, 0U);
 }
 
-hps_string_status hps_string_builder_append_json_escaped(hps_string_builder *builder,
-                                                         const hps_string_view source, char *scratch,
-                                                         const size_t scratch_capacity)
+int32_t hps_string_builder_append_json_escaped(hps_string_builder *builder,
+                                               const hps_string_view source, char *scratch,
+                                               const size_t scratch_capacity)
 {
     return builder_compose(builder, source, scratch, scratch_capacity, 1U);
 }
 
-hps_string_status hps_string_builder_append_json_quoted(hps_string_builder *builder,
-                                                        const hps_string_view source, char *scratch,
-                                                        const size_t scratch_capacity)
+int32_t hps_string_builder_append_json_quoted(hps_string_builder *builder,
+                                              const hps_string_view source, char *scratch,
+                                              const size_t scratch_capacity)
 {
     return builder_compose(builder, source, scratch, scratch_capacity, 2U);
 }
 
-hps_string_status hps_string_builder_append_line(hps_string_builder *builder, const hps_string_view source,
-                                                 char *scratch, const size_t scratch_capacity)
+int32_t hps_string_builder_append_line(hps_string_builder *builder, const hps_string_view source,
+                                       char *scratch, const size_t scratch_capacity)
 {
     return builder_compose(builder, source, scratch, scratch_capacity, 3U);
 }

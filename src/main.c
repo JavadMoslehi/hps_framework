@@ -1,4 +1,5 @@
 #include "hps/memory/pool.h"
+#include <stdint.h>
 
 /**
  * @file src/main.c
@@ -8,7 +9,7 @@
 /* Hosted entry-point exception: HPS-C-005. One context, no retries or I/O. */
 int main(void)
 {
-    hps_pool_status status = hps_pool_init();
+    int32_t status = hps_pool_init();
     if (status == HPS_POOL_OK) {
         uint8_t *bytes = hps_calloc(16U, sizeof(uint8_t));
         status = hps_pool_last_status();

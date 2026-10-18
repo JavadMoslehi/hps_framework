@@ -12,10 +12,10 @@ is promised by portable C; confirm sections and budget in the target linker map.
 #include "hps/memory/pool.h"
 
 /* Call hps_pool_init() once during exclusive startup first. */
-hps_pool_status buffer_example(void)
+int32_t buffer_example(void)
 {
     uint8_t *buffer = hps_calloc(16U, sizeof(uint8_t));
-    hps_pool_status status = hps_pool_last_status();
+    int32_t status = hps_pool_last_status();
     if (buffer != NULL) {
         buffer[0] = 42U;
         uint8_t *resized = hps_realloc(buffer, 64U);
@@ -34,13 +34,13 @@ hps_pool_status buffer_example(void)
 
 | Function | Signature and behavior |
 | --- | --- |
-| hps_pool_init | hps_pool_status (void); initialize once, reject later initialization |
+| hps_pool_init | int32_t (void); initialize once, reject later initialization |
 | hps_malloc | void * (size_t); one block for 1..128 bytes; NULL on failure |
 | hps_free | void (void *); NULL no-op; validate address and allocated state before insertion |
 | hps_realloc | void * (void *, size_t); NULL input allocates; live input and zero size frees; otherwise keep same block for sizes <=128; failure preserves old allocation |
 | hps_calloc | void * (size_t, size_t); nonzero factors, checked product <=128; zero exactly the requested bytes |
-| hps_pool_last_status | hps_pool_status (void); latest mutation result; read does not change it |
-| hps_pool_get_stats | hps_pool_status (hps_pool_stats *); report block size, capacity, available and allocated |
+| hps_pool_last_status | int32_t (void); latest mutation result; read does not change it |
+| hps_pool_get_stats | int32_t (hps_pool_stats *); report block size, capacity, available and allocated |
 
 The four allocation signatures match the C function forms. Symbols remain HPS
 namespaced: no standard-library interposition or allocation macro redefinition.
@@ -48,26 +48,26 @@ Zero-sized malloc/calloc returns NULL with INVALID_ARGUMENT. realloc(NULL, 0)
 follows that policy; realloc(live, 0) releases successfully. These are documented
 pool choices, not a promise of all zero-size behaviors across libc implementations.
 
-`hps_pool_status` is a semantic alias of `hps_status_t`, the shared int64_t status
-type from `hps/status.h`. Memory owns module ID one. Status names retain their
-module meaning and can be passed directly to `hps_status_module` and
-`hps_status_string`; returned diagnostic strings are immutable. See
-[the shared status contract](status.md).
+The result-returning pool APIs use `int32_t` directly from `<stdint.h>`. Zero
+means success; local negative values distinguish the errors below. Constants in
+`hps/memory/pool.h` are typed as `int32_t`. Codes belong to this API and may overlap
+codes from other APIs; compare the named pool constants. No shared result typedef,
+module registry or diagnostic-string lookup is required.
 
 | Status | Value |
 | --- | --- |
 | HPS_POOL_OK | 0 |
-| HPS_POOL_INVALID_ARGUMENT | -65537 |
-| HPS_POOL_EXHAUSTED | -65538 |
-| HPS_POOL_INVALID_POINTER | -65539 |
-| HPS_POOL_DOUBLE_FREE | -65540 |
-| HPS_POOL_NOT_INITIALIZED | -65541 |
-| HPS_POOL_ALREADY_INITIALIZED | -65542 |
-| HPS_POOL_CORRUPT | -65543 |
+| HPS_POOL_INVALID_ARGUMENT | -1 |
+| HPS_POOL_EXHAUSTED | -2 |
+| HPS_POOL_INVALID_POINTER | -3 |
+| HPS_POOL_DOUBLE_FREE | -4 |
+| HPS_POOL_NOT_INITIALIZED | -5 |
+| HPS_POOL_ALREADY_INITIALIZED | -6 |
+| HPS_POOL_CORRUPT | -7 |
 
-The memory target (`HPS::memory` in CMake, `hps-memory` in Meson) carries its status
-library dependency. Diagnostic lookup has no dependency on live pool state and
-does not alter `hps_pool_last_status`.
+The memory target (`HPS::memory` in CMake, `hps-memory` in Meson) has no shared
+result-library dependency. `hps_pool_last_status` retains its read-only,
+single-context behavior; `hps_pool_get_stats` does not alter the stored result.
 
 This is byte-buffer storage, not a drop-in general typed-object allocator. Arrays
 are declared uint8_t objects; use the returned addresses as uint8_t buffers. Do not
@@ -109,10 +109,10 @@ Do not label the lookup search-free or scalable O(1). Fixed limits bound executi
 but are not measured latency/WCET evidence. The block count and size are fixed API
 constants, not silently differing per-file configurations. Private storage budget
 is 32*sizeof(private block), including pointer/flag/padding overhead, plus a head
-pointer, size_t counter, uint8_t flag and int64_t status; verify actual ABI sizes,
+pointer, size_t counter, uint8_t flag and int32_t result; verify actual ABI sizes,
 stack and linker layout on a selected target. Payload budget alone is 4096 bytes.
-The last-status object now has int64_t representation; include that widened
-storage and the separate immutable diagnostic registry in target budget evidence.
+The last-result object uses `int32_t`; no shared diagnostic registry is linked.
+Actual total storage, padding and stack still require target evidence.
 
 ## Migration and evidence
 
@@ -121,25 +121,27 @@ Replace acquire/resolve/release with the four functions above; callers no longer
 supply metadata or payload arrays. Generation retirement and post-reuse stale-handle
 rejection no longer exist. This is an intentional API/ABI break at development 0.1.0.
 
-The current shared-status change separately widens `hps_pool_status` from uint8_t
-to int64_t and replaces positive errors 1..7 with -65537..-65543. Function names,
-allocation signatures, pool capacity, ownership and error priority are unchanged.
-The `hps_pool_stats` layout is unchanged because it has no status field. Rebuild
-all status-returning callers, callbacks and bindings with the matching library;
-update persisted numeric assumptions and never narrow an error to uint8_t. Old
-binaries cannot be mixed with the new headers/library. See
-[the shared-status change record](../../governance/reviews/status-2026-10-11.md).
+The shared result abstraction has now been removed at the user's request.
+Replace the former pool result alias in callers with direct `int32_t`. The
+previous `int64_t` return/storage representation and global codes -65537..-65543
+change to `int32_t` and local codes -1..-7. Function names, allocation signatures,
+pool capacity, ownership, error priority and failure preservation are unchanged.
+The `hps_pool_stats` layout is unchanged because it has no result field. Rebuild
+all callers, callbacks and bindings with the matching library; update persisted
+numeric assumptions and keep error results in `int32_t`. Old binaries cannot be
+mixed with the new headers/library. See the
+[result-removal review](../../governance/reviews/status-removal-2026-10-18.md)
+for policy/MISRA mapping and verification scope.
 
-Tests cover signatures, pre-init use, reinit rejection, zero/oversize,
-calloc product overflow and clearing, realloc preservation, exhaustion/recovery,
-foreign/interior addresses and immediate double free. The current shared host
-suite passed with GCC and Clang; commands and evidence scope are in the
-[string review](../../governance/reviews/string-2026-10-13.md). Earlier allocator
-test and review results do not validate this replacement. See
-[source review](misra-review.md)
-and [pointer-pool change record](../../governance/reviews/pointer-pool-2026-10-11.md).
-Those records remain evidence for their respective earlier snapshots; the shared
-status representation still requires qualified target ABI and resource evidence.
+Tests cover direct result-returning signatures and local codes, pre-init use,
+reinit rejection, zero/oversize requests, calloc product overflow and clearing,
+realloc preservation, exhaustion/recovery, foreign/interior addresses and
+immediate double free. Current migration evidence is recorded in the review
+above. The [string review](../../governance/reviews/string-2026-10-13.md),
+[source review](misra-review.md) and
+[pointer-pool change record](../../governance/reviews/pointer-pool-2026-10-11.md)
+retain their historical scope. They do not verify this result migration or
+establish qualified target ABI and resource evidence.
 
 The public header has independent standard dependencies and guarded extern "C"
 for declarations. Qualified target C/C++ compilation/linking and ABI validation

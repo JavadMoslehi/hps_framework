@@ -554,12 +554,12 @@ uint8_t hps_string_policy_accept(const uint8_t policy, const uint8_t value)
     return result;
 }
 
-static hps_string_status policy_write(hps_string_buffer *buffer,
-                                      const hps_string_view source,
-                                      const uint8_t policy, const uint8_t append)
+static int32_t policy_write(hps_string_buffer *buffer,
+                            const hps_string_view source,
+                            const uint8_t policy, const uint8_t append)
 {
     size_t remaining = 0U;
-    hps_string_status status = hps_string_buffer_remaining(buffer, &remaining);
+    int32_t status = hps_string_buffer_remaining(buffer, &remaining);
     if (status == HPS_STRING_OK) {
         status = hps_string_check_view(source);
         if (status == HPS_STRING_OK) {
@@ -583,16 +583,16 @@ static hps_string_status policy_write(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_policy_assign(hps_string_buffer *buffer,
-                                           const hps_string_view source,
-                                           const uint8_t policy)
+int32_t hps_string_policy_assign(hps_string_buffer *buffer,
+                                 const hps_string_view source,
+                                 const uint8_t policy)
 {
     return policy_write(buffer, source, policy, 0U);
 }
 
-hps_string_status hps_string_policy_append(hps_string_buffer *buffer,
-                                           const hps_string_view source,
-                                           const uint8_t policy)
+int32_t hps_string_policy_append(hps_string_buffer *buffer,
+                                 const hps_string_view source,
+                                 const uint8_t policy)
 {
     return policy_write(buffer, source, policy, 1U);
 }

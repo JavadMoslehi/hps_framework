@@ -44,8 +44,12 @@ The [C-string contract](../architecture/cstr.md) lists the resulting headers.
 
 Unbounded strlen/strcmp, pointer-only inputs, unsafe vsprintf and copy truncation
 are replaced by real capacities, checked arithmetic and complete writes.
-Framework errors share int64_t string statuses; numeric predicates use uint8_t,
-comparison uses int32_t, and indexes use size_t/NPOS. Scalar char mutation wrappers
+Text operations now return `int32_t` directly with local `HPS_STRING_*` errors
+(zero success, negative errors); Cstr and validation reuse the string error domain.
+The [2026-10-18 review](../../governance/reviews/status-removal-2026-10-18.md)
+records removal of the earlier shared status ABI, numeric-code mappings and
+consumer migration. Numeric predicates use uint8_t, comparison uses int32_t, and
+indexes use size_t/NPOS. Scalar char mutation wrappers
 use counted one-character views or explicitly bounded ASCII-octet values.
 All failure paths preserve destination, descriptor and scalar outputs. Scratch
 supplied for transactional edits/formatting is disjoint and unchanged on failure.
@@ -93,13 +97,15 @@ traits generator's behavior stays unchanged.
 
 ## Verification and continuation
 
-HPS tests cover 15 callable suites in one runner, all build manifests, C89 span
+The 2026-10-13 migration tests covered 15 callable suites in one runner, all build manifests, C89 span
 construction, direct string-key switch, numerical limits, exact bounded inputs,
 failure preservation, overlap, splitting, JSON and 15,104 policy membership cases
 from a restricted AST interpretation of the read-only legacy expressions. This
 fixture checks migration parity, not independent proof of the original policy.
-Current compiler commands/results, provenance rechecks and proposed policy
+Historical compiler commands/results, provenance rechecks and proposed policy
 dispositions are in [the review](../../governance/reviews/csep-text-2026-10-13.md).
-The older string review is a historical foundation snapshot, not current evidence
-for these expanded files. Keep this mapping, the manifest and original packages
+The shared status suite is removed in the subsequent 2026-10-18 change; its
+review records current checks for the remaining suites and changed ABI. The older
+string review is a historical foundation snapshot, not current evidence for
+these expanded files. Keep this mapping, the manifest and original packages
 available when continuing on another machine.

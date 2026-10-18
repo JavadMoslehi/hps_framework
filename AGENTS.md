@@ -16,10 +16,11 @@ repository. User task constraints on execution and scope remain authoritative.
 - Keep names, validation, mutation order and purpose comments easy to review.
   Factor avoidable duplicate logic only when its contracts and resource bounds
   match; record justified specialization/repetition under HPS-C-017/HPS-C-018.
-- Framework/module statuses use hps_status_t from hps/status.h (int64_t), with
-  registered module IDs, negative typed error constants and immutable bounded
-  diagnostic strings. Module aliases are allowed; flags remain uint8_t. Follow
-  HPS-C-004/HPS-C-019 and document status ABI changes.
+- APIs use ordinary types suited to their result. Error-returning module APIs use
+  int32_t directly from stdint.h, with zero success and module-local negative typed
+  constants; flags remain uint8_t. No shared status typedef, module-ID registry or
+  diagnostic lookup dependency. Follow HPS-C-004/HPS-C-019 and document API/ABI
+  and numeric-code changes.
 - The static pool is single-context. Do not introduce pthread, atomics, locks or a
   thread-safe claim unless the task explicitly requests a separate reviewed layer.
 - Map changes to policy IDs and relevant MISRA rows. Keep unverified results,

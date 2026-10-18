@@ -5,19 +5,19 @@
  * @brief Checked construction, slicing, byte reads and equality of borrowed bytes.
  */
 
-static hps_byte_status view_check(const hps_byte_view view)
+static int32_t view_check(const hps_byte_view view)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if ((view.data != NULL) || (view.length == 0U)) {
         status = HPS_BYTE_OK;
     }
     return status;
 }
 
-hps_byte_status hps_byte_view_init(hps_byte_view *result,
-                                   const uint8_t *data, const size_t length)
+int32_t hps_byte_view_init(hps_byte_view *result,
+                           const uint8_t *data, const size_t length)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if ((result != NULL) && ((data != NULL) || (length == 0U))) {
         result->data = (length == 0U) ? NULL : data;
         result->length = length;
@@ -26,10 +26,10 @@ hps_byte_status hps_byte_view_init(hps_byte_view *result,
     return status;
 }
 
-hps_byte_status hps_byte_view_slice(const hps_byte_view view, const size_t offset,
-                                    const size_t length, hps_byte_view *result)
+int32_t hps_byte_view_slice(const hps_byte_view view, const size_t offset,
+                            const size_t length, hps_byte_view *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = view_check(view);
         if (status == HPS_BYTE_OK) {
@@ -46,10 +46,10 @@ hps_byte_status hps_byte_view_slice(const hps_byte_view view, const size_t offse
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u8(const hps_byte_view view, const size_t index,
-                                    uint8_t *result)
+int32_t hps_byte_view_read_u8(const hps_byte_view view, const size_t index,
+                              uint8_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = view_check(view);
         if (status == HPS_BYTE_OK) {
@@ -63,10 +63,10 @@ hps_byte_status hps_byte_view_read_u8(const hps_byte_view view, const size_t ind
     return status;
 }
 
-hps_byte_status hps_byte_view_equal(const hps_byte_view left,
-                                    const hps_byte_view right, uint8_t *result)
+int32_t hps_byte_view_equal(const hps_byte_view left,
+                            const hps_byte_view right, uint8_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = view_check(left);
         if (status == HPS_BYTE_OK) {

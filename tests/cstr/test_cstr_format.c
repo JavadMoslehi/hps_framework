@@ -12,7 +12,7 @@ static void test_numeric_boundaries(void)
 {
     char storage[80] = "keep";
     hps_string_buffer buffer = {storage, 4U, sizeof(storage)};
-    hps_string_status status = hps_cstr_render_decimal(&buffer, INT64_MIN, 0U);
+    int32_t status = hps_cstr_render_decimal(&buffer, INT64_MIN, 0U);
     assert(status == HPS_STRING_OK && strcmp(storage, "-9223372036854775808") == 0);
     status = hps_cstr_render_decimal(&buffer, INT64_MAX, 18U);
     assert(status == HPS_STRING_OK && strcmp(storage, "9.223372036854775807") == 0);
@@ -48,7 +48,7 @@ static void test_grammar_and_aliasing(void)
         {HPS_CSTR_ARG_DECIMAL, {NULL, 0U}, -INT64_C(5), UINT64_C(0), 0U, 2U}
     };
     const char *pattern = "%s%c %lld %llu %x %X %b %f %%";
-    hps_string_status status = hps_cstr_format(&buffer, scratch, sizeof(scratch),
+    int32_t status = hps_cstr_format(&buffer, scratch, sizeof(scratch),
         pattern, strlen(pattern) + 1U, arguments, sizeof(arguments) / sizeof(arguments[0]));
     assert(status == HPS_STRING_OK);
     assert(strcmp(storage, "hello! -9223372036854775808 18446744073709551615 ff FF true -0.05 %") == 0);
@@ -71,14 +71,14 @@ static void test_grammar_and_aliasing(void)
 static void assert_bad_format(hps_string_buffer *buffer, char *scratch,
                               const char *pattern, const size_t capacity,
                               const hps_cstr_format_arg *args, const size_t count,
-                              const hps_string_status expected)
+                              const int32_t expected)
 {
     char destination_before[16];
     char scratch_before[16];
     const size_t length_before = buffer->length;
     (void)memcpy(destination_before, buffer->data, 16U);
     (void)memcpy(scratch_before, scratch, 16U);
-    const hps_string_status status = hps_cstr_format(buffer, scratch, 16U,
+    const int32_t status = hps_cstr_format(buffer, scratch, 16U,
                                                    pattern, capacity, args, count);
     assert(status == expected && buffer->length == length_before);
     assert(memcmp(destination_before, buffer->data, 16U) == 0);
@@ -120,7 +120,7 @@ static void test_failures_and_fit(void)
     argument.scale = 19U;
     assert_bad_format(&buffer, scratch, "%f", 3U, &argument, 1U, HPS_STRING_INVALID_ARGUMENT);
     assert_bad_format(&buffer, scratch, "1234567890123456", 17U, NULL, 0U, HPS_STRING_NO_SPACE);
-    hps_string_status status = hps_cstr_format(&buffer, scratch, 2U, "abc", 4U, NULL, 0U);
+    int32_t status = hps_cstr_format(&buffer, scratch, 2U, "abc", 4U, NULL, 0U);
     assert(status == HPS_STRING_NO_SPACE && strcmp(storage, "keep") == 0 && strcmp(scratch, "scratch") == 0);
     status = hps_cstr_format(&buffer, NULL, 1U, "x", 2U, NULL, 0U);
     assert(status == HPS_STRING_INVALID_ARGUMENT);

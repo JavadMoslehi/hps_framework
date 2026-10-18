@@ -7,6 +7,7 @@
  */
 
 #include <stddef.h>
+#include <stdint.h>
 #include "hps/base/attributes.h"
 #include "hps/string/buffer.h"
 
@@ -24,12 +25,12 @@
     typedef size_t name_##_capacity_positive[((capacity_) > 0U) ? 1 : -1]; \
     static HPS_INLINE size_t name_##_capacity(void) \
     { return (size_t)(capacity_); } \
-    static HPS_INLINE hps_string_status name_##_bind(name_##_t *storage_, hps_string_buffer *buffer_) \
+    static HPS_INLINE int32_t name_##_bind(name_##_t *storage_, hps_string_buffer *buffer_) \
     { \
         return (storage_ == NULL) ? HPS_STRING_INVALID_ARGUMENT : \
             hps_string_buffer_init(buffer_, storage_->data, sizeof(storage_->data)); \
     } \
-    static HPS_INLINE hps_string_status name_##_adopt(name_##_t *storage_, hps_string_buffer *buffer_) \
+    static HPS_INLINE int32_t name_##_adopt(name_##_t *storage_, hps_string_buffer *buffer_) \
     { \
         return (storage_ == NULL) ? HPS_STRING_INVALID_ARGUMENT : \
             hps_string_buffer_init_cstr(buffer_, storage_->data, sizeof(storage_->data)); \

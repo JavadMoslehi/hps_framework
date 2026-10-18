@@ -15,7 +15,7 @@
 static void test_integer_boundaries(void)
 {
     uint64_t unsigned_value = UINT64_C(71);
-    hps_string_status status = hps_cstr_parse_u64("18446744073709551615", 21U,
+    int32_t status = hps_cstr_parse_u64("18446744073709551615", 21U,
                                                 10U, &unsigned_value);
     assert(status == HPS_STRING_OK && unsigned_value == UINT64_MAX);
     status = hps_cstr_parse_u64("18446744073709551616", 21U, 10U,
@@ -114,7 +114,7 @@ static void test_byte_formats(void)
     for (uint8_t format = 0U; format < 7U; format += 1U) {
         (void)memset(output, '?', sizeof(output));
         const size_t length = strlen(expected[format]);
-        hps_string_status status = hps_cstr_encode_bytes(output, length + 1U,
+        int32_t status = hps_cstr_encode_bytes(output, length + 1U,
                                                         bytes, 4U, format);
         assert(status == HPS_STRING_OK && strcmp(output, expected[format]) == 0);
         assert(output[length + 1U] == '?');
@@ -128,7 +128,7 @@ static void test_byte_formats(void)
     }
     uint8_t decoded[8] = {0xAAU, 0xAAU, 0xAAU, 0xAAU, 0xAAU, 0xAAU, 0xAAU, 0xAAU};
     size_t written = 99U;
-    hps_string_status status = hps_cstr_decode_bytes(decoded, sizeof(decoded),
+    int32_t status = hps_cstr_decode_bytes(decoded, sizeof(decoded),
         expected[0], strlen(expected[0]) + 1U, HPS_CSTR_BYTES_HEX_COMPACT, &written);
     assert(status == HPS_STRING_OK && written == 4U);
     assert(memcmp(decoded, bytes, sizeof(bytes)) == 0 && decoded[4] == 0xAAU);
@@ -200,7 +200,7 @@ static void test_validation_and_tokens(void)
     const char *invalid[6] = {"102", "-1", "8", "G", "A1", "a_"};
     for (uint8_t character_class = 0U; character_class < 6U; character_class += 1U) {
         uint8_t result = 9U;
-        hps_string_status status = hps_cstr_validate(valid[character_class],
+        int32_t status = hps_cstr_validate(valid[character_class],
             strlen(valid[character_class]) + 1U, character_class, &result);
         assert(status == HPS_STRING_OK && result == 1U);
         status = hps_cstr_validate(invalid[character_class],
@@ -210,7 +210,7 @@ static void test_validation_and_tokens(void)
         assert(status == HPS_STRING_OK && result == 0U);
     }
     uint8_t flag = 7U;
-    hps_string_status status = hps_cstr_validate("1", 2U, 6U, &flag);
+    int32_t status = hps_cstr_validate("1", 2U, 6U, &flag);
     assert(status == HPS_STRING_INVALID_ARGUMENT && flag == 7U);
     const char unterminated[1] = {'1'};
     status = hps_cstr_validate(unterminated, 1U, HPS_CSTR_CLASS_BINARY, &flag);
@@ -269,7 +269,7 @@ static void test_validation_and_tokens(void)
 static void test_group_paths_and_dumps(void)
 {
     char output[96] = "saved";
-    hps_string_status status = hps_cstr_group(output, sizeof(output),
+    int32_t status = hps_cstr_group(output, sizeof(output),
         "1234567", 8U, 3U, ",", 2U);
     assert(status == HPS_STRING_OK && strcmp(output, "1,234,567") == 0);
     status = hps_cstr_group(output, sizeof(output), "123456", 7U, 3U, "::", 3U);

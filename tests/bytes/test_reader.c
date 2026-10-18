@@ -46,7 +46,7 @@ static void test_reader_sequence(void)
     }
     const hps_byte_view view = {data, 33U};
     hps_byte_reader reader = {{NULL, 0U}, 0U};
-    hps_byte_status status = hps_byte_reader_init(&reader, view);
+    int32_t status = hps_byte_reader_init(&reader, view);
     assert(status == HPS_BYTE_OK);
     assert(reader.view.data == data && reader.view.length == 33U);
     assert(reader.position == 0U);
@@ -119,7 +119,7 @@ static void test_reader_independent_cursors(void)
     const hps_byte_view view = {data, 4U};
     hps_byte_reader first = {{NULL, 0U}, 0U};
     hps_byte_reader second = {{NULL, 0U}, 0U};
-    hps_byte_status status = hps_byte_reader_init(&first, view);
+    int32_t status = hps_byte_reader_init(&first, view);
     assert(status == HPS_BYTE_OK);
     status = hps_byte_reader_init(&second, view);
     assert(status == HPS_BYTE_OK);
@@ -149,7 +149,7 @@ static void test_reader_initialization_and_empty(void)
     hps_byte_reader reader = {view, 2U};
     const hps_byte_reader original = reader;
     const hps_byte_view malformed = {NULL, SIZE_MAX};
-    hps_byte_status status = hps_byte_reader_init(&reader, malformed);
+    int32_t status = hps_byte_reader_init(&reader, malformed);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
     assert_reader_snapshot(&reader, original);
     status = hps_byte_reader_init(NULL, view);
@@ -218,7 +218,7 @@ static void test_reader_arguments_and_state(void)
     size_t remaining = SIZE_MAX;
     uint8_t byte = 0xA5U;
     hps_byte_view taken = {data, 1U};
-    hps_byte_status status = hps_byte_reader_remaining(NULL, &remaining);
+    int32_t status = hps_byte_reader_remaining(NULL, &remaining);
     assert(status == HPS_BYTE_INVALID_ARGUMENT && remaining == SIZE_MAX);
     status = hps_byte_reader_remaining(&reader, NULL);
     assert(status == HPS_BYTE_INVALID_ARGUMENT);
@@ -296,7 +296,7 @@ static void test_reader_size_bounds(void)
      * pointer or access bytes. This does not assert a real SIZE_MAX-byte array. */
     hps_byte_reader reader = {{data, SIZE_MAX}, SIZE_MAX - 1U};
     size_t remaining = SIZE_MAX;
-    hps_byte_status status = hps_byte_reader_remaining(&reader, &remaining);
+    int32_t status = hps_byte_reader_remaining(&reader, &remaining);
     assert(status == HPS_BYTE_OK && remaining == 1U);
     const hps_byte_reader before = reader;
     status = hps_byte_reader_skip(&reader, SIZE_MAX);
@@ -325,7 +325,7 @@ static void test_reader_size_bounds(void)
 /* Each helper receives one explicit width/order fixture with a prefix and suffix.
  * All wire copying/indexing is bounded by ten bytes; effects stay outside assert. */
 static void test_reader_u16(
-    hps_byte_status (*read)(hps_byte_reader *reader, uint16_t *result),
+    int32_t (*read)(hps_byte_reader *reader, uint16_t *result),
     const uint8_t *wire, uint16_t expected)
 {
     uint8_t data[4];
@@ -334,7 +334,7 @@ static void test_reader_u16(
     }
     hps_byte_reader reader = {{data, 4U}, 1U};
     uint16_t value = UINT16_C(0);
-    hps_byte_status status = read(&reader, &value);
+    int32_t status = read(&reader, &value);
     assert(status == HPS_BYTE_OK && value == expected && reader.position == 3U);
     assert(reader.view.data == data && reader.view.length == 4U);
     reader.view.length = 3U;
@@ -393,7 +393,7 @@ static void test_reader_u16(
 }
 
 static void test_reader_u32(
-    hps_byte_status (*read)(hps_byte_reader *reader, uint32_t *result),
+    int32_t (*read)(hps_byte_reader *reader, uint32_t *result),
     const uint8_t *wire, uint32_t expected)
 {
     uint8_t data[6];
@@ -402,7 +402,7 @@ static void test_reader_u32(
     }
     hps_byte_reader reader = {{data, 6U}, 1U};
     uint32_t value = UINT32_C(0);
-    hps_byte_status status = read(&reader, &value);
+    int32_t status = read(&reader, &value);
     assert(status == HPS_BYTE_OK && value == expected && reader.position == 5U);
     assert(reader.view.data == data && reader.view.length == 6U);
     reader.view.length = 5U;
@@ -461,7 +461,7 @@ static void test_reader_u32(
 }
 
 static void test_reader_u64(
-    hps_byte_status (*read)(hps_byte_reader *reader, uint64_t *result),
+    int32_t (*read)(hps_byte_reader *reader, uint64_t *result),
     const uint8_t *wire, uint64_t expected)
 {
     uint8_t data[10];
@@ -470,7 +470,7 @@ static void test_reader_u64(
     }
     hps_byte_reader reader = {{data, 10U}, 1U};
     uint64_t value = UINT64_C(0);
-    hps_byte_status status = read(&reader, &value);
+    int32_t status = read(&reader, &value);
     assert(status == HPS_BYTE_OK && value == expected && reader.position == 9U);
     assert(reader.view.data == data && reader.view.length == 10U);
     reader.view.length = 9U;

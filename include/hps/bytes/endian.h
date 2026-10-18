@@ -38,18 +38,18 @@ typedef enum {
  * O(1), bounded by eight byte reads; no explicit libc call in the read path.
  * Compiler-generated runtime helpers and actual stack need target qualification.
  */
-hps_byte_status hps_byte_view_read_u16_le(hps_byte_view view, size_t offset,
-                                        uint16_t *result);
-hps_byte_status hps_byte_view_read_u16_be(hps_byte_view view, size_t offset,
-                                        uint16_t *result);
-hps_byte_status hps_byte_view_read_u32_le(hps_byte_view view, size_t offset,
-                                        uint32_t *result);
-hps_byte_status hps_byte_view_read_u32_be(hps_byte_view view, size_t offset,
-                                        uint32_t *result);
-hps_byte_status hps_byte_view_read_u64_le(hps_byte_view view, size_t offset,
-                                        uint64_t *result);
-hps_byte_status hps_byte_view_read_u64_be(hps_byte_view view, size_t offset,
-                                        uint64_t *result);
+int32_t hps_byte_view_read_u16_le(hps_byte_view view, size_t offset,
+                                  uint16_t *result);
+int32_t hps_byte_view_read_u16_be(hps_byte_view view, size_t offset,
+                                  uint16_t *result);
+int32_t hps_byte_view_read_u32_le(hps_byte_view view, size_t offset,
+                                  uint32_t *result);
+int32_t hps_byte_view_read_u32_be(hps_byte_view view, size_t offset,
+                                  uint32_t *result);
+int32_t hps_byte_view_read_u64_le(hps_byte_view view, size_t offset,
+                                  uint64_t *result);
+int32_t hps_byte_view_read_u64_be(hps_byte_view view, size_t offset,
+                                  uint64_t *result);
 
 /* Appends exactly 2, 4 or 8 bytes to an initialized buffer; active prefix and
  * unused bytes after the field are preserved. NULL buffer => INVALID_ARGUMENT;
@@ -60,18 +60,18 @@ hps_byte_status hps_byte_view_read_u64_be(hps_byte_view view, size_t offset,
  * plus a local view and call state; actual stack/runtime helpers need target
  * qualification. The encoded local array does not escape the synchronous call.
  */
-hps_byte_status hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
-                                            uint16_t value);
-hps_byte_status hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
-                                            uint16_t value);
-hps_byte_status hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
-                                            uint32_t value);
-hps_byte_status hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
-                                            uint32_t value);
-hps_byte_status hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
-                                            uint64_t value);
-hps_byte_status hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
-                                            uint64_t value);
+int32_t hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
+                                      uint16_t value);
+int32_t hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
+                                      uint16_t value);
+int32_t hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
+                                      uint32_t value);
+int32_t hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
+                                      uint32_t value);
+int32_t hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
+                                      uint64_t value);
+int32_t hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
+                                      uint64_t value);
 
 #ifdef __cplusplus
 } /* extern "C" */

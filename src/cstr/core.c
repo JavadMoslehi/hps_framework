@@ -6,15 +6,15 @@
  * @brief Capacity-checked C-string algorithms over caller-owned buffers.
  */
 
-static hps_string_status check_view(hps_string_view view)
+static int32_t check_view(hps_string_view view)
 {
     hps_string_view checked = {NULL, 0U};
     return hps_string_view_init(&checked, view.data, view.length);
 }
 
-static hps_string_status check_pattern(hps_string_view pattern)
+static int32_t check_pattern(hps_string_view pattern)
 {
-    hps_string_status status = check_view(pattern);
+    int32_t status = check_view(pattern);
     if (status == HPS_STRING_OK) {
         size_t index = 0U;
         while ((index < pattern.length) && (status == HPS_STRING_OK)) {
@@ -27,10 +27,10 @@ static hps_string_status check_pattern(hps_string_view pattern)
     return status;
 }
 
-hps_string_status hps_cstr_length(const char *data, const size_t capacity,
-                                  size_t *result)
+int32_t hps_cstr_length(const char *data, const size_t capacity,
+                        size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view view = {NULL, 0U};
         status = hps_string_view_init_cstr(&view, data, capacity);
@@ -41,10 +41,10 @@ hps_string_status hps_cstr_length(const char *data, const size_t capacity,
     return status;
 }
 
-hps_string_status hps_cstr_is_empty(const char *data, const size_t capacity,
-                                    uint8_t *result)
+int32_t hps_cstr_is_empty(const char *data, const size_t capacity,
+                          uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t length = 0U;
         status = hps_cstr_length(data, capacity, &length);
@@ -55,10 +55,10 @@ hps_string_status hps_cstr_is_empty(const char *data, const size_t capacity,
     return status;
 }
 
-hps_string_status hps_cstr_is_terminated(const char *data,
-                                         const size_t capacity, uint8_t *result)
+int32_t hps_cstr_is_terminated(const char *data,
+                               const size_t capacity, uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t length = 0U;
         status = hps_cstr_length(data, capacity, &length);
@@ -70,12 +70,12 @@ hps_string_status hps_cstr_is_terminated(const char *data,
     return status;
 }
 
-hps_string_status hps_cstr_has_capacity_for(const char *data,
-                                            const size_t capacity,
-                                            const size_t additional,
-                                            uint8_t *result)
+int32_t hps_cstr_has_capacity_for(const char *data,
+                                  const size_t capacity,
+                                  const size_t additional,
+                                  uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t length = 0U;
         status = hps_cstr_length(data, capacity, &length);
@@ -86,11 +86,11 @@ hps_string_status hps_cstr_has_capacity_for(const char *data,
     return status;
 }
 
-hps_string_status hps_cstr_copy_length(const char *data, const size_t capacity,
-                                       const size_t output_capacity,
-                                       size_t *result)
+int32_t hps_cstr_copy_length(const char *data, const size_t capacity,
+                             const size_t output_capacity,
+                             size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         size_t length = 0U;
         status = hps_cstr_length(data, capacity, &length);
@@ -103,11 +103,11 @@ hps_string_status hps_cstr_copy_length(const char *data, const size_t capacity,
     return status;
 }
 
-static hps_string_status clear_storage(hps_string_buffer *buffer,
-                                       const uint8_t tail_only)
+static int32_t clear_storage(hps_string_buffer *buffer,
+                             const uint8_t tail_only)
 {
     hps_string_view view = {NULL, 0U};
-    const hps_string_status status = hps_string_buffer_as_view(buffer, &view);
+    const int32_t status = hps_string_buffer_as_view(buffer, &view);
     if (status == HPS_STRING_OK) {
         const size_t start = (tail_only == 1U) ? view.length : 0U;
         (void)memset(&buffer->data[start], 0, buffer->capacity - start);
@@ -118,12 +118,12 @@ static hps_string_status clear_storage(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_clear(hps_string_buffer *buffer)
+int32_t hps_cstr_clear(hps_string_buffer *buffer)
 {
     return clear_storage(buffer, 0U);
 }
 
-hps_string_status hps_cstr_clear_tail(hps_string_buffer *buffer)
+int32_t hps_cstr_clear_tail(hps_string_buffer *buffer)
 {
     return clear_storage(buffer, 1U);
 }
@@ -151,12 +151,12 @@ static const char *case_character(const char *input, const uint8_t mode)
     return result;
 }
 
-hps_string_status hps_cstr_compare(const char *left, const size_t left_capacity,
-                                    const char *right, const size_t right_capacity,
-                                    const size_t limit, const uint8_t ignore_case,
-                                    int32_t *result)
+int32_t hps_cstr_compare(const char *left, const size_t left_capacity,
+                         const char *right, const size_t right_capacity,
+                         const size_t limit, const uint8_t ignore_case,
+                         int32_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (ignore_case <= 1U)) {
         hps_string_view lhs = {NULL, 0U};
         hps_string_view rhs = {NULL, 0U};
@@ -205,14 +205,14 @@ hps_string_status hps_cstr_compare(const char *left, const size_t left_capacity,
     return status;
 }
 
-hps_string_status hps_cstr_copy_range(hps_string_buffer *output,
-                                       const char *input,
-                                       const size_t input_capacity,
-                                       const size_t offset, const size_t count,
-                                       const uint8_t mode)
+int32_t hps_cstr_copy_range(hps_string_buffer *output,
+                            const char *input,
+                            const size_t input_capacity,
+                            const size_t offset, const size_t count,
+                            const uint8_t mode)
 {
     hps_string_view source = {NULL, 0U};
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && (mode <= HPS_CSTR_UPPER_CASE)) {
         status = hps_string_view_init_cstr(&source, input, input_capacity);
         if (status == HPS_STRING_OK) {
@@ -244,14 +244,14 @@ static uint8_t set_contains(hps_string_view set, const char *character)
 {
     const hps_string_view needle = {character, 1U};
     size_t index = HPS_STRING_NPOS;
-    const hps_string_status status = hps_string_view_find(set, needle, 0U, &index);
+    const int32_t status = hps_string_view_find(set, needle, 0U, &index);
     return (uint8_t)((status == HPS_STRING_OK) && (index != HPS_STRING_NPOS));
 }
 
-hps_string_status hps_cstr_consists_of(const char *data, const size_t capacity,
-                                       hps_string_view allowed, uint8_t *result)
+int32_t hps_cstr_consists_of(const char *data, const size_t capacity,
+                             hps_string_view allowed, uint8_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view input = {NULL, 0U};
         status = hps_string_view_init_cstr(&input, data, capacity);
@@ -272,13 +272,13 @@ hps_string_status hps_cstr_consists_of(const char *data, const size_t capacity,
     return status;
 }
 
-static hps_string_status search_string(const char *data, const size_t capacity,
-                                        const char *needle,
-                                        const size_t needle_capacity,
-                                        const size_t position,
-                                        const uint8_t reverse, size_t *result)
+static int32_t search_string(const char *data, const size_t capacity,
+                             const char *needle,
+                             const size_t needle_capacity,
+                             const size_t position,
+                             const uint8_t reverse, size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view input = {NULL, 0U};
         hps_string_view pattern = {NULL, 0U};
@@ -295,27 +295,27 @@ static hps_string_status search_string(const char *data, const size_t capacity,
     return status;
 }
 
-hps_string_status hps_cstr_find(const char *data, const size_t capacity,
-                                const char *needle, const size_t needle_capacity,
-                                const size_t offset, size_t *result)
+int32_t hps_cstr_find(const char *data, const size_t capacity,
+                      const char *needle, const size_t needle_capacity,
+                      const size_t offset, size_t *result)
 {
     return search_string(data, capacity, needle, needle_capacity, offset, 0U, result);
 }
 
-hps_string_status hps_cstr_rfind(const char *data, const size_t capacity,
-                                 const char *needle, const size_t needle_capacity,
-                                 const size_t position, size_t *result)
+int32_t hps_cstr_rfind(const char *data, const size_t capacity,
+                       const char *needle, const size_t needle_capacity,
+                       const size_t position, size_t *result)
 {
     return search_string(data, capacity, needle, needle_capacity, position, 1U, result);
 }
 
-static hps_string_status search_character(const char *data,
-                                           const size_t capacity,
-                                           hps_string_view character,
-                                           const size_t position,
-                                           const uint8_t reverse, size_t *result)
+static int32_t search_character(const char *data,
+                                const size_t capacity,
+                                hps_string_view character,
+                                const size_t position,
+                                const uint8_t reverse, size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (character.length == 1U)) {
         status = check_view(character);
         if (status == HPS_STRING_OK) {
@@ -331,25 +331,25 @@ static hps_string_status search_character(const char *data,
     return status;
 }
 
-hps_string_status hps_cstr_find_char(const char *data, const size_t capacity,
-                                     hps_string_view character,
-                                     const size_t offset, size_t *result)
+int32_t hps_cstr_find_char(const char *data, const size_t capacity,
+                           hps_string_view character,
+                           const size_t offset, size_t *result)
 {
     return search_character(data, capacity, character, offset, 0U, result);
 }
 
-hps_string_status hps_cstr_rfind_char(const char *data, const size_t capacity,
-                                      hps_string_view character,
-                                      const size_t position, size_t *result)
+int32_t hps_cstr_rfind_char(const char *data, const size_t capacity,
+                            hps_string_view character,
+                            const size_t position, size_t *result)
 {
     return search_character(data, capacity, character, position, 1U, result);
 }
 
-hps_string_status hps_cstr_reverse(hps_string_buffer *buffer, const size_t offset,
-                                   const size_t count)
+int32_t hps_cstr_reverse(hps_string_buffer *buffer, const size_t offset,
+                         const size_t count)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         if (offset > active.length) {
             status = HPS_STRING_OUT_OF_RANGE;
@@ -377,12 +377,12 @@ hps_string_status hps_cstr_reverse(hps_string_buffer *buffer, const size_t offse
     return status;
 }
 
-hps_string_status hps_cstr_replace_char(hps_string_buffer *buffer,
-                                        hps_string_view old_character,
-                                        hps_string_view new_character)
+int32_t hps_cstr_replace_char(hps_string_buffer *buffer,
+                              hps_string_view old_character,
+                              hps_string_view new_character)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         status = check_pattern(old_character);
         if (status == HPS_STRING_OK) {
@@ -407,11 +407,11 @@ hps_string_status hps_cstr_replace_char(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_filter(hps_string_buffer *buffer,
-                                  hps_string_view chars, const uint8_t mode)
+int32_t hps_cstr_filter(hps_string_buffer *buffer,
+                        hps_string_view chars, const uint8_t mode)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         status = check_view(chars);
         if ((status == HPS_STRING_OK) &&
@@ -444,13 +444,13 @@ hps_string_status hps_cstr_filter(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_remove_substring(hps_string_buffer *buffer,
-                                            const char *needle,
-                                            const size_t needle_capacity)
+int32_t hps_cstr_remove_substring(hps_string_buffer *buffer,
+                                  const char *needle,
+                                  const size_t needle_capacity)
 {
     hps_string_view active = {NULL, 0U};
     hps_string_view pattern = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         status = hps_string_view_init_cstr(&pattern, needle, needle_capacity);
     }
@@ -485,12 +485,12 @@ hps_string_status hps_cstr_remove_substring(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_trim(hps_string_buffer *buffer,
-                                hps_string_view left_chars,
-                                hps_string_view right_chars)
+int32_t hps_cstr_trim(hps_string_buffer *buffer,
+                      hps_string_view left_chars,
+                      hps_string_view right_chars)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         status = check_view(left_chars);
     }
@@ -516,12 +516,12 @@ hps_string_status hps_cstr_trim(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_trim_substrings(hps_string_buffer *buffer,
-                                           hps_string_view left_pattern,
-                                           hps_string_view right_pattern)
+int32_t hps_cstr_trim_substrings(hps_string_buffer *buffer,
+                                 hps_string_view left_pattern,
+                                 hps_string_view right_pattern)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     if (status == HPS_STRING_OK) {
         status = check_view(left_pattern);
     }
@@ -561,11 +561,11 @@ hps_string_status hps_cstr_trim_substrings(hps_string_buffer *buffer,
 
 /* Derive a repetition's byte count against remaining real storage. Zero-length
  * patterns do not evaluate count*length or enter a count-driven write loop. */
-static hps_string_status pattern_bytes(hps_string_view pattern,
-                                        const size_t count,
-                                        const size_t available, size_t *result)
+static int32_t pattern_bytes(hps_string_view pattern,
+                             const size_t count,
+                             const size_t available, size_t *result)
 {
-    hps_string_status status = check_pattern(pattern);
+    int32_t status = check_pattern(pattern);
     if (status == HPS_STRING_OK) {
         if (pattern.length == 0U) {
             *result = 0U;
@@ -593,14 +593,14 @@ static void write_pattern(char *output, hps_string_view pattern,
     }
 }
 
-hps_string_status hps_cstr_pad(hps_string_buffer *buffer,
-                               hps_string_view left_pattern,
-                               const size_t left_count,
-                               hps_string_view right_pattern,
-                               const size_t right_count)
+int32_t hps_cstr_pad(hps_string_buffer *buffer,
+                     hps_string_view left_pattern,
+                     const size_t left_count,
+                     hps_string_view right_pattern,
+                     const size_t right_count)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     size_t left_bytes = 0U;
     size_t right_bytes = 0U;
     if (status == HPS_STRING_OK) {
@@ -625,11 +625,11 @@ hps_string_status hps_cstr_pad(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_repeat(hps_string_buffer *buffer,
-                                  hps_string_view pattern, const size_t count)
+int32_t hps_cstr_repeat(hps_string_buffer *buffer,
+                        hps_string_view pattern, const size_t count)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = hps_string_buffer_as_view(buffer, &active);
+    int32_t status = hps_string_buffer_as_view(buffer, &active);
     size_t bytes = 0U;
     if (status == HPS_STRING_OK) {
         status = pattern_bytes(pattern, count, buffer->capacity - 1U, &bytes);
@@ -642,12 +642,12 @@ hps_string_status hps_cstr_repeat(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_cstr_pad_to(hps_string_buffer *buffer,
-                                  hps_string_view pattern, const size_t target,
-                                  const uint8_t left)
+int32_t hps_cstr_pad_to(hps_string_buffer *buffer,
+                        hps_string_view pattern, const size_t target,
+                        const uint8_t left)
 {
     hps_string_view active = {NULL, 0U};
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (left <= 1U) {
         status = hps_string_buffer_as_view(buffer, &active);
         if (status == HPS_STRING_OK) {

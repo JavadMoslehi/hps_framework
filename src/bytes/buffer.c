@@ -6,9 +6,9 @@
  * @brief Fixed-capacity byte operations; memmove handles overlapping payloads.
  */
 
-static hps_byte_status buffer_check(const hps_byte_buffer *buffer)
+static int32_t buffer_check(const hps_byte_buffer *buffer)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (buffer != NULL) {
         status = HPS_BYTE_INVALID_STATE;
         if ((buffer->length <= buffer->capacity) &&
@@ -28,10 +28,10 @@ static void buffer_copy(uint8_t *destination, const uint8_t *source,
     (void)memmove(destination, source, length);
 }
 
-hps_byte_status hps_byte_buffer_init(hps_byte_buffer *buffer,
-                                     uint8_t *storage, const size_t capacity)
+int32_t hps_byte_buffer_init(hps_byte_buffer *buffer,
+                             uint8_t *storage, const size_t capacity)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if ((buffer != NULL) && ((storage != NULL) || (capacity == 0U))) {
         buffer->data = storage;
         buffer->length = 0U;
@@ -41,10 +41,10 @@ hps_byte_status hps_byte_buffer_init(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_assign_bytes(hps_byte_buffer *buffer,
-                                            const hps_byte_view source)
+int32_t hps_byte_buffer_assign_bytes(hps_byte_buffer *buffer,
+                                     const hps_byte_view source)
 {
-    hps_byte_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
         if ((source.data == NULL) && (source.length != 0U)) {
             status = HPS_BYTE_INVALID_ARGUMENT;
@@ -60,10 +60,10 @@ hps_byte_status hps_byte_buffer_assign_bytes(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
-                                            const hps_byte_view source)
+int32_t hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
+                                     const hps_byte_view source)
 {
-    hps_byte_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
         if ((source.data == NULL) && (source.length != 0U)) {
             status = HPS_BYTE_INVALID_ARGUMENT;
@@ -80,10 +80,10 @@ hps_byte_status hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_append_u8(hps_byte_buffer *buffer,
-                                        const uint8_t value)
+int32_t hps_byte_buffer_append_u8(hps_byte_buffer *buffer,
+                                  const uint8_t value)
 {
-    hps_byte_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
         if (buffer->length == buffer->capacity) {
             status = HPS_BYTE_NO_SPACE;
@@ -95,10 +95,10 @@ hps_byte_status hps_byte_buffer_append_u8(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_truncate(hps_byte_buffer *buffer,
-                                         const size_t length)
+int32_t hps_byte_buffer_truncate(hps_byte_buffer *buffer,
+                                 const size_t length)
 {
-    hps_byte_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_BYTE_OK) {
         if (length > buffer->length) {
             status = HPS_BYTE_OUT_OF_RANGE;
@@ -109,15 +109,15 @@ hps_byte_status hps_byte_buffer_truncate(hps_byte_buffer *buffer,
     return status;
 }
 
-hps_byte_status hps_byte_buffer_clear(hps_byte_buffer *buffer)
+int32_t hps_byte_buffer_clear(hps_byte_buffer *buffer)
 {
     return hps_byte_buffer_truncate(buffer, 0U);
 }
 
-hps_byte_status hps_byte_buffer_as_view(const hps_byte_buffer *buffer,
-                                        hps_byte_view *result)
+int32_t hps_byte_buffer_as_view(const hps_byte_buffer *buffer,
+                                hps_byte_view *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = buffer_check(buffer);
         if (status == HPS_BYTE_OK) {

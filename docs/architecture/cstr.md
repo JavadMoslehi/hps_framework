@@ -1,7 +1,10 @@
 # Bounded C strings and text composition
 
 Include `hps/cstr.h`, link `HPS::cstr` (CMake) or `hps-cstr` (Meson).
-This layer builds on `HPS::string` and shares its registered status module 3.
+This layer builds on `HPS::string` and returns its local `int32_t` result codes:
+zero for success and `HPS_STRING_*` errors -1 through -5. It has no shared result
+registry dependency. The return representation and numeric error values change
+with the [string result migration](string.md); consumers must be rebuilt.
 Its 45 functions group the implemented CSEP C-string operations into four headers.
 
 | Header | Operations |
@@ -61,8 +64,11 @@ String keys for switch statements belong to `hps/enum/cstr.h`.
 
 [The complete legacy family/file mapping](../migration/csep-text.md) distinguishes
 adapted APIs, consolidated variants, removed unsafe/heap/hosted contracts and
-empty legacy placeholders. Current tests/evidence and the proposed character and
-native-enum policy dispositions are in the
-[migration review](../../governance/reviews/csep-text-2026-10-13.md).
+empty legacy placeholders. Current result-API tests, C/C++ interoperability checks
+and remaining limitations are recorded in the
+[result-API replacement review](../../governance/reviews/status-removal-2026-10-18.md).
+The earlier [migration review](../../governance/reviews/csep-text-2026-10-13.md)
+records historical implementation evidence and the proposed character and
+native-enum policy dispositions; it does not verify the current result ABI.
 Target ABI/resources/timing, whole-program analysis and policy acceptance remain
 unqualified. Algorithmic bounds are not measured performance or proven WCET.

@@ -8,9 +8,9 @@
  * @brief Bounded caller-owned C strings with checked overlap-safe copies.
  */
 
-static hps_string_status buffer_check(const hps_string_buffer *buffer)
+static int32_t buffer_check(const hps_string_buffer *buffer)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (buffer != NULL) {
         status = HPS_STRING_INVALID_STATE;
         if ((buffer->data != NULL) && (buffer->capacity > 0U) &&
@@ -31,11 +31,11 @@ static hps_string_status buffer_check(const hps_string_buffer *buffer)
 /* Assign and append have the same shape/space/NUL checks and copy contract.
  * Choose the write offset only after validating the initialized descriptor.
  * Caller-selected mode is private and always exactly zero or one. */
-static hps_string_status buffer_write(hps_string_buffer *buffer,
-                                       const hps_string_view source,
-                                       const uint8_t append)
+static int32_t buffer_write(hps_string_buffer *buffer,
+                            const hps_string_view source,
+                            const uint8_t append)
 {
-    hps_string_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_STRING_OK) {
         const size_t offset = (append == 1U) ? buffer->length : 0U;
         status = hps_string_check_view(source);
@@ -60,10 +60,10 @@ static hps_string_status buffer_write(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_init(hps_string_buffer *buffer,
-                                          char *storage, const size_t capacity)
+int32_t hps_string_buffer_init(hps_string_buffer *buffer,
+                               char *storage, const size_t capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((buffer != NULL) && (storage != NULL) && (capacity > 0U)) {
         storage[0] = '\0';
         buffer->data = storage;
@@ -74,11 +74,11 @@ hps_string_status hps_string_buffer_init(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_init_cstr(hps_string_buffer *buffer,
-                                               char *storage,
-                                               const size_t capacity)
+int32_t hps_string_buffer_init_cstr(hps_string_buffer *buffer,
+                                    char *storage,
+                                    const size_t capacity)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (buffer != NULL) {
         hps_string_view active = {NULL, 0U};
         status = hps_string_view_init_cstr(&active, storage, capacity);
@@ -91,23 +91,23 @@ hps_string_status hps_string_buffer_init_cstr(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_assign(hps_string_buffer *buffer,
-                                            const hps_string_view source)
+int32_t hps_string_buffer_assign(hps_string_buffer *buffer,
+                                 const hps_string_view source)
 {
     return buffer_write(buffer, source, 0U);
 }
 
-hps_string_status hps_string_buffer_append(hps_string_buffer *buffer,
-                                            const hps_string_view source)
+int32_t hps_string_buffer_append(hps_string_buffer *buffer,
+                                 const hps_string_view source)
 {
     return buffer_write(buffer, source, 1U);
 }
 
-hps_string_status hps_string_buffer_erase(hps_string_buffer *buffer,
-                                           const size_t offset,
-                                           const size_t count)
+int32_t hps_string_buffer_erase(hps_string_buffer *buffer,
+                                const size_t offset,
+                                const size_t count)
 {
-    hps_string_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_STRING_OK) {
         if (offset > buffer->length) {
             status = HPS_STRING_OUT_OF_RANGE;
@@ -128,10 +128,10 @@ hps_string_status hps_string_buffer_erase(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_truncate(hps_string_buffer *buffer,
-                                              const size_t length)
+int32_t hps_string_buffer_truncate(hps_string_buffer *buffer,
+                                   const size_t length)
 {
-    hps_string_status status = buffer_check(buffer);
+    int32_t status = buffer_check(buffer);
     if (status == HPS_STRING_OK) {
         if (length > buffer->length) {
             status = HPS_STRING_OUT_OF_RANGE;
@@ -143,15 +143,15 @@ hps_string_status hps_string_buffer_truncate(hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_clear(hps_string_buffer *buffer)
+int32_t hps_string_buffer_clear(hps_string_buffer *buffer)
 {
     return hps_string_buffer_truncate(buffer, 0U);
 }
 
-hps_string_status hps_string_buffer_as_view(const hps_string_buffer *buffer,
-                                             hps_string_view *result)
+int32_t hps_string_buffer_as_view(const hps_string_buffer *buffer,
+                                  hps_string_view *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = buffer_check(buffer);
         if (status == HPS_STRING_OK) {
@@ -162,10 +162,10 @@ hps_string_status hps_string_buffer_as_view(const hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_cstr(const hps_string_buffer *buffer,
-                                          const char **result)
+int32_t hps_string_buffer_cstr(const hps_string_buffer *buffer,
+                               const char **result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = buffer_check(buffer);
         if (status == HPS_STRING_OK) {
@@ -175,10 +175,10 @@ hps_string_status hps_string_buffer_cstr(const hps_string_buffer *buffer,
     return status;
 }
 
-hps_string_status hps_string_buffer_remaining(const hps_string_buffer *buffer,
-                                               size_t *result)
+int32_t hps_string_buffer_remaining(const hps_string_buffer *buffer,
+                                    size_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         status = buffer_check(buffer);
         if (status == HPS_STRING_OK) {

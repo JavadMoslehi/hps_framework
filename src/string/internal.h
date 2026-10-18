@@ -9,7 +9,7 @@
 #include "hps/base/attributes.h"
 #include "hps/string/view.h"
 
-static HPS_INLINE hps_string_status hps_string_check_view(hps_string_view view)
+static HPS_INLINE int32_t hps_string_check_view(hps_string_view view)
 {
     return ((view.length != HPS_STRING_NPOS) &&
             ((view.data != NULL) || (view.length == 0U))) ?

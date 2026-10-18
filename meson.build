@@ -12,29 +12,23 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
 endif
 install_subdir('include/hps', install_dir: get_option('includedir'))
 
-hps_status_library = static_library('hps_status', 'src/status.c',
-  dependencies: hps_base, install: true)
-hps_status = declare_dependency(link_with: hps_status_library,
-  dependencies: hps_base)
-meson.override_dependency('hps-status', hps_status)
-
 hps_memory_library = static_library('hps_memory', 'src/memory/pool.c',
-  dependencies: hps_status, install: true)
+  dependencies: hps_base, install: true)
 hps_memory = declare_dependency(link_with: hps_memory_library,
-  dependencies: hps_status)
+  dependencies: hps_base)
 meson.override_dependency('hps-memory', hps_memory)
 
 hps_bytes_library = static_library('hps_bytes', 'src/bytes/view.c', 'src/bytes/buffer.c', 'src/bytes/codec.c', 'src/bytes/endian.c', 'src/bytes/reader.c',
-  dependencies: hps_status, install: true)
+  dependencies: hps_base, install: true)
 hps_bytes = declare_dependency(link_with: hps_bytes_library,
-  dependencies: hps_status)
+  dependencies: hps_base)
 meson.override_dependency('hps-bytes', hps_bytes)
 
 hps_string_library = static_library('hps_string', 'src/string/view.c', 'src/string/buffer.c',
   'src/string/char.c', 'src/string/builder.c', 'src/string/policy.c',
-  dependencies: hps_status, install: true)
+  dependencies: hps_base, install: true)
 hps_string = declare_dependency(link_with: hps_string_library,
-  dependencies: hps_status)
+  dependencies: hps_base)
 meson.override_dependency('hps-string', hps_string)
 
 hps_cstr_library = static_library('hps_cstr', 'src/cstr/core.c',
@@ -53,11 +47,11 @@ meson.override_dependency('hps-validation', hps_validation)
 test_assertion_args = cc.get_id() in ['msvc', 'clang-cl'] ? ['/UNDEBUG'] : ['-UNDEBUG']
 hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/memory/test_pool.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
-  'tests/status/test_status.c', 'tests/enum/test_enum.c', 'tests/string/test_string.c',
+  'tests/enum/test_enum.c', 'tests/string/test_string.c',
   'tests/string/test_string_extended.c', 'tests/string/test_string_builder.c',
   'tests/span/test_span.c', 'tests/cstr/test_cstr.c', 'tests/cstr/test_cstr_convert.c',
   'tests/cstr/test_cstr_format.c', 'tests/validation/test_national_code.c',
   'tests/enum/test_cstr_enum.c',
-  dependencies: [hps_base, hps_memory, hps_bytes, hps_status, hps_string,
+  dependencies: [hps_base, hps_memory, hps_bytes, hps_string,
     hps_cstr, hps_validation], c_args: test_assertion_args)
 test('hps_tests', hps_tests)

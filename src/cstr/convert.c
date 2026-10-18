@@ -28,11 +28,11 @@ static uint8_t radix_valid(const uint8_t radix)
                      (radix == 10U) || (radix == 16U));
 }
 
-static hps_string_status parse_digits(const hps_string_view text,
-                                       const uint8_t radix,
-                                       const uint64_t limit, uint64_t *result)
+static int32_t parse_digits(const hps_string_view text,
+                            const uint8_t radix,
+                            const uint64_t limit, uint64_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     uint64_t value = UINT64_C(0);
     if (text.length > 0U) {
         status = HPS_STRING_OK;
@@ -54,11 +54,11 @@ static hps_string_status parse_digits(const hps_string_view text,
     return status;
 }
 
-hps_string_status hps_cstr_parse_u64(const char *input,
-                                     const size_t input_capacity,
-                                     const uint8_t radix, uint64_t *result)
+int32_t hps_cstr_parse_u64(const char *input,
+                           const size_t input_capacity,
+                           const uint8_t radix, uint64_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (radix_valid(radix) == 1U)) {
         hps_string_view text = {NULL, 0U};
         status = hps_string_view_init_cstr(&text, input, input_capacity);
@@ -69,11 +69,11 @@ hps_string_status hps_cstr_parse_u64(const char *input,
     return status;
 }
 
-hps_string_status hps_cstr_parse_i64(const char *input,
-                                     const size_t input_capacity,
-                                     int64_t *result)
+int32_t hps_cstr_parse_i64(const char *input,
+                           const size_t input_capacity,
+                           int64_t *result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_string_view text = {NULL, 0U};
         status = hps_string_view_init_cstr(&text, input, input_capacity);
@@ -104,12 +104,12 @@ hps_string_status hps_cstr_parse_i64(const char *input,
 
 /* Private sign selection is 0/1. Unsigned division removes at least one digit
  * per iteration, so 64 binary digits bound both work and temporary storage. */
-static hps_string_status render_integer(char *output, const size_t capacity,
-                                         uint64_t magnitude,
-                                         const uint8_t radix,
-                                         const uint8_t negative)
+static int32_t render_integer(char *output, const size_t capacity,
+                              uint64_t magnitude,
+                              const uint8_t radix,
+                              const uint8_t negative)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && (radix_valid(radix) == 1U)) {
         char reverse[65];
         const char *digits = "0123456789ABCDEF";
@@ -138,17 +138,17 @@ static hps_string_status render_integer(char *output, const size_t capacity,
     return status;
 }
 
-hps_string_status hps_cstr_render_u64(char *output,
-                                      const size_t output_capacity,
-                                      const uint64_t value,
-                                      const uint8_t radix)
+int32_t hps_cstr_render_u64(char *output,
+                            const size_t output_capacity,
+                            const uint64_t value,
+                            const uint8_t radix)
 {
     return render_integer(output, output_capacity, value, radix, 0U);
 }
 
-hps_string_status hps_cstr_render_i64(char *output,
-                                      const size_t output_capacity,
-                                      const int64_t value)
+int32_t hps_cstr_render_i64(char *output,
+                            const size_t output_capacity,
+                            const int64_t value)
 {
     const uint8_t negative = (uint8_t)(value < INT64_C(0));
     /* Adding one before negation makes INT64_MIN safe; restoring one unsigned
@@ -238,12 +238,12 @@ static size_t write_byte(char *output, const uint8_t value, const uint8_t format
     return count;
 }
 
-hps_string_status hps_cstr_encode_bytes(char *output,
-                                        const size_t output_capacity,
-                                        const uint8_t *data, const size_t length,
-                                        const uint8_t format)
+int32_t hps_cstr_encode_bytes(char *output,
+                              const size_t output_capacity,
+                              const uint8_t *data, const size_t length,
+                              const uint8_t format)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((output != NULL) && (format <= HPS_CSTR_BYTES_TEXT) &&
         ((data != NULL) || (length == 0U))) {
         const size_t separator = separator_width(format);
@@ -298,13 +298,13 @@ hps_string_status hps_cstr_encode_bytes(char *output,
     return status;
 }
 
-hps_string_status hps_cstr_decode_bytes(uint8_t *output,
-                                        const size_t output_capacity,
-                                        const char *input,
-                                        const size_t input_capacity,
-                                        const uint8_t format, size_t *written)
+int32_t hps_cstr_decode_bytes(uint8_t *output,
+                              const size_t output_capacity,
+                              const char *input,
+                              const size_t input_capacity,
+                              const uint8_t format, size_t *written)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((written != NULL) && ((output != NULL) || (output_capacity == 0U)) &&
         ((format == HPS_CSTR_BYTES_HEX_COMPACT) ||
          (format == HPS_CSTR_BYTES_BINARY_COMPACT) ||
@@ -369,13 +369,13 @@ hps_string_status hps_cstr_decode_bytes(uint8_t *output,
     return status;
 }
 
-hps_string_status hps_cstr_invert_binary(char *output,
-                                         const size_t output_capacity,
-                                         const char *input,
-                                         const size_t input_capacity,
-                                         const uint64_t inverse_count)
+int32_t hps_cstr_invert_binary(char *output,
+                               const size_t output_capacity,
+                               const char *input,
+                               const size_t input_capacity,
+                               const uint64_t inverse_count)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if (output != NULL) {
         hps_string_view text = {NULL, 0U};
         status = hps_string_view_init_cstr(&text, input, input_capacity);
@@ -407,9 +407,9 @@ hps_string_status hps_cstr_invert_binary(char *output,
     return status;
 }
 
-hps_string_status hps_cstr_boolalpha(const uint8_t flag, const char **result)
+int32_t hps_cstr_boolalpha(const uint8_t flag, const char **result)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     if ((result != NULL) && (flag <= 1U)) {
         *result = (flag == 1U) ? "true" : "false";
         status = HPS_STRING_OK;

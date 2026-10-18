@@ -1,4 +1,10 @@
-# Governance validation record
+# Historical governance validation record
+
+This record preserves the 2026-10-11 snapshot and its hashes. It is not current
+verification for later source/policy changes. Current shared-status removal
+checks and their limitations are recorded in the
+[2026-10-18 review](reviews/status-removal-2026-10-18.md); earlier host text
+verification is retained in the [text review](reviews/csep-text-2026-10-13.md).
 
 Date: 2026-10-11. Scope: source-policy subset and governance record consistency in
 the current working tree. This is not a production-source MISRA assessment or

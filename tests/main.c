@@ -19,38 +19,35 @@ int main(void)
     if (test_reader() != 0) {
         return 4;
     }
-    if (test_status() != 0) {
+    if (test_enum() != 0) {
         return 5;
     }
-    if (test_enum() != 0) {
+    if (test_string() != 0) {
         return 6;
     }
-    if (test_string() != 0) {
+    if (test_string_extended() != 0) {
         return 7;
     }
-    if (test_string_extended() != 0) {
+    if (test_string_builder() != 0) {
         return 8;
     }
-    if (test_string_builder() != 0) {
+    if (test_span() != 0) {
         return 9;
     }
-    if (test_span() != 0) {
+    if (test_cstr() != 0) {
         return 10;
     }
-    if (test_cstr() != 0) {
+    if (test_cstr_convert() != 0) {
         return 11;
     }
-    if (test_cstr_convert() != 0) {
+    if (test_cstr_format() != 0) {
         return 12;
     }
-    if (test_cstr_format() != 0) {
+    if (test_national_code() != 0) {
         return 13;
     }
-    if (test_national_code() != 0) {
-        return 14;
-    }
     if (test_cstr_enum() != 0) {
-        return 15;
+        return 14;
     }
     return 0;
 }

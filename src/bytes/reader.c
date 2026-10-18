@@ -6,9 +6,9 @@
  * @brief Checked cursor operations over borrowed bytes; no payload scratch array.
  */
 
-static hps_byte_status reader_check(const hps_byte_reader *reader)
+static int32_t reader_check(const hps_byte_reader *reader)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (reader != NULL) {
         status = HPS_BYTE_INVALID_STATE;
         if ((reader->position <= reader->view.length) &&
@@ -19,10 +19,10 @@ static hps_byte_status reader_check(const hps_byte_reader *reader)
     return status;
 }
 
-hps_byte_status hps_byte_reader_init(hps_byte_reader *reader,
-                                    const hps_byte_view view)
+int32_t hps_byte_reader_init(hps_byte_reader *reader,
+                             const hps_byte_view view)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (reader != NULL) {
         hps_byte_view canonical = {NULL, 0U};
         status = hps_byte_view_init(&canonical, view.data, view.length);
@@ -34,10 +34,10 @@ hps_byte_status hps_byte_reader_init(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_remaining(const hps_byte_reader *reader,
-                                         size_t *result)
+int32_t hps_byte_reader_remaining(const hps_byte_reader *reader,
+                                  size_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -47,9 +47,9 @@ hps_byte_status hps_byte_reader_remaining(const hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_skip(hps_byte_reader *reader, const size_t length)
+int32_t hps_byte_reader_skip(hps_byte_reader *reader, const size_t length)
 {
-    hps_byte_status status = reader_check(reader);
+    int32_t status = reader_check(reader);
     if (status == HPS_BYTE_OK) {
         if (length > (reader->view.length - reader->position)) {
             status = HPS_BYTE_OUT_OF_RANGE;
@@ -60,11 +60,11 @@ hps_byte_status hps_byte_reader_skip(hps_byte_reader *reader, const size_t lengt
     return status;
 }
 
-hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader,
-                                        const size_t length,
-                                        hps_byte_view *result)
+int32_t hps_byte_reader_take_view(hps_byte_reader *reader,
+                                  const size_t length,
+                                  hps_byte_view *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -79,9 +79,9 @@ hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result)
+int32_t hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -99,10 +99,10 @@ hps_byte_status hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result
  * cursor addition. Output/reader/payload separation is a caller precondition,
  * so writing result cannot change the metadata used to commit the cursor.
  */
-hps_byte_status hps_byte_reader_read_u16_le(hps_byte_reader *reader,
-                                          uint16_t *result)
+int32_t hps_byte_reader_read_u16_le(hps_byte_reader *reader,
+                                    uint16_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -116,10 +116,10 @@ hps_byte_status hps_byte_reader_read_u16_le(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u16_be(hps_byte_reader *reader,
-                                          uint16_t *result)
+int32_t hps_byte_reader_read_u16_be(hps_byte_reader *reader,
+                                    uint16_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -133,10 +133,10 @@ hps_byte_status hps_byte_reader_read_u16_be(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u32_le(hps_byte_reader *reader,
-                                          uint32_t *result)
+int32_t hps_byte_reader_read_u32_le(hps_byte_reader *reader,
+                                    uint32_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -150,10 +150,10 @@ hps_byte_status hps_byte_reader_read_u32_le(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u32_be(hps_byte_reader *reader,
-                                          uint32_t *result)
+int32_t hps_byte_reader_read_u32_be(hps_byte_reader *reader,
+                                    uint32_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -167,10 +167,10 @@ hps_byte_status hps_byte_reader_read_u32_be(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u64_le(hps_byte_reader *reader,
-                                          uint64_t *result)
+int32_t hps_byte_reader_read_u64_le(hps_byte_reader *reader,
+                                    uint64_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {
@@ -184,10 +184,10 @@ hps_byte_status hps_byte_reader_read_u64_le(hps_byte_reader *reader,
     return status;
 }
 
-hps_byte_status hps_byte_reader_read_u64_be(hps_byte_reader *reader,
-                                          uint64_t *result)
+int32_t hps_byte_reader_read_u64_be(hps_byte_reader *reader,
+                                    uint64_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         status = reader_check(reader);
         if (status == HPS_BYTE_OK) {

@@ -39,7 +39,7 @@ extern "C" {
  * Input view is passed by value, so init(reader, reader->view) is allowed for an
  * already initialized reader; success restarts it, failure preserves it. O(1).
  */
-hps_byte_status hps_byte_reader_init(hps_byte_reader *reader, hps_byte_view view);
+int32_t hps_byte_reader_init(hps_byte_reader *reader, hps_byte_view view);
 
 /* For all following APIs, NULL reader or required output => INVALID_ARGUMENT
  * (NULL output checked first). Non-NULL initialized metadata with position >
@@ -48,21 +48,21 @@ hps_byte_status hps_byte_reader_init(hps_byte_reader *reader, hps_byte_view view
  */
 
 /* Writes view.length-position without moving the cursor. */
-hps_byte_status hps_byte_reader_remaining(const hps_byte_reader *reader,
-                                         size_t *result);
+int32_t hps_byte_reader_remaining(const hps_byte_reader *reader,
+                                  size_t *result);
 
 /* Skips length bytes of the existing view without reading payload. Requires
  * length <= view.length-position; otherwise OUT_OF_RANGE. Zero is valid at EOF.
  * On success position advances by length. O(1), no pointer arithmetic.
  */
-hps_byte_status hps_byte_reader_skip(hps_byte_reader *reader, size_t length);
+int32_t hps_byte_reader_skip(hps_byte_reader *reader, size_t length);
 
 /* Writes a borrowed slice of length bytes at the current position, then advances
  * by length. Same range contract as skip. Empty result is {NULL, 0}, including
  * at EOF/empty input, without pointer arithmetic. O(1), no payload access/copy.
  */
-hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader, size_t length,
-                                        hps_byte_view *result);
+int32_t hps_byte_reader_take_view(hps_byte_reader *reader, size_t length,
+                                  hps_byte_view *result);
 
 /* Reads 1/2/4/8 bytes at the current position and advances only on success.
  * Insufficient remaining bytes => OUT_OF_RANGE with unchanged cursor/output.
@@ -71,19 +71,19 @@ hps_byte_status hps_byte_reader_take_view(hps_byte_reader *reader, size_t length
  * O(1), at most eight byte reads. No explicit libc call; compiler runtime helpers,
  * stack consumption and target latency still require qualification.
  */
-hps_byte_status hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result);
-hps_byte_status hps_byte_reader_read_u16_le(hps_byte_reader *reader,
-                                          uint16_t *result);
-hps_byte_status hps_byte_reader_read_u16_be(hps_byte_reader *reader,
-                                          uint16_t *result);
-hps_byte_status hps_byte_reader_read_u32_le(hps_byte_reader *reader,
-                                          uint32_t *result);
-hps_byte_status hps_byte_reader_read_u32_be(hps_byte_reader *reader,
-                                          uint32_t *result);
-hps_byte_status hps_byte_reader_read_u64_le(hps_byte_reader *reader,
-                                          uint64_t *result);
-hps_byte_status hps_byte_reader_read_u64_be(hps_byte_reader *reader,
-                                          uint64_t *result);
+int32_t hps_byte_reader_read_u8(hps_byte_reader *reader, uint8_t *result);
+int32_t hps_byte_reader_read_u16_le(hps_byte_reader *reader,
+                                    uint16_t *result);
+int32_t hps_byte_reader_read_u16_be(hps_byte_reader *reader,
+                                    uint16_t *result);
+int32_t hps_byte_reader_read_u32_le(hps_byte_reader *reader,
+                                    uint32_t *result);
+int32_t hps_byte_reader_read_u32_be(hps_byte_reader *reader,
+                                    uint32_t *result);
+int32_t hps_byte_reader_read_u64_le(hps_byte_reader *reader,
+                                    uint64_t *result);
+int32_t hps_byte_reader_read_u64_be(hps_byte_reader *reader,
+                                    uint64_t *result);
 
 #ifdef __cplusplus
 } /* extern "C" */

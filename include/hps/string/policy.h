@@ -83,10 +83,10 @@ uint8_t hps_string_policy_accept(uint8_t policy, uint8_t value);
  * buffer and outputs; source payload may overlap buffer. Unknown policy/negative
  * membership => INVALID_ARGUMENT. State, source shape, policy then capacity are
  * checked before mutation. O(old length + source length). */
-hps_string_status hps_string_policy_assign(hps_string_buffer *buffer,
-                                           hps_string_view source, uint8_t policy);
-hps_string_status hps_string_policy_append(hps_string_buffer *buffer,
-                                           hps_string_view source, uint8_t policy);
+int32_t hps_string_policy_assign(hps_string_buffer *buffer,
+                                 hps_string_view source, uint8_t policy);
+int32_t hps_string_policy_append(hps_string_buffer *buffer,
+                                 hps_string_view source, uint8_t policy);
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -15,10 +15,10 @@
 /*                               READ WRAPPERS                               */
 /* ========================================================================= */
 
-hps_byte_status hps_byte_view_read_u16_le(const hps_byte_view view,
-                                         const size_t offset, uint16_t *result)
+int32_t hps_byte_view_read_u16_le(const hps_byte_view view,
+                                  const size_t offset, uint16_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 2U, &field);
@@ -29,10 +29,10 @@ hps_byte_status hps_byte_view_read_u16_le(const hps_byte_view view,
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u16_be(const hps_byte_view view,
-                                         const size_t offset, uint16_t *result)
+int32_t hps_byte_view_read_u16_be(const hps_byte_view view,
+                                  const size_t offset, uint16_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 2U, &field);
@@ -43,10 +43,10 @@ hps_byte_status hps_byte_view_read_u16_be(const hps_byte_view view,
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u32_le(const hps_byte_view view,
-                                         const size_t offset, uint32_t *result)
+int32_t hps_byte_view_read_u32_le(const hps_byte_view view,
+                                  const size_t offset, uint32_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 4U, &field);
@@ -57,10 +57,10 @@ hps_byte_status hps_byte_view_read_u32_le(const hps_byte_view view,
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u32_be(const hps_byte_view view,
-                                         const size_t offset, uint32_t *result)
+int32_t hps_byte_view_read_u32_be(const hps_byte_view view,
+                                  const size_t offset, uint32_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 4U, &field);
@@ -71,10 +71,10 @@ hps_byte_status hps_byte_view_read_u32_be(const hps_byte_view view,
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u64_le(const hps_byte_view view,
-                                         const size_t offset, uint64_t *result)
+int32_t hps_byte_view_read_u64_le(const hps_byte_view view,
+                                  const size_t offset, uint64_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 8U, &field);
@@ -85,10 +85,10 @@ hps_byte_status hps_byte_view_read_u64_le(const hps_byte_view view,
     return status;
 }
 
-hps_byte_status hps_byte_view_read_u64_be(const hps_byte_view view,
-                                         const size_t offset, uint64_t *result)
+int32_t hps_byte_view_read_u64_be(const hps_byte_view view,
+                                  const size_t offset, uint64_t *result)
 {
-    hps_byte_status status = HPS_BYTE_INVALID_ARGUMENT;
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
     if (result != NULL) {
         hps_byte_view field = {NULL, 0U};
         status = hps_byte_view_slice(view, offset, 8U, &field);
@@ -103,8 +103,8 @@ hps_byte_status hps_byte_view_read_u64_be(const hps_byte_view view,
 /*                              APPEND WRAPPERS                              */
 /* ========================================================================= */
 
-hps_byte_status hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
-                                             const uint16_t value)
+int32_t hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
+                                      const uint16_t value)
 {
     uint8_t encoded[2];
     hps_codec_u16_to_bytes(encoded, value, HPS_BYTE_ORDER_LITTLE_ENDIAN);
@@ -112,8 +112,8 @@ hps_byte_status hps_byte_buffer_append_u16_le(hps_byte_buffer *buffer,
     return hps_byte_buffer_append_bytes(buffer, field);
 }
 
-hps_byte_status hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
-                                             const uint16_t value)
+int32_t hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
+                                      const uint16_t value)
 {
     uint8_t encoded[2];
     hps_codec_u16_to_bytes(encoded, value, HPS_BYTE_ORDER_BIG_ENDIAN);
@@ -121,8 +121,8 @@ hps_byte_status hps_byte_buffer_append_u16_be(hps_byte_buffer *buffer,
     return hps_byte_buffer_append_bytes(buffer, field);
 }
 
-hps_byte_status hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
-                                             const uint32_t value)
+int32_t hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
+                                      const uint32_t value)
 {
     uint8_t encoded[4];
     hps_codec_u32_to_bytes(encoded, value, HPS_BYTE_ORDER_LITTLE_ENDIAN);
@@ -130,8 +130,8 @@ hps_byte_status hps_byte_buffer_append_u32_le(hps_byte_buffer *buffer,
     return hps_byte_buffer_append_bytes(buffer, field);
 }
 
-hps_byte_status hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
-                                             const uint32_t value)
+int32_t hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
+                                      const uint32_t value)
 {
     uint8_t encoded[4];
     hps_codec_u32_to_bytes(encoded, value, HPS_BYTE_ORDER_BIG_ENDIAN);
@@ -139,8 +139,8 @@ hps_byte_status hps_byte_buffer_append_u32_be(hps_byte_buffer *buffer,
     return hps_byte_buffer_append_bytes(buffer, field);
 }
 
-hps_byte_status hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
-                                             const uint64_t value)
+int32_t hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
+                                      const uint64_t value)
 {
     uint8_t encoded[8];
     hps_codec_u64_to_bytes(encoded, value, HPS_BYTE_ORDER_LITTLE_ENDIAN);
@@ -148,8 +148,8 @@ hps_byte_status hps_byte_buffer_append_u64_le(hps_byte_buffer *buffer,
     return hps_byte_buffer_append_bytes(buffer, field);
 }
 
-hps_byte_status hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
-                                             const uint64_t value)
+int32_t hps_byte_buffer_append_u64_be(hps_byte_buffer *buffer,
+                                      const uint64_t value)
 {
     uint8_t encoded[8];
     hps_codec_u64_to_bytes(encoded, value, HPS_BYTE_ORDER_BIG_ENDIAN);

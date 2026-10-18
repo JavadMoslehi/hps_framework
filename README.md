@@ -63,7 +63,7 @@ compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
 
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
-`test_reader`, `test_status`, `test_enum`, `test_string`, `test_string_extended`,
+`test_reader`, `test_enum`, `test_string`, `test_string_extended`,
 `test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
 `test_cstr_format`, `test_national_code` and `test_cstr_enum` once, in that order,
 and stops on the first failure.
@@ -73,24 +73,23 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The current shared runner and all fifteen suites passed on the development host
-with GCC and Clang. See the [current verification record](governance/reviews/csep-text-2026-10-13.md)
-for flags, build systems, sanitizer results and remaining target/policy gaps.
+The fourteen-suite runner's verification for the current API is recorded in the
+[result-type migration review](governance/reviews/status-removal-2026-10-18.md).
+The [earlier verification record](governance/reviews/csep-text-2026-10-13.md)
+preserves historical flags, sanitizer results and target/policy gaps.
 
-## Status diagnostics
+## Operation results
 
-`hps/status.h` defines the shared `int64_t` status type `hps_status_t`: success is
-zero and errors are negative. Framework, memory, bytes and string errors occupy distinct
-registered module ranges. `hps_status_module` identifies an allocated range;
-`hps_status_string` returns an immutable NUL-terminated diagnostic message of at
-most 31 characters, or `"unknown status"` for an unregistered code. No allocation
-or runtime registration is involved.
+Fallible memory, byte and text operations return `int32_t` directly from
+`<stdint.h>`: zero means success and negative values identify local errors.
+Compare results with the API's `HPS_POOL_*`, `HPS_BYTE_*` or `HPS_STRING_*`
+constants. Their values are local to each family and may overlap. Predicates,
+lengths and text continue to use their documented output types.
 
-Link `HPS::status` in CMake or use `hps-status` in Meson; memory/bytes targets
-include this dependency, as does the string target. Module status aliases and constants retain their names
-but now use this signed representation and module-specific negative values.
-Consumers must rebuild and update stored numeric status assumptions. See
-[the status contract and migration](docs/architecture/status.md).
+The common status type, module registry, message lookup and separate status
+library have been removed. Link the module you use directly. Consumers must
+rebuild and update old result typedefs and numeric assumptions; see the
+[API/ABI migration](governance/reviews/status-removal-2026-10-18.md).
 
 ## Named-value traits
 
@@ -124,7 +123,7 @@ separate contracts.
 
 `hps/cstr.h` provides bounded C-string transformations, parsing/rendering, byte
 encoding, split/join, lexical path helpers, diagnostics and typed formatting.
-Link `HPS::cstr`/`hps-cstr`; it depends on string/status. Formatting uses exact-width
+Link `HPS::cstr`/`hps-cstr`; it depends on string. Formatting uses exact-width
 arguments and fixed decimal coefficient/scale, with no printf varargs or native
 floating point. See [the contract](docs/architecture/cstr.md) and
 [legacy family migration](docs/migration/csep-text.md).
@@ -184,7 +183,7 @@ indices. Integer types with least/fast width qualifiers are not used. Plain `cha
 This project policy supports MISRA's numeric-type guidance; it does not establish
 whole-framework compliance.
 
-Flags retain `uint8_t`; API statuses use `hps_status_t` or its semantic module
-aliases. [The C rules](governance/c-rules.md) also require readable validation and
+Flags retain `uint8_t`; fallible module APIs return `int32_t` directly with local
+error constants. [The C rules](governance/c-rules.md) also require readable validation and
 state transitions, shared logic where contracts match, and explicit reasons for
 specialization or repetition.

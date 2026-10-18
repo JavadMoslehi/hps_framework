@@ -73,12 +73,12 @@ static size_t format_decimal(char *output, const int64_t coefficient,
     return length;
 }
 
-hps_string_status hps_cstr_render_decimal(hps_string_buffer *destination,
-                                         const int64_t coefficient,
-                                         const uint8_t scale)
+int32_t hps_cstr_render_decimal(hps_string_buffer *destination,
+                                const int64_t coefficient,
+                                const uint8_t scale)
 {
     size_t remaining = 0U;
-    hps_string_status status = hps_string_buffer_remaining(destination, &remaining);
+    int32_t status = hps_string_buffer_remaining(destination, &remaining);
     if (status == HPS_STRING_OK) {
         if (scale > HPS_CSTR_DECIMAL_MAX_SCALE) {
             status = HPS_STRING_INVALID_ARGUMENT;
@@ -94,11 +94,11 @@ hps_string_status hps_cstr_render_decimal(hps_string_buffer *destination,
 
 /* Convert one validated token to a borrowed piece or bounded automatic number.
  * The token points into format storage, avoiding scalar char representation. */
-static hps_string_status format_argument(const char *token,
-                                         const hps_cstr_format_arg *argument,
-                                         char *number, hps_string_view *piece)
+static int32_t format_argument(const char *token,
+                               const hps_cstr_format_arg *argument,
+                               char *number, hps_string_view *piece)
 {
-    hps_string_status status = HPS_STRING_INVALID_ARGUMENT;
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
     size_t length = 0U;
     if ((*token == 's') || (*token == 'c')) {
         if (argument->type == HPS_CSTR_ARG_TEXT) {
@@ -149,12 +149,12 @@ static hps_string_status format_argument(const char *token,
 /* The same parser drives preflight and emission; output==NULL is a read-only
  * sizing pass. Emission follows an entirely successful pass with unchanged input.
  * Caller disjointness/serialization prevents staged writes invalidating sources. */
-static hps_string_status format_pass(const hps_string_view format,
-                                     const hps_cstr_format_arg *arguments,
-                                     const size_t argument_count,
-                                     char *output, size_t *result_length)
+static int32_t format_pass(const hps_string_view format,
+                           const hps_cstr_format_arg *arguments,
+                           const size_t argument_count,
+                           char *output, size_t *result_length)
 {
-    hps_string_status status = HPS_STRING_OK;
+    int32_t status = HPS_STRING_OK;
     size_t position = 0U;
     size_t argument_index = 0U;
     size_t length = 0U;
@@ -214,14 +214,14 @@ static hps_string_status format_pass(const hps_string_view format,
     return status;
 }
 
-static hps_string_status format_write(hps_string_buffer *destination,
-                                      char *scratch, const size_t scratch_capacity,
-                                      const char *format, const size_t format_capacity,
-                                      const hps_cstr_format_arg *arguments,
-                                      const size_t argument_count, const uint8_t append)
+static int32_t format_write(hps_string_buffer *destination,
+                            char *scratch, const size_t scratch_capacity,
+                            const char *format, const size_t format_capacity,
+                            const hps_cstr_format_arg *arguments,
+                            const size_t argument_count, const uint8_t append)
 {
     size_t remaining = 0U;
-    hps_string_status status = hps_string_buffer_remaining(destination, &remaining);
+    int32_t status = hps_string_buffer_remaining(destination, &remaining);
     if (status == HPS_STRING_OK) {
         if ((scratch == NULL) || (scratch_capacity == 0U) ||
             ((arguments == NULL) && (argument_count != 0U)) ||
@@ -254,21 +254,21 @@ static hps_string_status format_write(hps_string_buffer *destination,
     return status;
 }
 
-hps_string_status hps_cstr_format(hps_string_buffer *destination,
-                                 char *scratch, const size_t scratch_capacity,
-                                 const char *format, const size_t format_capacity,
-                                 const hps_cstr_format_arg *arguments,
-                                 const size_t argument_count)
+int32_t hps_cstr_format(hps_string_buffer *destination,
+                        char *scratch, const size_t scratch_capacity,
+                        const char *format, const size_t format_capacity,
+                        const hps_cstr_format_arg *arguments,
+                        const size_t argument_count)
 {
     return format_write(destination, scratch, scratch_capacity, format, format_capacity,
                         arguments, argument_count, 0U);
 }
 
-hps_string_status hps_cstr_append_format(hps_string_buffer *destination,
-                                        char *scratch, const size_t scratch_capacity,
-                                        const char *format, const size_t format_capacity,
-                                        const hps_cstr_format_arg *arguments,
-                                        const size_t argument_count)
+int32_t hps_cstr_append_format(hps_string_buffer *destination,
+                               char *scratch, const size_t scratch_capacity,
+                               const char *format, const size_t format_capacity,
+                               const hps_cstr_format_arg *arguments,
+                               const size_t argument_count)
 {
     return format_write(destination, scratch, scratch_capacity, format, format_capacity,
                         arguments, argument_count, 1U);

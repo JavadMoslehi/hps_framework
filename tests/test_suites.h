@@ -17,7 +17,6 @@ int test_base(void);
 int test_pool(void);
 int test_bytes(void);
 int32_t test_reader(void);
-int32_t test_status(void);
 int32_t test_enum(void);
 int32_t test_string(void);
 int32_t test_string_extended(void);
