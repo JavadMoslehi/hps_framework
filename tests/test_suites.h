@@ -22,6 +22,7 @@ int32_t test_string(void);
 int32_t test_string_extended(void);
 int32_t test_string_builder(void);
 int32_t test_span(void);
+int32_t test_data_structure(void);
 int32_t test_cstr(void);
 int32_t test_cstr_convert(void);
 int32_t test_cstr_format(void);

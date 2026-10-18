@@ -1,8 +1,11 @@
 # Typed spans and expression helpers
 
 `hps/span.h` is a header-only typed borrowed-span generator beside bytes/string.
-It is outside the base umbrella because base describes the environment. Define
-at file scope with an object type and a unique name:
+It is outside the base umbrella because base describes the environment.
+For mutable spans and the other container families following this generator
+pattern, see [typed data-structure descriptors](data-structure.md).
+
+Define at file scope with an object type and a unique name:
 
 ```c
 #include <stdint.h>

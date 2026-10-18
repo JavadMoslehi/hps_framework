@@ -65,7 +65,8 @@ The native test executable does not need Python.
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
 `test_reader`, `test_enum`, `test_string`, `test_string_extended`,
 `test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
-`test_cstr_format`, `test_national_code` and `test_cstr_enum` once, in that order,
+`test_cstr_format`, `test_national_code`, `test_cstr_enum` and
+`test_data_structure` once, in that order,
 and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
@@ -73,8 +74,10 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The fourteen-suite runner's verification for the current API is recorded in the
-[result-type migration review](governance/reviews/status-removal-2026-10-18.md).
+The fifteen-suite runner's current verification is recorded in the
+[data-structure review](governance/reviews/data-structure-2026-10-18.md).
+The preceding result-type migration is documented in its
+[review](governance/reviews/status-removal-2026-10-18.md).
 The [earlier verification record](governance/reviews/csep-text-2026-10-13.md)
 preserves historical flags, sanitizer results and target/policy gaps.
 
@@ -133,6 +136,12 @@ and C99 compound-literal support. `hps/base/expression.h` supplies single-evalua
 branch hints and LVALUE. See [span construction](docs/architecture/span.md).
 The native string-key enum generator lives beside traits in `hps/enum/cstr.h`;
 [its bounded switch example](docs/architecture/cstr-enum.md) includes input capacity.
+
+`hps/hps_data_structure.h` extends the span pattern to eleven typed descriptor
+families: vector, mutable/read-only span, read-only window, in-place vector/ring,
+ring, stack, singly/doubly linked list and binary tree. Each has a named generator,
+constructor, `MAKE` helper and static initializer; linked families also generate
+nodes. See [definitions and ownership contracts](docs/architecture/data-structure.md).
 
 ## Static memory pool
 

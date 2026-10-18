@@ -48,7 +48,8 @@ if(BUILD_TESTING)
         tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
         tests/enum/test_enum.c tests/string/test_string.c
         tests/string/test_string_extended.c tests/string/test_string_builder.c
-        tests/span/test_span.c tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
+        tests/span/test_span.c tests/data_structure/test_data_structure.c
+        tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
         tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
         tests/enum/test_cstr_enum.c)
     target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes

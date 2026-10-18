@@ -35,6 +35,7 @@ and blocks the corresponding release claim.
 | [Integer codec review](reviews/bytes-codec-2026-10-13.md) | Order-selecting conversion APIs, integration and source-only evidence |
 | [Enum traits migration](reviews/enum-traits-2026-10-13.md) | CSEP naming migration, original API restoration and utility-layer placement |
 | [CSEP text migration](reviews/csep-text-2026-10-13.md) | Cstr, builder/policy, spans/string keys and current compiled evidence |
+| [Data-structure generator review](reviews/data-structure-2026-10-18.md) | Typed descriptor/node generators, static storage and draft naming migration |
 | [String foundation review](reviews/string-2026-10-13.md) | Bounded text views/buffers, legacy adaptation and current host verification |
 | [Character storage proposal](reviews/string-storage-2026-10-13.md) | Counted text and actual char-array fixtures; release disposition pending |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |

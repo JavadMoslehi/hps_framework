@@ -49,5 +49,8 @@ int main(void)
     if (test_cstr_enum() != 0) {
         return 14;
     }
+    if (test_data_structure() != 0) {
+        return 15;
+    }
     return 0;
 }
