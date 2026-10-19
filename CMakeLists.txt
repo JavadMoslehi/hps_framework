@@ -72,6 +72,8 @@ if(BUILD_TESTING)
         tests/string/test_string_tokenizer.c tests/string/test_string_indent.c
         tests/span/test_span.c tests/data_structure/test_data_structure.c
         tests/data_structure/test_collection_operations.c tests/json/test_json.c
+        tests/data_structure/test_optional.c tests/bytes/test_byte_algorithms.c
+        tests/cstr/test_cstr_bool.c
         tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
         tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
         tests/enum/test_cstr_enum.c tests/base/test_macro_utilities.c

@@ -77,7 +77,7 @@ The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
 `test_data_structure`, `test_memory_operations`, `test_memory_clone`,
 `test_macro_utilities`, `test_memory_utilities`, `test_result`,
 `test_collection_operations`, `test_string_tokenizer`, `test_string_indent` and
-`test_json` once, in that order,
+`test_json`, `test_byte_algorithms`, `test_optional` and `test_cstr_bool` once, in that order,
 and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
@@ -85,7 +85,9 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The current twenty-four-suite verification (twenty-five with hosted diagnostics)
+The current twenty-seven-suite verification (twenty-eight with hosted diagnostics)
+is recorded in the [Bytes/features/optional review](governance/reviews/bytes-features-optional-2026-10-19.md).
+The preceding twenty-four-suite verification (twenty-five with hosted diagnostics)
 is recorded in the [runtime/text/JSON review](governance/reviews/objects-json-2026-10-19.md).
 `tests/json/check_json.py` adds deterministic grammar-oracle and mutation checks.
 The preceding twenty-suite verification (twenty-one with hosted diagnostics) is
@@ -156,6 +158,13 @@ bounded typed operations and borrowed iterators. `hps/memory/refcount.h` adds
 checked single-context reference arithmetic with explicit final-release output.
 Neither allocates or destroys element objects. String additionally offers
 delimiter-set tokenization and persistent four-space indentation over its builder.
+
+`hps/data_structure/optional.h` generates named typed optional values with checked
+access, uint8 presence and explicit copy/lifetime rules. It performs no cleanup
+or ownership transfer. `hps_cstr_parse_bool` adds bounded legacy truthy spelling;
+Base adds raw/expanded stringification and five compile-target x86 feature flags,
+which do not detect runtime CPU/OS support. See the
+[23-header mapping](docs/migration/bytes-features-optional.md).
 
 ## Named-value traits
 
@@ -246,6 +255,10 @@ buffers over caller-owned uint8_t arrays, with `assign_bytes`, `append_bytes`,
 a buffer tracks writable storage, its active length and its capacity. Failures
 preserve state; overlapping copies use memmove.
 No module allocation, pool dependency or synchronization is involved.
+
+Bytes also provides checked `pop_u8`, unsigned-byte view comparison,
+prefix/suffix checks and bounded first/last subsequence search. Empty needles
+produce `HPS_BYTE_NPOS`; absence succeeds, and failures preserve outputs.
 
 `hps/bytes/endian.h` adds checked u16/u32/u64 reads at view offsets and complete
 field appends to buffers, in explicit LE/BE order. No native alignment/byte-order

@@ -95,6 +95,25 @@ int32_t hps_byte_buffer_append_u8(hps_byte_buffer *buffer,
     return status;
 }
 
+int32_t hps_byte_buffer_pop_u8(hps_byte_buffer *buffer, uint8_t *result)
+{
+    int32_t status = HPS_BYTE_INVALID_ARGUMENT;
+
+    if (result != NULL) {
+        status = buffer_check(buffer);
+        if (status == HPS_BYTE_OK) {
+            if (buffer->length == 0U) {
+                status = HPS_BYTE_OUT_OF_RANGE;
+            } else {
+                const size_t last = buffer->length - 1U;
+                *result = buffer->data[last];
+                buffer->length = last;
+            }
+        }
+    }
+    return status;
+}
+
 int32_t hps_byte_buffer_truncate(hps_byte_buffer *buffer,
                                  const size_t length)
 {

@@ -73,3 +73,15 @@ records historical implementation evidence and the proposed character and
 native-enum policy dispositions; it does not verify the current result ABI.
 Target ABI/resources/timing, whole-program analysis and policy acceptance remain
 unqualified. Algorithmic bounds are not measured performance or proven WCET.
+
+## Legacy truthy text conversion
+
+`hps_cstr_parse_bool(input, capacity, result)` reuses bounded C-string import,
+ASCII whitespace classification and basic-Latin case-insensitive comparison.
+After skipping a leading run of basic ASCII whitespace, only the complete suffix true/yes/on/1
+produces flag one. All other terminated text produces zero, including unknown
+strings, empty input and truthy words followed by whitespace. This deliberately
+preserves the source predicate rather than claiming strict boolean validation.
+NULL/zero-capacity arguments and missing termination give documented errors and
+preserve the output. See the [mapping](../migration/bytes-features-optional.md)
+and [review](../../governance/reviews/bytes-features-optional-2026-10-19.md).

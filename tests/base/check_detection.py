@@ -18,23 +18,81 @@ COMPILER = [part for value in args.compiler for part in shlex.split(value)]
 checks = 0
 
 
-def check(header, expressions, definitions=(), dialect='c99', fail=False, prefix=''):
+def check(header, expressions, definitions=(), dialect='c99', fail=False, prefix='',
+          include_paths=(), flags=(), synthetic=True):
     global checks
     source = prefix + '#include "' + header + '"\n#include "' + header + '"\n'
     for expression in expressions:
         source += '#if !(' + expression + ')\n#error "detection contract"\n#endif\n'
     source += 'typedef void (*hps_detection_translation_unit)(void);\n'
     language = 'c++' if dialect.startswith('c++') else 'c'
-    command = COMPILER + ['-x', language, '-std=' + dialect, '-undef', '-Wall',
+    command = COMPILER + ['-x', language, '-std=' + dialect]
+    if synthetic:
+        command += ['-undef']
+    command += ['-Wall',
                           '-Wextra', '-Werror', '-pedantic-errors', '-I',
                           str(ROOT / 'include'), '-fsyntax-only']
-    command += ['-D' + value for value in definitions] + ['-']
+    command += ['-I' + str(path) for path in include_paths]
+    command += list(flags) + ['-D' + value for value in definitions] + ['-']
     result = subprocess.run(command, input=source, text=True, capture_output=True)
     if (result.returncode != 0) != fail:
         raise RuntimeError(' '.join(command) + '\n' + result.stderr + '\n' + source)
     if fail and 'HPS_CONFIG_LIBC' not in result.stderr:
         raise RuntimeError('Expected HPS_CONFIG_LIBC rejection:\n' + result.stderr)
     checks += 1
+
+
+# ISA capabilities are translation-unit targets, independent from CPU identity.
+# Synthetic cross-target cases use only the needed limits contract, so host SDK
+# include selection cannot turn an ARM/unknown macro fixture into a native build.
+instruction_macros = ['__AES__', '__PCLMUL__', '__AVX__', '__AVX2__', '__SHA__']
+instruction_names = ['AESNI', 'PCLMUL', 'AVX', 'AVX2', 'SHA']
+all_instruction_definitions = [name + '=1' for name in instruction_macros]
+
+
+def instruction_expectations(enabled):
+    return ['HPS_TARGET_HAS_X86_' + name + ' == ' + str(1 if name in enabled else 0)
+            for name in instruction_names]
+
+
+with tempfile.TemporaryDirectory(prefix='hps-detection-instructions-') as temporary:
+    Path(temporary, 'limits.h').write_text('#define CHAR_BIT 8\n')
+    for dialect in ['c99', 'c++11']:
+        for target in ['__i386__=1', '_M_IX86=600', '__x86_64__=1', '_M_X64=100']:
+            check('hps/base/features/architecture.h', instruction_expectations([]),
+                  [target], dialect=dialect, include_paths=[temporary])
+            check('hps/base/features/architecture.h', instruction_expectations(instruction_names),
+                  [target] + all_instruction_definitions, dialect=dialect,
+                  include_paths=[temporary])
+        for macro, name in zip(instruction_macros, instruction_names):
+            check('hps/base/features/architecture.h', instruction_expectations([name]),
+                  ['__x86_64__=1', macro + '=1'], dialect=dialect,
+                  include_paths=[temporary])
+        for target in [[], ['__arm__=1'], ['__aarch64__=1'], ['__riscv=1'],
+                       ['__mips__=1'], ['__powerpc__=1']]:
+            check('hps/base/features/architecture.h', instruction_expectations([]),
+                  target + all_instruction_definitions, dialect=dialect,
+                  include_paths=[temporary])
+
+# Native option checks ask the frontend to validate declarations only; no object,
+# executable or instruction is emitted/run. Non-x86 compiler targets explicitly
+# skip x86 options while retaining every synthetic architecture-gating check.
+predefined = subprocess.run(COMPILER + ['-dM', '-E', '-x', 'c', '-'], input='',
+                           text=True, capture_output=True, check=True).stdout
+predefined_names = {line.split()[1] for line in predefined.splitlines()
+                    if line.startswith('#define ')}
+if predefined_names.intersection({'__i386__', '__x86_64__', '_M_IX86', '_M_X64'}):
+    disabled = ['-mno-aes', '-mno-pclmul', '-mno-avx', '-mno-avx2', '-mno-sha']
+    native_cases = [([], []), (['-maes'], ['AESNI']), (['-mpclmul'], ['PCLMUL']),
+                    (['-mavx'], ['AVX']), (['-mavx2'], ['AVX', 'AVX2']),
+                    (['-msha'], ['SHA']),
+                    (['-maes', '-mpclmul', '-mavx', '-mavx2', '-msha'], instruction_names)]
+    for dialect in ['c99', 'c++11']:
+        for options, enabled in native_cases:
+            check('hps/base/features/architecture.h', instruction_expectations(enabled),
+                  dialect=dialect, flags=disabled + options, synthetic=False)
+else:
+    print('HPS detection: native x86 option checks skipped for non-x86 compiler target.')
 
 
 clang = ['__clang__=1', '__clang_major__=14', '__clang_minor__=0',

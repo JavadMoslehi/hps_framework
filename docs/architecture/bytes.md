@@ -176,3 +176,21 @@ verification is recorded in the
 Semantic analyzer assessment, qualified target ABI/timing and industrial acceptance
 remain open. Earlier bytes, endian and shared-result reviews retain their
 historical scope; they do not establish current target qualification.
+
+## View algorithms and last-byte removal
+
+The [23-header migration](../migration/bytes-features-optional.md) extends the
+existing providers without a second fixed-byte-buffer generator. View compare
+writes canonical unsigned-byte lexical -1/0/1; starts/ends write uint8 flags.
+Empty edge patterns match. Find/rfind return a size_t index via checked output
+or HPS_BYTE_NPOS on successful absence; empty needles never match, preserving
+the legacy draft contract. Reverse search does not decrement zero or narrow
+indexes. Read-only inputs may overlap, and output metadata must be disjoint.
+
+Buffer pop_u8 requires writable disjoint output, reads the last active byte and
+then decreases length. Empty is OUT_OF_RANGE. Payload bytes are retained and
+prior views are invalidated under the existing mutation contract. All failures
+preserve descriptor, payload and outputs. Work is O(1) for pop, O(minimum length)
+for compare, O(pattern length) for edges and O(view length times needle length)
+for search; automatic state is scalar and no payload scratch/heap is introduced.
+See the [review](../../governance/reviews/bytes-features-optional-2026-10-19.md).

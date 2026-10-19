@@ -7,6 +7,9 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
+
+#define HPS_TEST_STRINGIFY_VALUE 73U
 
 #ifdef NDEBUG
 # error "Macro utility tests require enabled assertions"
@@ -37,6 +40,11 @@ int32_t test_macro_utilities(void)
     assert(HPS_ARRAY_SIZE(matrix[0]) == 3U);
     assert(HPS_ARRAY_LENGTH(matrix) == 2U);
     assert(HPS_COUNT_OF(matrix[calls++]) == 3U);
+    assert(calls == 0U);
+    assert(strcmp(HPS_STRINGIFY_RAW(HPS_TEST_STRINGIFY_VALUE),
+        "HPS_TEST_STRINGIFY_VALUE") == 0);
+    assert(strcmp(HPS_STRINGIFY(HPS_TEST_STRINGIFY_VALUE), "73U") == 0);
+    assert(strcmp(HPS_STRINGIFY_RAW(++calls), "++calls") == 0);
     assert(calls == 0U);
     assert(*pointer == 7U && *const_pointer == 7U);
     assert(*pointer_to_const == 8U && *const_pointer_to_const == 8U);

@@ -57,6 +57,15 @@ int32_t hps_byte_buffer_append_bytes(hps_byte_buffer *buffer,
  * INVALID_STATE on malformed state. O(1). */
 int32_t hps_byte_buffer_append_u8(hps_byte_buffer *buffer, uint8_t value);
 
+/* Read the last active byte into a required output, then shrink length by one.
+ * The removed byte is not erased; all backing bytes and capacity are preserved.
+ * result is writable and disjoint from the entire buffer descriptor and backing
+ * storage. NULL arguments => INVALID_ARGUMENT (output checked first), malformed
+ * initialized state => INVALID_STATE, empty buffer => OUT_OF_RANGE. All failures
+ * preserve descriptor, backing bytes and result. Success invalidates prior
+ * borrowed views under the buffer mutation contract. O(1), one byte read. */
+int32_t hps_byte_buffer_pop_u8(hps_byte_buffer *buffer, uint8_t *result);
+
 /* Shrinks length only; requested length > current length gives OUT_OF_RANGE.
  * No byte erase; init-required argument/state errors as above. O(1). */
 int32_t hps_byte_buffer_truncate(hps_byte_buffer *buffer, size_t length);

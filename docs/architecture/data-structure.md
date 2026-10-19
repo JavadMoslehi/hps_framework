@@ -142,3 +142,10 @@ Exact interior membership/acyclicity, actual typed extents and exclusive detache
 node ownership remain caller preconditions; endpoint validation cannot prove
 arbitrary pointers safe. See the header contracts and
 [development review](../../governance/reviews/objects-json-2026-10-19.md).
+
+`hps/data_structure/optional.h` adds a separate named typed optional-value
+generator, included by `all.h`. Presence and payload are actual typed fields;
+checked access distinguishes absent values from present NULL pointers. It
+reuses language-correct aggregate initialization and performs no allocation or
+element cleanup. See the [optional contract](optional.md) and
+[23-header migration](../migration/bytes-features-optional.md).

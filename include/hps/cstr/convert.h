@@ -89,6 +89,18 @@ int32_t hps_cstr_invert_binary(char *output, size_t output_capacity,
  */
 int32_t hps_cstr_boolalpha(uint8_t flag, const char **result);
 
+/* Legacy truthy spelling: skip only leading ASCII space/tab/LF/CR/FF/VT, then
+ * match the entire suffix against true/yes/on/1, case-insensitively for basic
+ * Latin letters. Every other terminated input (including empty, false/no/off,
+ * unknown text and trailing whitespace) succeeds with flag zero. This is not a
+ * strict true/false validator. ASCII-compatible whitespace encoding is required;
+ * no locale/Unicode whitespace or POSIX dependency. Required arguments and zero
+ * capacity => INVALID_ARGUMENT; missing NUL => NOT_TERMINATED; failures preserve
+ * result. All extent/lifetime/disjointness rules above apply. O(input_capacity),
+ * fixed scalar/view state, no payload temporary array. */
+int32_t hps_cstr_parse_bool(const char *input, size_t input_capacity,
+                            uint8_t *result);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

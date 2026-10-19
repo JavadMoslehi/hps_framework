@@ -37,6 +37,9 @@ int32_t test_collection_operations(void);
 int32_t test_string_tokenizer(void);
 int32_t test_string_indent(void);
 int32_t test_json(void);
+int32_t test_byte_algorithms(void);
+int32_t test_optional(void);
+int32_t test_cstr_bool(void);
 #if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
 int32_t test_hosted_debug(void);
 #endif

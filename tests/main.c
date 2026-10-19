@@ -79,6 +79,15 @@ int main(void)
     if (test_json() != 0) {
         return 25;
     }
+    if (test_byte_algorithms() != 0) {
+        return 26;
+    }
+    if (test_optional() != 0) {
+        return 27;
+    }
+    if (test_cstr_bool() != 0) {
+        return 28;
+    }
 #if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
     if (test_hosted_debug() != 0) {
         return 21;

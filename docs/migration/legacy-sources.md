@@ -1,5 +1,13 @@
 # Legacy source inventory and continuation
 
+The [23-header byte/feature/optional migration](bytes-features-optional.md)
+records all selected source symbols and deliberate deduplication. Supplied live
+paths were unavailable during full reading; read-only ZIP members and the archive
+hash match this inventory. Its
+[lossless snapshot](bytes-features-optional-snapshot.json) retains exact bytes and
+that distinction. Comment-only implementation/algo/type drafts are not treated as
+active exports; new checked Bytes/optional operations are explicit adaptations.
+
 The subsequent [twenty-file runtime/text/JSON migration](objects-json.md) records
 the complete selected-file mapping and intentional omissions for already-covered
 concepts. Its [lossless snapshot](objects-json-snapshot.json) matches all twenty

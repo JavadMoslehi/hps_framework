@@ -60,6 +60,14 @@ conservative about VLA, complex, atomics and standard thread-local syntax.
 Flags describe compiler language facilities, not OS services or library linkage.
 No flag promises availability of `<threads.h>` or a threading runtime.
 
+`features/architecture.h` also reports `HPS_TARGET_HAS_X86_AESNI`, `PCLMUL`,
+`AVX`, `AVX2` and `SHA` (each with the full `HPS_TARGET_HAS_X86_` prefix).
+Each flag requires x86 identity and its own compiler predefined instruction
+macro; all are zero on other families. These are translation-unit target-option
+facts, not runtime CPU/CPUID or OS-state checks, execution permission, dispatch
+or cryptographic implementations. Zero is lack of positive compile evidence,
+not a statement that hardware lacks the feature.
+
 ## Architecture
 
 Existing identifiers cover x86, x86-64, ARM32, AArch64 and RISC-V 32/64; additive
@@ -109,6 +117,12 @@ thread-local storage have no silent semantic fallback. `HPS_UNUSED(value)`
 casts to void and evaluates its operand once; avoid side effects in its operand.
 
 ## Version and validation
+
+`macros.h` supplies `HPS_STRINGIFY_RAW(tokens)` for unexpanded spelling and
+`HPS_STRINGIFY(tokens)` for expansion before stringification. Both produce
+immutable literals and evaluate no runtime expression. The raw form preserves
+the legacy TO_STRING contract. See the
+[23-header migration](../migration/bytes-features-optional.md).
 
 `version.h` supplies the major/minor/patch components, string and
 `HPS_VERSION_AT_LEAST(major, minor, patch)`. This predicate is intended for

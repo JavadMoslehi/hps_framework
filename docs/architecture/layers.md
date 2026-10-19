@@ -35,7 +35,7 @@ graph TD
 | Binary sequences | `hps/bytes/` | Borrowed views, capacity/length, cursor and integer codecs |
 | Text values | `hps/string/all.h`, `hps/string/` | Counted views, bounded buffers/builders, delimiter-set tokenization, persistent indentation, ASCII and alphabet policy |
 | C-string algorithms | `hps/cstr/all.h`, `hps/cstr/` | Bounded NUL-terminated transformations, parsing and formatting |
-| Typed data structures | `hps/data_structure/define.h`, `operations.h`, `all.h` | Caller-owned typed spans/descriptors, bounded vector/list operations and typed borrowed iterators; one descriptor provider |
+| Typed data structures | `hps/data_structure/define.h`, `operations.h`, `optional.h`, `all.h` | Caller-owned typed spans/descriptors, bounded vector/list operations, typed borrowed iterators and optional values; one descriptor provider |
 | JSON syntax | `hps/json/all.h`, `hps/json/` | Strict lexical grammar, iterative caller-budgeted document reading and validated fixed-output writing; no heap object graph or generic format registry |
 | Named values | `hps/enum/` | Imported enum traits and string-key generators with recorded legacy findings |
 | Domain validation | `hps/validation/` | National-code validation over the String contract |
@@ -102,3 +102,12 @@ JSON decimal/exponent values remain lexical spans. `HPS::json`/`hps-json` is a
 separate compiled target, depending only on String and its Base provider.
 Neither JSON nor these new utilities uses allocator hooks, the pool, a heap,
 OS calls, recursive descent or floating-point conversion.
+
+The [next 23-header migration](../migration/bytes-features-optional.md) reuses
+those providers and adds missing byte pop/order/edge/search operations in Bytes,
+typed optional values in Data Structure, and truthy text parsing in Cstr. Optional
+values store presence plus a copyable typed payload; they do not own or destroy
+resources. Raw/expanded stringification and compiler-enabled x86 instruction
+metadata extend existing Base headers without runtime CPU detection or a second
+standard-type/feature system. Comment-only algorithm/result/null-object drafts
+remain provenance rather than new dependencies.

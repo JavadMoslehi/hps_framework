@@ -16,6 +16,7 @@
 #define HPS_BYTE_OUT_OF_RANGE ((int32_t)-INT32_C(2))
 #define HPS_BYTE_NO_SPACE ((int32_t)-INT32_C(3))
 #define HPS_BYTE_INVALID_STATE ((int32_t)-INT32_C(4))
+#define HPS_BYTE_NPOS SIZE_MAX
 
 typedef struct {
     const uint8_t *data;
@@ -60,6 +61,38 @@ int32_t hps_byte_view_read_u8(hps_byte_view view, size_t index,
  * This is not a constant-time comparison for secrets. */
 int32_t hps_byte_view_equal(hps_byte_view left, hps_byte_view right,
                             uint8_t *result);
+
+/* Compare in unsigned-byte lexicographic order, writing exactly -1, 0 or 1.
+ * A matching prefix sorts before its longer extension. NULL result/malformed
+ * input gives INVALID_ARGUMENT. Inputs may share/overlap readable payloads;
+ * result must be disjoint from payloads. O(minimum length), early mismatch exit.
+ * Like equal, this is unsuitable for comparing secrets. */
+int32_t hps_byte_view_compare(hps_byte_view left, hps_byte_view right,
+                              int32_t *result);
+
+/* Write exactly 0 or 1 for a prefix/suffix match. An empty pattern matches every
+ * valid view; a longer pattern does not match and reads no payload. Shared or
+ * overlapping inputs are permitted. NULL result/malformed input gives
+ * INVALID_ARGUMENT. O(pattern.length), with early mismatch exit. */
+int32_t hps_byte_view_starts_with(hps_byte_view view, hps_byte_view prefix,
+                                  uint8_t *result);
+int32_t hps_byte_view_ends_with(hps_byte_view view, hps_byte_view suffix,
+                                uint8_t *result);
+
+/* Search the whole view, writing the first/last matching start index, or NPOS
+ * for no match. Absence is a successful result. An empty needle never matches,
+ * preserving the legacy byte-buffer search contract; this differs from String view
+ * search. Inputs may overlap; result must be disjoint from both payloads.
+ * NULL result/malformed inputs give INVALID_ARGUMENT and preserve result.
+ * Empty/too-long needles read no payload. NPOS cannot be a valid element index,
+ * including when a caller proves an actual SIZE_MAX-element view. No index is
+ * narrowed to ptrdiff_t or a basic numerical type. Worst-case work is bounded
+ * by view.length candidate starts times needle.length byte comparisons; O(1)
+ * automatic scalar storage, no payload scratch or allocation. */
+int32_t hps_byte_view_find(hps_byte_view view, hps_byte_view needle,
+                           size_t *result);
+int32_t hps_byte_view_rfind(hps_byte_view view, hps_byte_view needle,
+                            size_t *result);
 
 #ifdef __cplusplus
 } /* extern "C" */

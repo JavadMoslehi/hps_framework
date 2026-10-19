@@ -1,4 +1,6 @@
 #include "hps/cstr/convert.h"
+#include "hps/cstr/core.h"
+#include "hps/string/char.h"
 
 #include <string.h>
 
@@ -413,6 +415,45 @@ int32_t hps_cstr_boolalpha(const uint8_t flag, const char **result)
     if ((result != NULL) && (flag <= 1U)) {
         *result = (flag == 1U) ? "true" : "false";
         status = HPS_STRING_OK;
+    }
+    return status;
+}
+
+int32_t hps_cstr_parse_bool(const char *input,
+                            const size_t input_capacity, uint8_t *result)
+{
+    int32_t status = HPS_STRING_INVALID_ARGUMENT;
+    if (result != NULL) {
+        hps_string_view text = {NULL, 0U};
+        status = hps_string_view_init_cstr(&text, input, input_capacity);
+        if (status == HPS_STRING_OK) {
+            size_t start = 0U;
+            while ((start < text.length) &&
+                   (hps_char_is_whitespace((uint8_t)text.data[start]) == 1U)) {
+                start += 1U;
+            }
+            const size_t length = text.length - start;
+            const char *keyword = NULL;
+            uint8_t parsed = 0U;
+            switch (length) {
+                case 1U: keyword = "1"; break;
+                case 2U: keyword = "on"; break;
+                case 3U: keyword = "yes"; break;
+                case 4U: keyword = "true"; break;
+                default: /* Other suffix lengths cannot be truthy spellings. */ break;
+            }
+            if (keyword != NULL) {
+                int32_t order = INT32_C(0);
+                /* The verified suffix is 1..4 characters followed by NUL.
+                 * Reuse the existing case-insensitive Cstr comparison contract. */
+                status = hps_cstr_compare(&text.data[start], length + 1U,
+                    keyword, length + 1U, HPS_STRING_NPOS, 1U, &order);
+                parsed = (uint8_t)(order == INT32_C(0));
+            }
+            if (status == HPS_STRING_OK) {
+                *result = parsed;
+            }
+        }
     }
     return status;
 }
