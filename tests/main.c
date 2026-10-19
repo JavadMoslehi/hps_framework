@@ -58,5 +58,19 @@ int main(void)
     if (test_memory_clone() != 0) {
         return 17;
     }
+    if (test_macro_utilities() != 0) {
+        return 18;
+    }
+    if (test_memory_utilities() != 0) {
+        return 19;
+    }
+    if (test_result() != 0) {
+        return 20;
+    }
+#if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
+    if (test_hosted_debug() != 0) {
+        return 21;
+    }
+#endif
     return 0;
 }

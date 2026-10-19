@@ -3,11 +3,14 @@
 
 /**
  * @file hps/memory/operations.h
- * @brief Byte copying, movement, comparison, search and volatile clearing.
+ * @brief Byte copying, movement, comparison, exchange and volatile clearing.
  */
 
 #include <stddef.h>
 #include <stdint.h>
+
+/* Payload scratch budget used by hps_memswap, excluding scalar bookkeeping. */
+#define HPS_MEMSWAP_SCRATCH_BYTES 256U
 
 #ifdef __cplusplus
 extern "C" {
@@ -16,8 +19,9 @@ extern "C" {
 /* Callers prove live readable/writable extents of at least count bytes and
  * serialize conflicting access. NULL is permitted only when count is zero.
  * No function allocates, changes ownership or validates arbitrary pointers.
- * Comparison/volatile clearing require a target where uint8_t is an unsigned
- * character type for object-representation access; other targets are unqualified.
+ * Representation traversal (comparison, swap, full-scan equality and volatile
+ * clearing) requires uint8_t to be an unsigned character type on the target;
+ * other targets are unqualified for these object-representation operations.
  * Object-byte copies do not grant alignment, effective type or valid values to
  * otherwise unsuitable storage. Never compare padding as meaningful object data.
  * HPS wrapper bookkeeping uses O(1) automatic storage. HPS-owned loops perform
@@ -43,6 +47,24 @@ int32_t hps_memcmp(const void *left, const void *right, size_t count);
 /* Borrow the first matching byte or return NULL; retain source constness and
  * lifetime. An empty range returns NULL without accessing source. */
 const void *hps_memchr(const void *source, uint8_t value, size_t count);
+
+/* Return 1 for a non-NULL pointer, otherwise 0. This tests only nullness; it
+ * establishes no storage validity, extent, lifetime, alignment or ownership.
+ * The input must itself be an initialized, determinate pointer value. O(1). */
+uint8_t hps_pointer_is_nonnull(const void *pointer);
+
+/* Exchange count representation bytes. Ranges must be disjoint or identical;
+ * partial overlap is unsupported. Each range is readable and writable. Uses
+ * HPS_MEMSWAP_SCRATCH_BYTES automatic payload bytes plus O(1) scalars; loops
+ * perform at most count byte-equivalent exchanges, excluding libc work. */
+void hps_memswap(void *left, void *right, size_t count);
+
+/* Return 1 when every byte matches, otherwise 0. Empty ranges compare equal.
+ * The source loop visits all count bytes without a data-dependent early exit.
+ * Compiler transformations and target timing remain unverified: this API has
+ * no constant-time or cryptographic-provider guarantee. O(count), O(1) space. */
+uint8_t hps_memequal_full_scan(const void *left, const void *right,
+                              size_t count);
 
 /* Perform count volatile zero stores. No approved sensitive-erasure, cache,
  * synchronization or constant-time guarantee; target review is still required. */

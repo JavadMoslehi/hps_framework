@@ -17,6 +17,13 @@ never built or executed in its reference directories.
 
 ## Reference roots and portability
 
+The [utilities/runtime migration](utilities-runtime.md) reads all eight selected
+C-core layer 01/02/03 attribute, debug, generic, ownership and error headers.
+All eight match this inventory and have lossless HPS snapshots. It records safe
+provider/typed-owner adaptations, optional hosted diagnostics and the explicit
+decision to retain module-local results instead of restoring shared error codes.
+Reference sources and this inventory remain unchanged.
+
 The [detection-environment migration](detection-environment.md) reads all nine
 selected C-core environment headers and preserves their exact bytes in a
 lossless HPS JSON snapshot. All nine match this inventory; reference files,

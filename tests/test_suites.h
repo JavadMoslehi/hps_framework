@@ -30,5 +30,11 @@ int32_t test_national_code(void);
 int32_t test_cstr_enum(void);
 int32_t test_memory_operations(void);
 int32_t test_memory_clone(void);
+int32_t test_macro_utilities(void);
+int32_t test_memory_utilities(void);
+int32_t test_result(void);
+#if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
+int32_t test_hosted_debug(void);
+#endif
 
 #endif /* HPS_TESTS_TEST_SUITES_H */

@@ -11,6 +11,9 @@ graph TD
     Containers[Span and data structure generators] --> Base
     Enum[Named value traits] --> Base
     Platform[Optional platform metadata]
+    Algorithms[Typed scalar and bit algorithms] --> Base
+    Results[Zero-result predicates] --> Base
+    Hosted[Optional hosted diagnostics] --> Base
     Cstr --> String
     Validation --> String
     Clone[Optional clone proposal] --> Allocator[Optional allocator proposal]
@@ -22,14 +25,16 @@ graph TD
 | --- | --- | --- |
 | Compile-time foundation | `hps/base/all.h`, `hps/base/` | Compiler/language/architecture capabilities and expression helpers; no runtime umbrella dependencies |
 | Platform metadata | `hps/platform/detection.h`, `hps/platform/` | Visible OS-family, libc and POSIX evidence; no OS/libc includes, runtime adapter or API guarantee |
-| Raw memory | `hps/memory/operations.h` | Byte fill, copy, overlap-safe movement, comparison, search, volatile clearing |
+| Hosted adapter | `hps/platform/hosted/debug.h` | Separately enabled stderr/assertion/abort adapter; no core dependency or no-heap claim |
+| Typed scalar algorithms | `hps/algorithm/scalar.h`, `hps/algorithm/bits.h` | Single-evaluation extrema and checked bit operations; no implicit generic mutation |
+| Result convention | `hps/result/check.h` | Zero/nonzero predicates only; no shared status type, codes, category or lookup |
+| Raw memory | `hps/memory/operations.h`, `hps/memory/array.h` | Byte operations and checked element-count wrappers; full-scan equality has no constant-time claim |
 | Static byte reservations | `hps/memory/pool.h` | Single-context fixed byte-block ownership; no general typed-object allocation |
-| Optional ownership proposals | `hps/memory/allocator.h`, `hps/memory/clone.h` | Explicit provider interface and element cloning/rollback; HPS-MEM-001 disposition pending |
+| Optional ownership proposals | `hps/memory/allocator.h`, `clone.h`, `allocated_array.h`, `owner.h` | Explicit providers, cloning, checked allocation and typed manual owners; HPS-MEM-001 disposition pending |
 | Binary sequences | `hps/bytes/` | Borrowed views, capacity/length, cursor and integer codecs |
 | Text values | `hps/string/all.h`, `hps/string/` | Counted views, bounded buffers/builders, ASCII and alphabet policy |
 | C-string algorithms | `hps/cstr/all.h`, `hps/cstr/` | Bounded NUL-terminated transformations, parsing and formatting |
-| Typed spans | `hps/span/define.h`, `hps/span/all.h` | Caller-owned typed read-only span descriptions and constructors |
-| Typed containers | `hps/data_structure/define.h`, `hps/data_structure/all.h` | Caller-owned typed container/node descriptions and constructors |
+| Typed data structures | `hps/data_structure/define.h`, `hps/data_structure/all.h` | Caller-owned typed read-only spans, container/node descriptions and constructors, with one implementation provider |
 | Named values | `hps/enum/` | Imported enum traits and string-key generators with recorded legacy findings |
 | Domain validation | `hps/validation/` | National-code validation over the String contract |
 
@@ -71,3 +76,13 @@ The nine selected legacy detection files have a
 Existing IDs remain stable; additional identities/probes do not qualify new
 targets. [Platform detection](platform.md) separates family hints from visible
 library/API evidence and records include-order/configuration requirements.
+
+The [next eight-file migration](../migration/utilities-runtime.md) extends the
+existing attributes and raw-memory providers, adds compile-time helpers and typed
+algorithms, and separates hosted diagnostics from core. The hosted target is
+default-disabled and must be linked explicitly; no core or metadata umbrella
+includes its header. Generic legacy error ranges remain source-reference data.
+
+At the user's follow-up request the span generator implementation is consolidated
+into `data_structure/define.h`. Old `span/define.h`, `span/all.h` and root span
+paths are forwarding includes, with no second implementation or include cycle.

@@ -32,6 +32,10 @@ REQUIREMENT = re.compile(r'^(HPS-[A-Z]+-\d{3}):', re.MULTILINE)
 MATRIX_FIELDS = ['kind', 'guideline_id', 'category', 'scope', 'method_group',
                  'owner_role', 'status', 'evidence', 'deviation']
 STATUSES = {'unassessed', 'open', 'satisfied', 'deviation-approved', 'not-applicable'}
+# Separately built, default-disabled hosted adapter allowed by HPS-PRO-002.
+# This admits its stdio include only; numerical/heap/concurrency rules still run.
+HOSTED_STDIO_SOURCES = {'src/platform/hosted/debug.c'}
+HOSTED_DEBUG_HEADER = 'include/hps/platform/hosted/debug.h'
 
 
 def blank_lexical(match):
@@ -41,6 +45,7 @@ def blank_lexical(match):
 def source_findings(source, path, hosted=False):
     """Return lexical findings; string/character literals and comments are ignored."""
     clean = TOKENS_TO_IGNORE.sub(blank_lexical, source)
+    hosted_dependency_pattern = None
     if hosted:
         clean = HOSTED_MAIN.sub(blank_lexical, clean)
     patterns = [
@@ -53,17 +58,33 @@ def source_findings(source, path, hosted=False):
         (re.compile(r'\b(?:setjmp|longjmp)\s*\('), 'HPS-C-014: nonlocal control transfer'),
     ]
     if path.startswith('include/') or (path.startswith('src/') and path != 'src/main.c'):
+        forbidden_headers = 'pthread|threads|stdatomic|unistd'
+        if path not in HOSTED_STDIO_SOURCES:
+            forbidden_headers += '|stdio'
         patterns.extend([
             (re.compile(r'\b(?:pthread_\w+|thrd_\w+|atomic_\w+)\s*\('),
              'HPS-MEM-005: concurrency API in current single-context core'),
-            (re.compile(r'#\s*include\s*<\s*(?:pthread|threads|stdatomic|stdio|unistd)\.h\s*>'),
+            (re.compile(r'#\s*include\s*<\s*(?:' + forbidden_headers + r')\.h\s*>'),
              'HPS-PRO-002/HPS-MEM-005: platform/concurrency/I/O dependency in core'),
         ])
+        if (path not in HOSTED_STDIO_SOURCES) and (path != HOSTED_DEBUG_HEADER):
+            hosted_dependency_pattern = re.compile(
+                r'^[ \t]*#\s*include\s*[<"]hps/platform/hosted/[^>"\n]+[>"]',
+                re.MULTILINE)
     findings = []
     for pattern, message in patterns:
         for match in pattern.finditer(clean):
             line = clean.count('\n', 0, match.start()) + 1
             findings.append(f'{path}:{line}: {message}: {match.group().strip()}')
+    if hosted_dependency_pattern is not None:
+        # Preserve include strings; only comments are blanked for this scan.
+        include_code = TOKENS_TO_IGNORE.sub(
+            lambda match: blank_lexical(match) if match.group().startswith(('//', '/*'))
+            else match.group(), source)
+        for match in hosted_dependency_pattern.finditer(include_code):
+            line = include_code.count('\n', 0, match.start()) + 1
+            findings.append(f'{path}:{line}: HPS-PRO-002: hosted adapter dependency in core: '
+                            f'{match.group().strip()}')
     return findings
 
 
@@ -256,6 +277,17 @@ def self_test():
         ('#include <stdio.h>', 'src/bytes/buffer.c', True),
         ('atomic_load(value);', 'src/bytes/view.c', True),
         ('#include <stdio.h>', 'src/main.c', False),
+        ('#include <stdio.h>', 'src/platform/hosted/debug.c', False),
+        ('#include <stdio.h>', 'src/platform/hosted/other.c', True),
+        ('#include <stdio.h>', HOSTED_DEBUG_HEADER, True),
+        ('#include <unistd.h>', 'src/platform/hosted/debug.c', True),
+        ('#include <stdatomic.h>', 'src/platform/hosted/debug.c', True),
+        ('malloc(1U);', 'src/platform/hosted/debug.c', True),
+        ('int value;', 'src/platform/hosted/debug.c', True),
+        ('pthread_lock(value);', 'src/platform/hosted/debug.c', True),
+        ('#include "hps/platform/hosted/debug.h"', 'src/bytes/buffer.c', True),
+        ('#include <hps/platform/hosted/debug.h>', 'include/hps/base/all.h', True),
+        ('#include "hps/platform/hosted/debug.h"', 'src/platform/hosted/debug.c', False),
     ]
     for source, path, expected in scope_cases:
         if bool(source_findings(source, path)) != expected:

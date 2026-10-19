@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/span/define.h"
-#include "hps/span/define.h"
+#include "hps/data_structure/define.h"
+#include "hps/data_structure/define.h"
 #include <assert.h>
 #include <stdint.h>
 

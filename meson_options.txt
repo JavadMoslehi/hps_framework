@@ -1,0 +1,2 @@
+option('hosted_debug', type: 'boolean', value: false,
+  description: 'Build the optional hosted stderr/abort adapter')

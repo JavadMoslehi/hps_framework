@@ -68,12 +68,14 @@ The native test executable does not need Python.
 `python3 tests/base/check_detection.py --compiler clang` separately checks the
 migrated compiler, OS, libc, POSIX and feature boundaries with synthetic metadata.
 It is registered in Make, CMake and Meson; it never executes foreign-target code.
+`tests/base/check_attributes.py` verifies annotation opt-in/fallback contracts.
 
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
 `test_reader`, `test_enum`, `test_string`, `test_string_extended`,
 `test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
 `test_cstr_format`, `test_national_code`, `test_cstr_enum` and
-`test_data_structure`, `test_memory_operations` and `test_memory_clone` once, in that order,
+`test_data_structure`, `test_memory_operations`, `test_memory_clone`,
+`test_macro_utilities`, `test_memory_utilities` and `test_result` once, in that order,
 and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
@@ -81,7 +83,9 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The current seventeen-suite/header/detection verification is recorded in the
+The current twenty-suite verification (twenty-one with hosted diagnostics) is
+recorded in the [utility/runtime review](governance/reviews/utilities-runtime-2026-10-19.md).
+The preceding seventeen-suite/header/detection verification is recorded in the
 [detection and folder review](governance/reviews/detection-layers-2026-10-19.md).
 The preceding seventeen-suite verification is recorded in the
 [memory and layer review](governance/reviews/memory-layers-2026-10-19.md).
@@ -113,6 +117,24 @@ libc/POSIX evidence, without including SDK/OS headers. Unknown values remain
 unknown; an explicit libc family hint is allowlisted and checked. See
 [the platform contract](docs/architecture/platform.md) and the
 [nine-file decomposition and public-header migration](docs/migration/detection-environment.md).
+
+## Attributes, algorithms and optional diagnostics
+
+`hps/base/macros.h` supplies namespaced array counts/type spelling; Base's existing
+attributes now offer opt-in probed annotations. Typed min/max and checked u64 bit
+operations live in `hps/algorithm/scalar.h` and `bits.h`.
+
+`hps/memory/array.h` checks count arithmetic for byte operations. Optional
+`allocated_array.h` and `owner.h` add bounded-provider helpers and explicit typed
+ownership under the pending allocator proposal. Scope exit performs no cleanup.
+Full-scan equality is not a qualified constant-time comparison.
+
+`hps/result/check.h` checks only zero/nonzero, without shared errors or lookup.
+The optional `hps/platform/hosted/debug.h` stderr/assert/abort adapter is disabled
+by default. Enable CMake `-DHPS_BUILD_HOSTED_DEBUG=ON` and link `HPS::hosted_debug`,
+Meson `-Dhosted_debug=true`/`hps-hosted-debug`, or Make `HPS_BUILD_HOSTED_DEBUG=1`.
+It is separate from core and can inherit allocation/blocking inside libc.
+See the [eight-file mapping and intentional behavior changes](docs/migration/utilities-runtime.md).
 
 ## Named-value traits
 
@@ -151,10 +173,11 @@ arguments and fixed decimal coefficient/scale, with no printf varargs or native
 floating point. See [the contract](docs/architecture/cstr.md) and
 [legacy family migration](docs/migration/csep-text.md).
 
-`hps/span/define.h` generates typed borrowed read-only spans with C89-style constructors
+`hps/data_structure/define.h` generates typed borrowed read-only spans with C89-style constructors
 and C99 compound-literal support. `hps/base/expression.h` supplies single-evaluation
 branch hints and LVALUE. See [span construction](docs/architecture/span.md).
-`hps/span/all.h` is the span module umbrella.
+`hps/data_structure/all.h` is the shared span/container umbrella. Former span
+paths forward to it; the implementation lives only in `data_structure/define.h`.
 The native string-key enum generator lives beside traits in `hps/enum/cstr.h`;
 [its bounded switch example](docs/architecture/cstr-enum.md) includes input capacity.
 

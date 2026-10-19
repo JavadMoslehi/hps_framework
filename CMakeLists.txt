@@ -9,7 +9,8 @@ target_include_directories(hps_base INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(hps_base INTERFACE c_std_99)
 
-add_library(hps_memory STATIC src/memory/pool.c src/memory/operations.c)
+add_library(hps_memory STATIC src/memory/pool.c src/memory/operations.c
+    src/memory/array.c)
 add_library(HPS::memory ALIAS hps_memory)
 target_link_libraries(hps_memory PUBLIC HPS::base)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
@@ -42,6 +43,17 @@ target_link_libraries(hps_validation PUBLIC HPS::string)
 set_target_properties(hps_validation PROPERTIES EXPORT_NAME validation
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
+option(HPS_BUILD_HOSTED_DEBUG "Build the optional hosted stderr/abort adapter" OFF)
+if(HPS_BUILD_HOSTED_DEBUG)
+    add_library(hps_hosted_debug STATIC src/platform/hosted/debug.c)
+    add_library(HPS::hosted_debug ALIAS hps_hosted_debug)
+    target_link_libraries(hps_hosted_debug PUBLIC HPS::base)
+    set_target_properties(hps_hosted_debug PROPERTIES EXPORT_NAME hosted_debug
+        C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    install(TARGETS hps_hosted_debug EXPORT HPSTargets
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
+
 include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
@@ -52,9 +64,15 @@ if(BUILD_TESTING)
         tests/span/test_span.c tests/data_structure/test_data_structure.c
         tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
         tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
-        tests/enum/test_cstr_enum.c)
+        tests/enum/test_cstr_enum.c tests/base/test_macro_utilities.c
+        tests/memory/test_memory_utilities.c tests/result/test_result.c)
     target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes
         HPS::string HPS::cstr HPS::validation)
+    if(HPS_BUILD_HOSTED_DEBUG)
+        target_sources(hps_tests PRIVATE tests/platform/test_hosted_debug.c)
+        target_link_libraries(hps_tests PRIVATE HPS::hosted_debug)
+        target_compile_definitions(hps_tests PRIVATE HPS_TEST_HOSTED_DEBUG=1)
+    endif()
     set_target_properties(hps_tests PROPERTIES
         C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
     # Test assertions must remain active in Release builds.
@@ -72,6 +90,14 @@ if(BUILD_TESTING)
         add_test(NAME hps_environment_detection
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_detection.py
                 --compiler ${CMAKE_C_COMPILER})
+        add_test(NAME hps_attribute_contracts
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_attributes.py
+                --compiler ${CMAKE_C_COMPILER})
+        if(HPS_BUILD_HOSTED_DEBUG)
+            add_test(NAME hps_hosted_debug_contracts
+                COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/platform/check_hosted_debug.py
+                    --compiler ${CMAKE_C_COMPILER})
+        endif()
     endif()
 endif()
 

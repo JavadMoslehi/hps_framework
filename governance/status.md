@@ -1,6 +1,6 @@
 # Current adoption status
 
-Baseline date: 2026-10-11; detection/folder review updated 2026-10-19. This is a
+Baseline date: 2026-10-11; utilities/runtime review updated 2026-10-19. This is a
 gap register, not a progress estimate. Earlier host results below belong to
 [the text migration snapshot](reviews/csep-text-2026-10-13.md). The changed error
 representation invalidates those results for affected sources; current evidence
@@ -35,6 +35,7 @@ industrial certification or release evidence bundle is currently established.
 | GAP-022 | Optional allocator/clone headers introduce callback-driven ownership outside default core paths; HPS-MEM-001 prohibits dependency allocator hooks in production core | Resolve the [proposed scoped exception](reviews/memory-layers-2026-10-19.md) before production-core adoption; qualify bounded typed providers and callback contracts | Open |
 | GAP-023 | Raw memory operations use target libc and require unsigned-character uint8_t representation access; volatile clearing is not qualified sensitive erasure | Qualify target representation, libc resources/ABI and any erasure use under the [memory review](reviews/memory-layers-2026-10-19.md) | Open |
 | GAP-024 | Additional compiler/CPU/OS/libc/POSIX identities and feature probes have host/synthetic evidence only; library/SDK evidence is captured at first inclusion | Qualify actual vendor toolchains, target macros, SDK/libc/profile configuration and include order under the [detection review](reviews/detection-layers-2026-10-19.md) | Open |
+| GAP-025 | New optional allocated arrays/manual owners retain pending allocator-hook disposition; attributes and hosted diagnostics require target-specific contracts | Resolve the [utility/runtime dispositions](reviews/utilities-runtime-2026-10-19.md), explicit ownership cleanup, annotation proofs and hosted libc/resource/security boundaries before production adoption | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

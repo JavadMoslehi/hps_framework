@@ -3,9 +3,9 @@
 
 /**
  * @file hps/span/all.h
- * @brief Public umbrella for HPS span generators.
+ * @brief Compatibility umbrella for hps/data_structure/all.h.
  */
 
-#include "hps/span/define.h"
+#include "hps/data_structure/all.h"
 
 #endif /* HPS_SPAN_ALL_H */

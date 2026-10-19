@@ -15,5 +15,6 @@
 #include "hps/base/features.h"
 #include "hps/base/attributes.h"
 #include "hps/base/expression.h"
+#include "hps/base/macros.h"
 
 #endif /* HPS_BASE_ALL_H */

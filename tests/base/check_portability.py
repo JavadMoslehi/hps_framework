@@ -190,7 +190,7 @@ HPS_NODISCARD static HPS_INLINE int32_t identity(int32_t value) { return value; 
 int main(void) { return (identity(0) == 0) ? 0 : 1; }
 ''', run=True)
 # Borrowed typed spans keep declarations/make syntax usable before compound literals.
-span_source = '''#include "hps/span/define.h"
+span_source = '''#include "hps/data_structure/define.h"
 HPS_SPAN_DEFINE(size_t, test_sizes)
 static const size_t data[] = {1U, 2U};
 static const test_sizes_t initial = HPS_SPAN_STATIC_INIT(data, 2U);

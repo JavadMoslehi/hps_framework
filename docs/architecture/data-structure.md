@@ -1,7 +1,8 @@
 # Typed data-structure descriptors
 
 `hps/data_structure/define.h` extends the file-scope generator pattern from
-[`hps/span/define.h`](span.md) to the eleven families supplied in the user's draft.
+the [read-only span generator](span.md) in the same header to the eleven families
+supplied in the user's draft.
 Each definition takes an explicit element type and a unique prefix. It emits
 `name_s`, `name_t` and an internal `static HPS_INLINE name_make(...)` constructor.
 `hps/data_structure/all.h` is the module umbrella. The former

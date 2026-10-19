@@ -160,3 +160,11 @@ keywords, exact-type aliases, hosted exceptions, pool concurrency dependencies
 and selected public-header structure/linkage checks.
 Semantic alias analysis, valid arithmetic, string termination, loop bounds, ABI,
 whole-program MISRA findings and external libraries need qualified tools and review.
+
+The source checker distinguishes the separately built, default-disabled hosted
+adapter `src/platform/hosted/debug.c` under HPS-PRO-002: only that file may include
+stdio. Numerical, allocation and concurrency checks still apply there. Public
+headers and other core files retain the I/O restriction, and core includes of
+hosted adapter headers are rejected. Scope self-tests cover both sides of this
+boundary. This implements the existing adapter boundary; it approves no new
+heap/provider, target or external-standard exception.

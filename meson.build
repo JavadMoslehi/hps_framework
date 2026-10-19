@@ -12,11 +12,19 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
   test('hps_environment_detection', python,
     args: [files('tests/base/check_detection.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
+  test('hps_attribute_contracts', python,
+    args: [files('tests/base/check_attributes.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
+  if get_option('hosted_debug')
+    test('hps_hosted_debug_contracts', python,
+      args: [files('tests/platform/check_hosted_debug.py'), '--compiler'] + cc.cmd_array(),
+      timeout: 120)
+  endif
 endif
 install_subdir('include/hps', install_dir: get_option('includedir'))
 
 hps_memory_library = static_library('hps_memory', 'src/memory/pool.c',
-  'src/memory/operations.c',
+  'src/memory/operations.c', 'src/memory/array.c',
   dependencies: hps_base, install: true)
 hps_memory = declare_dependency(link_with: hps_memory_library,
   dependencies: hps_base)
@@ -49,6 +57,18 @@ hps_validation = declare_dependency(link_with: hps_validation_library,
 meson.override_dependency('hps-validation', hps_validation)
 
 test_assertion_args = cc.get_id() in ['msvc', 'clang-cl'] ? ['/UNDEBUG'] : ['-UNDEBUG']
+hosted_test_sources = []
+hosted_test_dependencies = []
+if get_option('hosted_debug')
+  hosted_debug_library = static_library('hps_hosted_debug', 'src/platform/hosted/debug.c',
+    dependencies: hps_base, install: true)
+  hosted_debug = declare_dependency(link_with: hosted_debug_library,
+    dependencies: hps_base)
+  meson.override_dependency('hps-hosted-debug', hosted_debug)
+  hosted_test_sources = files('tests/platform/test_hosted_debug.c')
+  hosted_test_dependencies = [hosted_debug]
+  test_assertion_args += ['-DHPS_TEST_HOSTED_DEBUG=1']
+endif
 hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/memory/test_pool.c', 'tests/memory/test_memory_operations.c',
   'tests/memory/test_memory_clone.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
@@ -57,7 +77,8 @@ hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/span/test_span.c', 'tests/data_structure/test_data_structure.c',
   'tests/cstr/test_cstr.c', 'tests/cstr/test_cstr_convert.c',
   'tests/cstr/test_cstr_format.c', 'tests/validation/test_national_code.c',
-  'tests/enum/test_cstr_enum.c',
+  'tests/enum/test_cstr_enum.c', 'tests/base/test_macro_utilities.c',
+  'tests/memory/test_memory_utilities.c', 'tests/result/test_result.c', hosted_test_sources,
   dependencies: [hps_base, hps_memory, hps_bytes, hps_string,
-    hps_cstr, hps_validation], c_args: test_assertion_args)
+    hps_cstr, hps_validation] + hosted_test_dependencies, c_args: test_assertion_args)
 test('hps_tests', hps_tests)
