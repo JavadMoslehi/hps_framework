@@ -124,3 +124,21 @@ copy no backing array.
 
 The [change review](../../governance/reviews/data-structure-2026-10-18.md) records
 draft naming migration, policy/MISRA mapping, actual checks and remaining gaps.
+
+## Bounded operations and borrowed iteration
+
+`hps/data_structure/operations.h`, also included by `all.h`, extends an existing
+`HPS_VECTOR_DEFINE` or `HPS_DLIST_DEFINE` instantiation with matching
+`HPS_VECTOR_OPERATIONS_DEFINE(type, name)` or
+`HPS_DLIST_OPERATIONS_DEFINE(type, name)`. No descriptor generator is duplicated.
+Generated vector push/get and dlist detached-node append return direct `int32_t`
+with local `HPS_COLLECTION_*` errors; they neither allocate nor retain elements.
+
+Typed iterator begin/next borrow live unchanged storage and return copied values
+plus a uint8 found flag, distinguishing a nullable element from end. End preserves
+the value, and errors preserve all outputs/state. List begin additionally requires
+a maximum-node budget and next checks predecessor/final-node consistency.
+Exact interior membership/acyclicity, actual typed extents and exclusive detached
+node ownership remain caller preconditions; endpoint validation cannot prove
+arbitrary pointers safe. See the header contracts and
+[development review](../../governance/reviews/objects-json-2026-10-19.md).

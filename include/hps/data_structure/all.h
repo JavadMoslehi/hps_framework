@@ -7,5 +7,6 @@
  */
 
 #include "hps/data_structure/define.h"
+#include "hps/data_structure/operations.h"
 
 #endif /* HPS_DATA_STRUCTURE_ALL_H */

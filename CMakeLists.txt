@@ -24,7 +24,8 @@ set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_string STATIC src/string/view.c src/string/buffer.c
-    src/string/char.c src/string/builder.c src/string/policy.c)
+    src/string/char.c src/string/builder.c src/string/policy.c
+    src/string/tokenizer.c src/string/indent.c)
 add_library(HPS::string ALIAS hps_string)
 target_link_libraries(hps_string PUBLIC HPS::base)
 set_target_properties(hps_string PROPERTIES EXPORT_NAME string
@@ -35,6 +36,13 @@ add_library(hps_cstr STATIC src/cstr/core.c src/cstr/convert.c
 add_library(HPS::cstr ALIAS hps_cstr)
 target_link_libraries(hps_cstr PUBLIC HPS::string)
 set_target_properties(hps_cstr PROPERTIES EXPORT_NAME cstr
+    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+
+add_library(hps_json STATIC src/json/tokenizer.c src/json/reader.c
+    src/json/writer.c src/json/string.c)
+add_library(HPS::json ALIAS hps_json)
+target_link_libraries(hps_json PUBLIC HPS::string)
+set_target_properties(hps_json PROPERTIES EXPORT_NAME json
     C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_validation STATIC src/validation/national_code.c)
@@ -61,13 +69,15 @@ if(BUILD_TESTING)
         tests/memory/test_memory_clone.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
         tests/enum/test_enum.c tests/string/test_string.c
         tests/string/test_string_extended.c tests/string/test_string_builder.c
+        tests/string/test_string_tokenizer.c tests/string/test_string_indent.c
         tests/span/test_span.c tests/data_structure/test_data_structure.c
+        tests/data_structure/test_collection_operations.c tests/json/test_json.c
         tests/cstr/test_cstr.c tests/cstr/test_cstr_convert.c
         tests/cstr/test_cstr_format.c tests/validation/test_national_code.c
         tests/enum/test_cstr_enum.c tests/base/test_macro_utilities.c
         tests/memory/test_memory_utilities.c tests/result/test_result.c)
     target_link_libraries(hps_tests PRIVATE HPS::base HPS::memory HPS::bytes
-        HPS::string HPS::cstr HPS::validation)
+        HPS::string HPS::cstr HPS::json HPS::validation)
     if(HPS_BUILD_HOSTED_DEBUG)
         target_sources(hps_tests PRIVATE tests/platform/test_hosted_debug.c)
         target_link_libraries(hps_tests PRIVATE HPS::hosted_debug)
@@ -93,6 +103,9 @@ if(BUILD_TESTING)
         add_test(NAME hps_attribute_contracts
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_attributes.py
                 --compiler ${CMAKE_C_COMPILER})
+        add_test(NAME hps_json_oracle
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/json/check_json.py
+                --compiler ${CMAKE_C_COMPILER})
         if(HPS_BUILD_HOSTED_DEBUG)
             add_test(NAME hps_hosted_debug_contracts
                 COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/platform/check_hosted_debug.py
@@ -109,7 +122,7 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/HPSConfigVersion.cm
     VERSION ${PROJECT_VERSION} COMPATIBILITY ExactVersion)
 set_target_properties(hps_base PROPERTIES EXPORT_NAME base)
 install(TARGETS hps_base hps_memory hps_bytes hps_string hps_cstr
-    hps_validation EXPORT HPSTargets
+    hps_json hps_validation EXPORT HPSTargets
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/hps DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 install(EXPORT HPSTargets NAMESPACE HPS:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/HPS)

@@ -176,7 +176,7 @@ does not rename every legacy function into an API-compatible replacement.
 | Buffer capacity | MyLibraries header describes capacity excluding NUL, while implementation reserves NUL inside capacity | Capacity consistently includes NUL; minimum capacity one; remaining payload space excludes the terminator |
 | Copy arithmetic and overlap | MyLibraries append adds lengths before checking space and uses `memcpy` | Subtraction proves available space; overlapping assign/append use `memmove`; no partial writes |
 | Buffer text validity | MyLibraries can append views containing NUL and does not validate length/termination state | Active prefix contains no NUL; state is checked before mutation and source NUL is rejected |
-| Dependencies and larger features | MyLibraries view includes printing/tokenizer code; CSEP has additional split/find/character helpers and fixed-string generators | No stdio, formatting, tokenizer, heap builder or packed layout in the selected foundation |
+| Dependencies and larger features | MyLibraries view includes printing/tokenizer code; CSEP has additional split/find/character helpers and fixed-string generators | No stdio, formatting, tokenizer, heap builder or packed layout in the initial foundation. Subsequent bounded formatting/builders and delimiter-set tokenizer extensions have their own migration contracts. |
 
 The CSEP comparison sources are
 `inc/csep/string/string_view/csep_string_view.h` and
@@ -225,3 +225,19 @@ deviation; checker findings remain visible. Contracts and engineering work map
 to HPS-C-004/006/009/010/011/012/017/018/019, HPS-HDR-001 through HPS-HDR-006,
 HPS-MEM-001/002, HPS-EXEC-001 and HPS-SEC-002/009. Tests cannot supply that approval,
 MISRA compliance, target qualification, certification or measured performance.
+
+## Tokenization and indentation extensions
+
+`hps/string/tokenizer.h` adds delimiter-set scanning with optional literal
+quote/escape shielding and edge trimming. Enabled syntax takes precedence over
+delimiter membership, including at token boundaries; no unquoting occurs.
+Malformed quoting/trailing escape preserves cursor and outputs. Existing
+substring `split_next` remains the provider for empty-field substring splitting.
+
+`hps/string/indent.h` adds persistent checked four-space levels and explicit
+line-start state over an initialized builder. Compound appends stage the complete
+result in disjoint caller scratch; source may borrow the builder. All failures
+preserve context, destination and scratch. Explicit newline/line calls drive
+state; raw embedded LF is not interpreted. These additions allocate no storage.
+See the [twenty-file mapping](../migration/objects-json.md) and
+[review](../../governance/reviews/objects-json-2026-10-19.md).

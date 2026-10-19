@@ -1,5 +1,12 @@
 # Legacy source inventory and continuation
 
+The subsequent [twenty-file runtime/text/JSON migration](objects-json.md) records
+the complete selected-file mapping and intentional omissions for already-covered
+concepts. Its [lossless snapshot](objects-json-snapshot.json) matches all twenty
+inventory hashes. New bounded reference arithmetic, typed collection operations,
+String tokenization/indentation and JSON APIs are HPS adaptations; heap object
+wrappers and an incomplete generic serialization framework are not imported.
+
 Snapshot date: 2026-10-13; continuation updated: 2026-10-19.
 HPS inventory base revision: 2dafeb9df1f70ca84418ba8348bae8ad688b97c9.
 This is a source inventory and migration handoff. Module implementation and host

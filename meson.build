@@ -15,6 +15,9 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
   test('hps_attribute_contracts', python,
     args: [files('tests/base/check_attributes.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
+  test('hps_json_oracle', python,
+    args: [files('tests/json/check_json.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
   if get_option('hosted_debug')
     test('hps_hosted_debug_contracts', python,
       args: [files('tests/platform/check_hosted_debug.py'), '--compiler'] + cc.cmd_array(),
@@ -38,6 +41,7 @@ meson.override_dependency('hps-bytes', hps_bytes)
 
 hps_string_library = static_library('hps_string', 'src/string/view.c', 'src/string/buffer.c',
   'src/string/char.c', 'src/string/builder.c', 'src/string/policy.c',
+  'src/string/tokenizer.c', 'src/string/indent.c',
   dependencies: hps_base, install: true)
 hps_string = declare_dependency(link_with: hps_string_library,
   dependencies: hps_base)
@@ -49,6 +53,13 @@ hps_cstr_library = static_library('hps_cstr', 'src/cstr/core.c',
 hps_cstr = declare_dependency(link_with: hps_cstr_library,
   dependencies: hps_string)
 meson.override_dependency('hps-cstr', hps_cstr)
+
+hps_json_library = static_library('hps_json', 'src/json/tokenizer.c',
+  'src/json/reader.c', 'src/json/writer.c', 'src/json/string.c',
+  dependencies: hps_string, install: true)
+hps_json = declare_dependency(link_with: hps_json_library,
+  dependencies: hps_string)
+meson.override_dependency('hps-json', hps_json)
 
 hps_validation_library = static_library('hps_validation', 'src/validation/national_code.c',
   dependencies: hps_string, install: true)
@@ -74,11 +85,13 @@ hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/memory/test_memory_clone.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
   'tests/enum/test_enum.c', 'tests/string/test_string.c',
   'tests/string/test_string_extended.c', 'tests/string/test_string_builder.c',
+  'tests/string/test_string_tokenizer.c', 'tests/string/test_string_indent.c',
   'tests/span/test_span.c', 'tests/data_structure/test_data_structure.c',
+  'tests/data_structure/test_collection_operations.c', 'tests/json/test_json.c',
   'tests/cstr/test_cstr.c', 'tests/cstr/test_cstr_convert.c',
   'tests/cstr/test_cstr_format.c', 'tests/validation/test_national_code.c',
   'tests/enum/test_cstr_enum.c', 'tests/base/test_macro_utilities.c',
   'tests/memory/test_memory_utilities.c', 'tests/result/test_result.c', hosted_test_sources,
   dependencies: [hps_base, hps_memory, hps_bytes, hps_string,
-    hps_cstr, hps_validation] + hosted_test_dependencies, c_args: test_assertion_args)
+    hps_cstr, hps_json, hps_validation] + hosted_test_dependencies, c_args: test_assertion_args)
 test('hps_tests', hps_tests)

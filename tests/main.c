@@ -67,6 +67,18 @@ int main(void)
     if (test_result() != 0) {
         return 20;
     }
+    if (test_collection_operations() != 0) {
+        return 22;
+    }
+    if (test_string_tokenizer() != 0) {
+        return 23;
+    }
+    if (test_string_indent() != 0) {
+        return 24;
+    }
+    if (test_json() != 0) {
+        return 25;
+    }
 #if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
     if (test_hosted_debug() != 0) {
         return 21;

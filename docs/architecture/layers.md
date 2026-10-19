@@ -16,6 +16,7 @@ graph TD
     Hosted[Optional hosted diagnostics] --> Base
     Cstr --> String
     Validation --> String
+    JSON[Bounded JSON tokenizer, reader and writer] --> String
     Clone[Optional clone proposal] --> Allocator[Optional allocator proposal]
     Allocator --> Memory
     Clone --> Memory
@@ -28,13 +29,14 @@ graph TD
 | Hosted adapter | `hps/platform/hosted/debug.h` | Separately enabled stderr/assertion/abort adapter; no core dependency or no-heap claim |
 | Typed scalar algorithms | `hps/algorithm/scalar.h`, `hps/algorithm/bits.h` | Single-evaluation extrema and checked bit operations; no implicit generic mutation |
 | Result convention | `hps/result/check.h` | Zero/nonzero predicates only; no shared status type, codes, category or lookup |
-| Raw memory | `hps/memory/operations.h`, `hps/memory/array.h` | Byte operations and checked element-count wrappers; full-scan equality has no constant-time claim |
+| Raw memory and lifetime counters | `hps/memory/operations.h`, `hps/memory/array.h`, `hps/memory/refcount.h` | Byte operations, checked element counts and checked single-context reference arithmetic; no implicit destruction |
 | Static byte reservations | `hps/memory/pool.h` | Single-context fixed byte-block ownership; no general typed-object allocation |
 | Optional ownership proposals | `hps/memory/allocator.h`, `clone.h`, `allocated_array.h`, `owner.h` | Explicit providers, cloning, checked allocation and typed manual owners; HPS-MEM-001 disposition pending |
 | Binary sequences | `hps/bytes/` | Borrowed views, capacity/length, cursor and integer codecs |
-| Text values | `hps/string/all.h`, `hps/string/` | Counted views, bounded buffers/builders, ASCII and alphabet policy |
+| Text values | `hps/string/all.h`, `hps/string/` | Counted views, bounded buffers/builders, delimiter-set tokenization, persistent indentation, ASCII and alphabet policy |
 | C-string algorithms | `hps/cstr/all.h`, `hps/cstr/` | Bounded NUL-terminated transformations, parsing and formatting |
-| Typed data structures | `hps/data_structure/define.h`, `hps/data_structure/all.h` | Caller-owned typed read-only spans, container/node descriptions and constructors, with one implementation provider |
+| Typed data structures | `hps/data_structure/define.h`, `operations.h`, `all.h` | Caller-owned typed spans/descriptors, bounded vector/list operations and typed borrowed iterators; one descriptor provider |
+| JSON syntax | `hps/json/all.h`, `hps/json/` | Strict lexical grammar, iterative caller-budgeted document reading and validated fixed-output writing; no heap object graph or generic format registry |
 | Named values | `hps/enum/` | Imported enum traits and string-key generators with recorded legacy findings |
 | Domain validation | `hps/validation/` | National-code validation over the String contract |
 
@@ -86,3 +88,17 @@ includes its header. Generic legacy error ranges remain source-reference data.
 At the user's follow-up request the span generator implementation is consolidated
 into `data_structure/define.h`. Old `span/define.h`, `span/all.h` and root span
 paths are forwarding includes, with no second implementation or include cycle.
+
+The [twenty-file object/text/JSON migration](../migration/objects-json.md)
+adds only missing operations. Reference counters are ordinary caller-owned values;
+they do not introduce a universal base object, allocation or implicit destructor.
+Vector/list operations build on the existing generators, keeping user-selected
+element types and node ownership. Their iterators prohibit mutation while borrowed.
+
+String tokenizer/indentation are extensions of counted text rather than a second
+Cstr implementation. JSON is a consumer of String, not part of Base or a generic
+runtime umbrella. Its token/frame/output budgets come from the caller; ordinary
+JSON decimal/exponent values remain lexical spans. `HPS::json`/`hps-json` is a
+separate compiled target, depending only on String and its Base provider.
+Neither JSON nor these new utilities uses allocator hooks, the pool, a heap,
+OS calls, recursive descent or floating-point conversion.

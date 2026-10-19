@@ -39,6 +39,7 @@ and blocks the corresponding release claim.
 | [Memory and layer review](reviews/memory-layers-2026-10-19.md) | Supplied memory primitives, optional allocator/clone proposal and canonical layer paths |
 | [Detection and folder review](reviews/detection-layers-2026-10-19.md) | Nine legacy headers decomposed into Base/Platform and canonical module folders |
 | [Utilities and runtime review](reviews/utilities-runtime-2026-10-19.md) | Eight legacy headers mapped to attributes, algorithms, memory ownership and optional hosted diagnostics |
+| [Objects, text and JSON review](reviews/objects-json-2026-10-19.md) | Twenty legacy files deduplicated into checked refcounts, typed operations, String extensions and bounded JSON |
 | [String foundation review](reviews/string-2026-10-13.md) | Bounded text views/buffers, legacy adaptation and current host verification |
 | [Character storage proposal](reviews/string-storage-2026-10-13.md) | Counted text and actual char-array fixtures; release disposition pending |
 | [Bytes reader review](reviews/bytes-reader-2026-10-11.md) | Checked cursor, ecosystem mapping and pending verification |

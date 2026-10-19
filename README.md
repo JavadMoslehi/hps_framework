@@ -75,7 +75,9 @@ The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
 `test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
 `test_cstr_format`, `test_national_code`, `test_cstr_enum` and
 `test_data_structure`, `test_memory_operations`, `test_memory_clone`,
-`test_macro_utilities`, `test_memory_utilities` and `test_result` once, in that order,
+`test_macro_utilities`, `test_memory_utilities`, `test_result`,
+`test_collection_operations`, `test_string_tokenizer`, `test_string_indent` and
+`test_json` once, in that order,
 and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
@@ -83,7 +85,10 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The current twenty-suite verification (twenty-one with hosted diagnostics) is
+The current twenty-four-suite verification (twenty-five with hosted diagnostics)
+is recorded in the [runtime/text/JSON review](governance/reviews/objects-json-2026-10-19.md).
+`tests/json/check_json.py` adds deterministic grammar-oracle and mutation checks.
+The preceding twenty-suite verification (twenty-one with hosted diagnostics) is
 recorded in the [utility/runtime review](governance/reviews/utilities-runtime-2026-10-19.md).
 The preceding seventeen-suite/header/detection verification is recorded in the
 [detection and folder review](governance/reviews/detection-layers-2026-10-19.md).
@@ -135,6 +140,22 @@ by default. Enable CMake `-DHPS_BUILD_HOSTED_DEBUG=ON` and link `HPS::hosted_deb
 Meson `-Dhosted_debug=true`/`hps-hosted-debug`, or Make `HPS_BUILD_HOSTED_DEBUG=1`.
 It is separate from core and can inherit allocation/blocking inside libc.
 See the [eight-file mapping and intentional behavior changes](docs/migration/utilities-runtime.md).
+
+## Bounded JSON and collection operations
+
+`hps/json/all.h` provides strict tokenization, iterative document reading,
+counted UTF-8 string decoding, checked i64 access and validated compact output.
+Supply token/frame/output storage explicitly; numbers can remain raw text.
+Link `HPS::json`/`hps-json`, depending on String. No heap object graph, recursion
+or native floating conversion is required. See the
+[JSON contract](docs/architecture/json.md) and
+[twenty-file migration mapping](docs/migration/objects-json.md).
+
+`hps/data_structure/operations.h` extends existing vector/dlist descriptors with
+bounded typed operations and borrowed iterators. `hps/memory/refcount.h` adds
+checked single-context reference arithmetic with explicit final-release output.
+Neither allocates or destroys element objects. String additionally offers
+delimiter-set tokenization and persistent four-space indentation over its builder.
 
 ## Named-value traits
 

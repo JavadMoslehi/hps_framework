@@ -33,6 +33,10 @@ int32_t test_memory_clone(void);
 int32_t test_macro_utilities(void);
 int32_t test_memory_utilities(void);
 int32_t test_result(void);
+int32_t test_collection_operations(void);
+int32_t test_string_tokenizer(void);
+int32_t test_string_indent(void);
+int32_t test_json(void);
 #if defined(HPS_TEST_HOSTED_DEBUG) && HPS_TEST_HOSTED_DEBUG
 int32_t test_hosted_debug(void);
 #endif
