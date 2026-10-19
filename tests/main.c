@@ -52,5 +52,11 @@ int main(void)
     if (test_data_structure() != 0) {
         return 15;
     }
+    if (test_memory_operations() != 0) {
+        return 16;
+    }
+    if (test_memory_clone() != 0) {
+        return 17;
+    }
     return 0;
 }

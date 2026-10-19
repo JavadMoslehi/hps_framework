@@ -2,7 +2,7 @@
 
 #include <string.h>
 #include "hps/string/char.h"
-#include "internal.h"
+#include "../internal/text.h"
 
 /**
  * @file src/string/builder.c

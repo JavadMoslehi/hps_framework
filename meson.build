@@ -9,10 +9,14 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
   test('hps_base_portability', python,
     args: [files('tests/base/check_portability.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
+  test('hps_environment_detection', python,
+    args: [files('tests/base/check_detection.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
 endif
 install_subdir('include/hps', install_dir: get_option('includedir'))
 
 hps_memory_library = static_library('hps_memory', 'src/memory/pool.c',
+  'src/memory/operations.c',
   dependencies: hps_base, install: true)
 hps_memory = declare_dependency(link_with: hps_memory_library,
   dependencies: hps_base)
@@ -46,7 +50,8 @@ meson.override_dependency('hps-validation', hps_validation)
 
 test_assertion_args = cc.get_id() in ['msvc', 'clang-cl'] ? ['/UNDEBUG'] : ['-UNDEBUG']
 hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
-  'tests/memory/test_pool.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
+  'tests/memory/test_pool.c', 'tests/memory/test_memory_operations.c',
+  'tests/memory/test_memory_clone.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
   'tests/enum/test_enum.c', 'tests/string/test_string.c',
   'tests/string/test_string_extended.c', 'tests/string/test_string_builder.c',
   'tests/span/test_span.c', 'tests/data_structure/test_data_structure.c',

@@ -28,6 +28,11 @@
 #define HPS_ARCH_RISCV32   5
 #define HPS_ARCH_RISCV64   6
 
+/* Family detection does not establish the data model or pointer width. */
+#define HPS_ARCH_MIPS      7
+#define HPS_ARCH_PPC       8
+#define HPS_ARCH_RISCV     9
+
 
 /* --------------------------------------------------------------------------
  * Architecture detection
@@ -63,15 +68,24 @@
 
 #  else
 
-#   define HPS_ARCHITECTURE HPS_ARCH_UNKNOWN
+#   define HPS_ARCHITECTURE HPS_ARCH_RISCV
 
 #  endif
 
 # else
 
-#  define HPS_ARCHITECTURE HPS_ARCH_UNKNOWN
+#  define HPS_ARCHITECTURE HPS_ARCH_RISCV
 
 # endif
+
+#elif defined(__mips__) || defined(__mips) || defined(__MIPS__)
+
+# define HPS_ARCHITECTURE HPS_ARCH_MIPS
+
+#elif defined(__powerpc64__) || defined(__powerpc__) || \
+      defined(__ppc__) || defined(_M_PPC)
+
+# define HPS_ARCHITECTURE HPS_ARCH_PPC
 
 #else
 

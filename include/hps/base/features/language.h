@@ -69,6 +69,12 @@
 
 #endif
 
+/* Standard C syntax only: compiler extensions have separate flags. Neither
+ * C compound literals nor C designated initializers are advertised in C++. */
+#define HPS_HAS_COMPOUND_LITERALS HPS_HAS_C99_FEATURES
+#define HPS_HAS_DESIGNATED_INITIALIZERS HPS_HAS_C99_FEATURES
+#define HPS_HAS_TYPEOF HPS_HAS_C23_FEATURES
+
 
 /* --------------------------------------------------------------------------
  * C11 language features

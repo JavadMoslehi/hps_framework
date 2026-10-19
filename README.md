@@ -1,15 +1,19 @@
 # HPS
 
 HPS is a general-purpose C framework. Its base layer is a header-only foundation
-shared by industry-specific layers. It has no runtime, allocation, operating
+shared by runtime utilities and domain modules. The base has no runtime, allocation, operating
 system, network, or file I/O dependency.
 
-Include `hps/base.h` for the complete C99+ API, or include individual headers.
+Include `hps/base/all.h` for the base C99+ API, or include individual headers.
+Each public module keeps its declarations in its own directory. The former root
+headers remain compatibility includes; new consumers use the module paths below.
 See [the base API and portability contract](docs/architecture/base.md) before
 using optional capabilities on a new target.
+The [layer map](docs/architecture/layers.md) describes every module, canonical
+include path and dependency direction.
 
 ```c
-#include "hps/base.h"
+#include "hps/base/all.h"
 #include <stdint.h>
 
 HPS_STATIC_ASSERT(HPS_C_IS_C99, "C99 required");
@@ -61,12 +65,15 @@ C99/C11/C17/C2x compilation, negative contracts, freestanding compilation, and
 synthetic compiler/architecture detection. Run it with another GCC/Clang-compatible
 compiler using `python3 tests/base/check_portability.py --compiler clang`.
 The native test executable does not need Python.
+`python3 tests/base/check_detection.py --compiler clang` separately checks the
+migrated compiler, OS, libc, POSIX and feature boundaries with synthetic metadata.
+It is registered in Make, CMake and Meson; it never executes foreign-target code.
 
 The shared `hps_tests` executable runs `test_base`, `test_pool`, `test_bytes`,
 `test_reader`, `test_enum`, `test_string`, `test_string_extended`,
 `test_string_builder`, `test_span`, `test_cstr`, `test_cstr_convert`,
 `test_cstr_format`, `test_national_code`, `test_cstr_enum` and
-`test_data_structure` once, in that order,
+`test_data_structure`, `test_memory_operations` and `test_memory_clone` once, in that order,
 and stops on the first failure.
 Module test files expose
 functions matching their filenames; the only suite runner `main` is in
@@ -74,7 +81,11 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The fifteen-suite runner's current verification is recorded in the
+The current seventeen-suite/header/detection verification is recorded in the
+[detection and folder review](governance/reviews/detection-layers-2026-10-19.md).
+The preceding seventeen-suite verification is recorded in the
+[memory and layer review](governance/reviews/memory-layers-2026-10-19.md).
+The preceding fifteen-suite verification is recorded in the
 [data-structure review](governance/reviews/data-structure-2026-10-18.md).
 The preceding result-type migration is documented in its
 [review](governance/reviews/status-removal-2026-10-18.md).
@@ -94,6 +105,15 @@ library have been removed. Link the module you use directly. Consumers must
 rebuild and update old result typedefs and numeric assumptions; see the
 [API/ABI migration](governance/reviews/status-removal-2026-10-18.md).
 
+## Environment metadata
+
+Language/compiler/CPU declarations remain in `hps/base/all.h`. Optional
+`hps/platform/detection.h` separately aggregates OS-family hints and already-visible
+libc/POSIX evidence, without including SDK/OS headers. Unknown values remain
+unknown; an explicit libc family hint is allowlisted and checked. See
+[the platform contract](docs/architecture/platform.md) and the
+[nine-file decomposition and public-header migration](docs/migration/detection-environment.md).
+
 ## Named-value traits
 
 `hps/enum/traits.h` preserves the imported enum API for name lookup, parsing,
@@ -107,7 +127,7 @@ the user's request. Its suite is included in the current host verification.
 
 ## Strings
 
-`hps/string.h` includes borrowed text views and fixed-capacity C-string buffers.
+`hps/string/all.h` includes borrowed text views and fixed-capacity C-string buffers.
 Views support exact slicing, comparison, prefix/suffix tests, forward/backward
 search, trimming and bounded C-string import/export. Buffers use caller-owned
 storage for assign, append, erase, truncate and clear; capacity includes the NUL
@@ -124,24 +144,41 @@ separate contracts.
 
 ## C strings, spans and string keys
 
-`hps/cstr.h` provides bounded C-string transformations, parsing/rendering, byte
+`hps/cstr/all.h` provides bounded C-string transformations, parsing/rendering, byte
 encoding, split/join, lexical path helpers, diagnostics and typed formatting.
 Link `HPS::cstr`/`hps-cstr`; it depends on string. Formatting uses exact-width
 arguments and fixed decimal coefficient/scale, with no printf varargs or native
 floating point. See [the contract](docs/architecture/cstr.md) and
 [legacy family migration](docs/migration/csep-text.md).
 
-`hps/span.h` generates typed borrowed read-only spans with C89-style constructors
+`hps/span/define.h` generates typed borrowed read-only spans with C89-style constructors
 and C99 compound-literal support. `hps/base/expression.h` supplies single-evaluation
 branch hints and LVALUE. See [span construction](docs/architecture/span.md).
+`hps/span/all.h` is the span module umbrella.
 The native string-key enum generator lives beside traits in `hps/enum/cstr.h`;
 [its bounded switch example](docs/architecture/cstr-enum.md) includes input capacity.
 
-`hps/hps_data_structure.h` extends the span pattern to eleven typed descriptor
+`hps/data_structure/define.h` extends the span pattern to eleven typed descriptor
 families: vector, mutable/read-only span, read-only window, in-place vector/ring,
 ring, stack, singly/doubly linked list and binary tree. Each has a named generator,
 constructor, `MAKE` helper and static initializer; linked families also generate
 nodes. See [definitions and ownership contracts](docs/architecture/data-structure.md).
+`hps/data_structure/all.h` is the data-structure module umbrella. The former
+`hps/data_structure.h` and `hps/hps_data_structure.h` paths remain forwarding
+includes.
+
+## Memory operations and optional cloning
+
+`hps/memory/operations.h` supplies byte fill, copy, overlap-safe movement,
+comparison, const-preserving search and volatile clearing. Link `HPS::memory` or
+`hps-memory`. Caller-proven extents and target libc requirements apply.
+
+`hps/memory/allocator.h` and `hps/memory/clone.h` separately expose the supplied
+allocator and deep-copy designs as optional development proposals. Their wrapper
+names use `hps_allocator_*` to coexist with the existing pool API. Callback hooks
+remain subject to the proposed HPS-MEM-001 exception; no core module uses them and
+no heap provider is supplied. See the explicit
+[API and behavior migration](docs/migration/memory.md).
 
 ## Static memory pool
 

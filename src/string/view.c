@@ -1,5 +1,5 @@
 #include "hps/string/view.h"
-#include "internal.h"
+#include "../internal/text.h"
 #include <string.h>
 
 /**

@@ -3,12 +3,9 @@
 
 /**
  * @file hps/cstr.h
- * @brief Bounded C-string operations, conversions and typed formatting.
+ * @brief Compatibility include for hps/cstr/all.h.
  */
 
-#include "hps/cstr/core.h"
-#include "hps/cstr/convert.h"
-#include "hps/cstr/algorithm.h"
-#include "hps/cstr/format.h"
+#include "hps/cstr/all.h"
 
 #endif /* HPS_CSTR_H */

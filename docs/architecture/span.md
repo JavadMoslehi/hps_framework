@@ -1,7 +1,9 @@
 # Typed spans and expression helpers
 
-`hps/span.h` is a header-only typed borrowed-span generator beside bytes/string.
+`hps/span/define.h` is a header-only typed borrowed-span generator beside bytes/string.
 It is outside the base umbrella because base describes the environment.
+`hps/span/all.h` includes the module API; the former `hps/span.h` path remains a
+forwarding compatibility include. Generator names and behavior are unchanged.
 For mutable spans and the other container families following this generator
 pattern, see [typed data-structure descriptors](data-structure.md).
 
@@ -9,7 +11,7 @@ Define at file scope with an object type and a unique name:
 
 ```c
 #include <stdint.h>
-#include "hps/span.h"
+#include "hps/span/define.h"
 
 HPS_SPAN_DEFINE(uint16_t, hps_words)
 static const uint16_t words[] = {1U, 2U};

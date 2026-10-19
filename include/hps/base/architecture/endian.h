@@ -38,7 +38,13 @@
 
 # define HPS_ENDIANNESS HPS_ENDIAN_BIG
 
-#elif defined(_WIN32)
+#elif defined(__BYTE_ORDER__)
+
+/* Preserve unsupported/mixed byte orders instead of overriding direct evidence. */
+# define HPS_ENDIANNESS HPS_ENDIAN_UNKNOWN
+
+#elif defined(_WIN32) || defined(__i386__) || defined(_M_IX86) || \
+      defined(__x86_64__) || defined(_M_X64)
 
 # define HPS_ENDIANNESS HPS_ENDIAN_LITTLE
 
@@ -47,6 +53,8 @@
 # define HPS_ENDIANNESS HPS_ENDIAN_UNKNOWN
 
 #endif
+
+/* ARM, RISC-V, MIPS and PowerPC identity alone does not select byte order. */
 
 
 #endif /* HPS_BASE_ARCHITECTURE_ENDIAN_H */

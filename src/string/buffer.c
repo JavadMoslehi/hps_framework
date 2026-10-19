@@ -1,7 +1,7 @@
 #include "hps/string/buffer.h"
 
 #include <string.h>
-#include "internal.h"
+#include "../internal/text.h"
 
 /**
  * @file src/string/buffer.c

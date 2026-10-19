@@ -3,7 +3,7 @@
 `hps/enum/traits.h` is the renamed CSEP enum traits generator. It belongs beside
 bytes and memory in the utility layer because its generated functions perform
 runtime lookup, parsing, iteration and formatting. It is excluded from
-`hps/base.h`, whose contract covers environment detection and portable declarations.
+`hps/base/all.h`, whose contract covers environment detection and portable declarations.
 The user's requested restoration retains the original enum definitions, generated
 API and helper behavior; this is a naming and placement migration.
 

@@ -3,17 +3,9 @@
 
 /**
  * @file hps/base.h
- * @brief Public umbrella for HPS base declarations and target detection.
+ * @brief Compatibility include for hps/base/all.h.
  */
 
-/* Public umbrella: complete base API requires C99 or newer. */
-#include "hps/base/version.h"
-#include "hps/base/language.h"
-#include "hps/base/compiler.h"
-#include "hps/base/standard.h"
-#include "hps/base/architecture.h"
-#include "hps/base/features.h"
-#include "hps/base/attributes.h"
-#include "hps/base/expression.h"
+#include "hps/base/all.h"
 
 #endif /* HPS_BASE_H */

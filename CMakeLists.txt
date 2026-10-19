@@ -9,7 +9,7 @@ target_include_directories(hps_base INTERFACE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 target_compile_features(hps_base INTERFACE c_std_99)
 
-add_library(hps_memory STATIC src/memory/pool.c)
+add_library(hps_memory STATIC src/memory/pool.c src/memory/operations.c)
 add_library(HPS::memory ALIAS hps_memory)
 target_link_libraries(hps_memory PUBLIC HPS::base)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
@@ -45,7 +45,8 @@ set_target_properties(hps_validation PROPERTIES EXPORT_NAME validation
 include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
-        tests/memory/test_pool.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
+        tests/memory/test_pool.c tests/memory/test_memory_operations.c
+        tests/memory/test_memory_clone.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
         tests/enum/test_enum.c tests/string/test_string.c
         tests/string/test_string_extended.c tests/string/test_string_builder.c
         tests/span/test_span.c tests/data_structure/test_data_structure.c
@@ -67,6 +68,9 @@ if(BUILD_TESTING)
     if(Python3_Interpreter_FOUND AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         add_test(NAME hps_base_portability
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_portability.py
+                --compiler ${CMAKE_C_COMPILER})
+        add_test(NAME hps_environment_detection
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_detection.py
                 --compiler ${CMAKE_C_COMPILER})
     endif()
 endif()

@@ -1,5 +1,5 @@
 #include "hps/string/policy.h"
-#include "internal.h"
+#include "../internal/text.h"
 
 /**
  * @file src/string/policy.c

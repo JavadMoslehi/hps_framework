@@ -7,11 +7,12 @@
  */
 
 #include "hps/base/compiler.h"
+#include "hps/base/features/compiler.h"
 #include "hps/base/standard.h"
 
 /* Hints affect optimization only; both paths normalize to 0/1 and evaluate x once.
  * No measured performance or prediction guarantee follows from their use. */
-#if HPS_HAS_BUILTIN(__builtin_expect) || HPS_COMPILER_IS_GCC
+#if HPS_HAS_BUILTIN_EXPECT
 # define HPS_LIKELY(expression_) __builtin_expect(!!(expression_), 1)
 # define HPS_UNLIKELY(expression_) __builtin_expect(!!(expression_), 0)
 #else

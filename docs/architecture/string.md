@@ -1,12 +1,13 @@
 # Bounded string foundation
 
-`hps/string.h` exposes the completed bounded string foundation: a borrowed text
+`hps/string/all.h` exposes the completed bounded string foundation: a borrowed text
 view and a caller-owned fixed-capacity C-string buffer. Their public contracts are
 in `include/hps/string/view.h` and `include/hps/string/buffer.h`; implementations
 are in `src/string/view.c` and `src/string/buffer.c`. This utility layer sits beside
 bytes and memory, outside the environment-detection responsibilities of
-`hps/base.h`. It uses local `int32_t` result codes and the C library's `memcmp`
+`hps/base/all.h`. It uses local `int32_t` result codes and the C library's `memcmp`
 and `memmove`; it does not use the pool, allocate storage, or call OS services.
+The former `hps/string.h` path remains a forwarding compatibility include.
 
 The initial foundation below contains 23 functions. The subsequent user-authorized
 [extension and C-string migration](cstr.md) adds the remaining view/search/split
@@ -136,7 +137,7 @@ following helper imports bounded C-string input and assigns it to an already
 initialized buffer; failed import or assignment preserves the buffer.
 
 ```c
-#include "hps/string.h"
+#include "hps/string/all.h"
 #include <stdint.h>
 
 static int32_t demo_assign_cstr(hps_string_buffer *buffer,

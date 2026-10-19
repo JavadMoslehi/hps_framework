@@ -1,14 +1,18 @@
 # Typed data-structure descriptors
 
-`hps/hps_data_structure.h` extends the file-scope generator pattern from
-[`hps/span.h`](span.md) to the eleven families supplied in the user's draft.
+`hps/data_structure/define.h` extends the file-scope generator pattern from
+[`hps/span/define.h`](span.md) to the eleven families supplied in the user's draft.
 Each definition takes an explicit element type and a unique prefix. It emits
 `name_s`, `name_t` and an internal `static HPS_INLINE name_make(...)` constructor.
+`hps/data_structure/all.h` is the module umbrella. The former
+`hps/data_structure.h` and `hps/hps_data_structure.h` paths remain forwarding
+compatibility headers; new consumers use the module paths. Generator names and
+behavior are unchanged by this include-path migration.
 For example:
 
 ```c
 #include <stdint.h>
-#include "hps/hps_data_structure.h"
+#include "hps/data_structure/define.h"
 
 HPS_VECTOR_DEFINE(uint16_t, hps_words)
 HPS_SVECTOR_DEFINE(uint16_t, hps_local_words, 8U)

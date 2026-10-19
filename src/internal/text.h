@@ -1,8 +1,8 @@
-#ifndef HPS_STRING_INTERNAL_H
-#define HPS_STRING_INTERNAL_H
+#ifndef HPS_INTERNAL_TEXT_H
+#define HPS_INTERNAL_TEXT_H
 
 /**
- * @file src/string/internal.h
+ * @file src/internal/text.h
  * @brief Shared shape and embedded-NUL validation for bounded text operations.
  */
 
@@ -30,4 +30,4 @@ static HPS_INLINE uint8_t hps_string_has_nul(hps_string_view view)
     return found;
 }
 
-#endif /* HPS_STRING_INTERNAL_H */
+#endif /* HPS_INTERNAL_TEXT_H */

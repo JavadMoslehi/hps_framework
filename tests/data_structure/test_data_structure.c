@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/hps_data_structure.h"
-#include "hps/hps_data_structure.h"
+#include "hps/data_structure/define.h"
+#include "hps/data_structure/define.h"
 #include <assert.h>
 #include <stdint.h>
 

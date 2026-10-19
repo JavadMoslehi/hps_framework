@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/base.h"
-#include "hps/base.h"
+#include "hps/base/all.h"
+#include "hps/base/all.h"
 
 #include <limits.h>
 #include <stdint.h>

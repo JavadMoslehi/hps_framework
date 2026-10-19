@@ -1,6 +1,6 @@
 # Legacy source inventory and continuation
 
-Snapshot date: 2026-10-13; continuation updated: 2026-10-18.
+Snapshot date: 2026-10-13; continuation updated: 2026-10-19.
 HPS inventory base revision: 2dafeb9df1f70ca84418ba8348bae8ad688b97c9.
 This is a source inventory and migration handoff. Module implementation and host
 verification are recorded separately; no target qualification is inferred. The user authorizes reading the two legacy frameworks and
@@ -16,6 +16,20 @@ authorizes HPS builds and test execution for the string step. Legacy code is sti
 never built or executed in its reference directories.
 
 ## Reference roots and portability
+
+The [detection-environment migration](detection-environment.md) reads all nine
+selected C-core environment headers and preserves their exact bytes in a
+lossless HPS JSON snapshot. All nine match this inventory; reference files,
+builds and configuration remain untouched. The record maps every section to
+Base/Platform or an explicit policy-constrained omission, and records all
+behavior changes and canonical public-header folders for continuation.
+
+The subsequent [memory/layer migration](memory.md) uses only the user's new
+attachment and allocator draft, retained as lossless HPS JSON snapshots. It also
+records canonical header paths and moves shared text validation to
+`src/internal/text.h` without changing its implementation. Neither reference
+tree nor its manifest changed. Read that record alongside the current layer map
+before extending memory ownership or cloning.
 
 | ID | Default location on this machine | Inventoried sections |
 | --- | --- | --- |

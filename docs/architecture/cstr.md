@@ -1,6 +1,7 @@
 # Bounded C strings and text composition
 
-Include `hps/cstr.h`, link `HPS::cstr` (CMake) or `hps-cstr` (Meson).
+Include `hps/cstr/all.h`, link `HPS::cstr` (CMake) or `hps-cstr` (Meson).
+The former `hps/cstr.h` path remains a forwarding compatibility include.
 This layer builds on `HPS::string` and returns its local `int32_t` result codes:
 zero for success and `HPS_STRING_*` errors -1 through -5. It has no shared result
 registry dependency. The return representation and numeric error values change

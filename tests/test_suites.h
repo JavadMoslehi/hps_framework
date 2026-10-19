@@ -28,5 +28,7 @@ int32_t test_cstr_convert(void);
 int32_t test_cstr_format(void);
 int32_t test_national_code(void);
 int32_t test_cstr_enum(void);
+int32_t test_memory_operations(void);
+int32_t test_memory_clone(void);
 
 #endif /* HPS_TESTS_TEST_SUITES_H */

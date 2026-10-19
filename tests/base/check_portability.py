@@ -111,7 +111,7 @@ for optional in ['VLA', 'COMPLEX', 'ATOMICS']:
            ['-D__STDC_NO_' + optional + '__=1'], 'c11')
 expect('hps/base/language.h', ['HPS_HOSTED_IS_KNOWN', 'HPS_IS_FREESTANDING',
        '!HPS_IS_HOSTED'], ['-ffreestanding'])
-compile_source('#include "hps/base.h"\n', flags=['-ffreestanding'])
+compile_source('#include "hps/base/all.h"\n', flags=['-ffreestanding'])
 
 # Pointer detection counts C bytes using CHAR_BIT.
 with tempfile.TemporaryDirectory(prefix='hps-limits-test-') as directory:
@@ -133,11 +133,14 @@ for definitions, expected in [
     (['-D_MSC_VER=1930'], 'MSVC'),
     (clang_version + ['-D__GNUC__=4', '-D_MSC_VER=1930'], 'CLANG'),
     (clang_version + ['-D__ARMCOMPILER_VERSION=6100000'], 'ARMCLANG'),
-    (['-D__GNUC__=4', '-D__GNUC_MINOR__=2', '-D__INTEL_COMPILER=1900'], 'UNKNOWN'),
+    (['-D__GNUC__=4', '-D__GNUC_MINOR__=2', '-D__INTEL_COMPILER=1900'], 'INTEL_CLASSIC'),
 ]:
     expect('hps/base/compiler.h', ['HPS_COMPILER == HPS_COMPILER_' + expected,
            '(HPS_COMPILER_IS_GCC + HPS_COMPILER_IS_CLANG + HPS_COMPILER_IS_MSVC + '
-           'HPS_COMPILER_IS_ARMCLANG) == ' + ('0' if expected == 'UNKNOWN' else '1')],
+           'HPS_COMPILER_IS_ARMCLANG + HPS_COMPILER_IS_INTEL_CLASSIC + '
+           'HPS_COMPILER_IS_INTEL_LLVM + HPS_COMPILER_IS_IAR + '
+           'HPS_COMPILER_IS_ARMCC + HPS_COMPILER_IS_TINYCC) == ' +
+           ('0' if expected == 'UNKNOWN' else '1')],
            definitions, headers=False)
 
 for definitions, expected in [
@@ -148,8 +151,8 @@ for definitions, expected in [
     (['-D__aarch64__=1'], 'AARCH64'), (['-D_M_ARM64=1'], 'AARCH64'),
     (['-D__riscv=1', '-D__riscv_xlen=32'], 'RISCV32'),
     (['-D__riscv=1', '-D__riscv_xlen=64'], 'RISCV64'),
-    (['-D__riscv=1'], 'UNKNOWN'),
-    (['-D__riscv=1', '-D__riscv_xlen=128'], 'UNKNOWN'),
+    (['-D__riscv=1'], 'RISCV'),
+    (['-D__riscv=1', '-D__riscv_xlen=128'], 'RISCV'),
 ]:
     expect('hps/base/architecture/id.h',
            ['HPS_ARCHITECTURE == HPS_ARCH_' + expected], definitions, headers=False)
@@ -187,7 +190,7 @@ HPS_NODISCARD static HPS_INLINE int32_t identity(int32_t value) { return value; 
 int main(void) { return (identity(0) == 0) ? 0 : 1; }
 ''', run=True)
 # Borrowed typed spans keep declarations/make syntax usable before compound literals.
-span_source = '''#include "hps/span.h"
+span_source = '''#include "hps/span/define.h"
 HPS_SPAN_DEFINE(size_t, test_sizes)
 static const size_t data[] = {1U, 2U};
 static const test_sizes_t initial = HPS_SPAN_STATIC_INIT(data, 2U);

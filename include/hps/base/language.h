@@ -8,6 +8,7 @@
 
 /* C++ is not a C dialect; do not advertise C features in C++ mode. */
 #define HPS_C_STANDARD_C89 198900L
+#define HPS_C_STANDARD_C90 HPS_C_STANDARD_C89
 #define HPS_C_STANDARD_C95 199409L
 #define HPS_C_STANDARD_C99 199901L
 #define HPS_C_STANDARD_C11 201112L

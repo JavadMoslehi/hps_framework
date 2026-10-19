@@ -1,7 +1,7 @@
 #include "hps/cstr/algorithm.h"
 
 #include "hps/cstr/convert.h"
-#include "../string/internal.h"
+#include "../internal/text.h"
 #include <string.h>
 
 /**

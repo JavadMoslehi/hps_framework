@@ -1,5 +1,5 @@
 #include "hps/cstr/format.h"
-#include "../string/internal.h"
+#include "../internal/text.h"
 #include <string.h>
 
 /**

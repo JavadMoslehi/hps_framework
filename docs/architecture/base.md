@@ -5,6 +5,8 @@ Industry policy, protocols, memory management, threading implementations, device
 access, logging and domain data models belong in higher layers. All base headers
 can be included independently and repeatedly; none defines executable runtime
 state. The API starts at development version 0.1.0 and is not a stable ABI.
+Use `hps/base/all.h` for the module umbrella; `hps/base.h` remains a forwarding
+compatibility include. Every base declaration lives beneath `hps/base/`.
 
 ## Language and standards
 
@@ -28,9 +30,13 @@ provides `<limits.h>` and `<stddef.h>` for the base headers.
 
 ## Compiler and capabilities
 
-`compiler.h` checks Armclang, Clang, MSVC, then GCC so compatibility macros
-do not hide more specific identities. Version fields
-describe the selected compiler frontend. Unknown compilers have identifier and
+`compiler.h` checks Armclang, Intel LLVM, Intel Classic, IAR, ARMCC and TinyCC
+before generic Clang, MSVC and GCC so compatibility macros do not hide more
+specific identities. Existing IDs 0–4 remain stable; added identities use 5–9.
+Version fields describe the selected frontend or documented vendor encoding.
+`HPS_COMPILER_VENDOR_VERSION` separately retains a visible raw vendor release.
+IAR/TinyCC normalized fields remain unknown rather than guessing one format.
+Unknown compilers have identifier and
 version fields equal to zero. Known GCC derivatives excluded from GCC detection
 fall back to unknown unless recognized as another frontend. Compiler detection
 is not a claim of certification or exhaustive vendor coverage.
@@ -39,6 +45,13 @@ is not a claim of certification or exhaustive vendor coverage.
 delegate to compiler probes when present and return zero otherwise. These are
 preprocessor probes. `HPS_HAS_GNU_EXTENSIONS` describes GNU compatibility mode;
 use individual probes when a particular extension is required.
+
+`HPS_HAS_COMPOUND_LITERALS` and `HPS_HAS_DESIGNATED_INITIALIZERS` describe C99
+syntax; `HPS_HAS_TYPEOF` describes final C23 syntax. Separate
+`HPS_HAS_EXTENSION_*` flags describe known GNU-mode syntax (and the explicit
+MSVC thread-storage extension). `HPS_HAS_BUILTIN_*` flags distinguish individual
+builtins; type compatibility/choose-expression probes are C-only. These flags
+enable no extension, declaration fallback or policy exception.
 
 `features.h` aggregates language, compiler and architecture capabilities.
 Standard feature flags follow the selected C dialect; VLA, complex and atomics
@@ -49,7 +62,8 @@ No flag promises availability of `<threads.h>` or a threading runtime.
 
 ## Architecture
 
-Existing identifiers cover x86, x86-64, ARM32, AArch64 and RISC-V 32/64.
+Existing identifiers cover x86, x86-64, ARM32, AArch64 and RISC-V 32/64; additive
+IDs cover MIPS, PowerPC and a known RISC-V family with unavailable/unsupported XLEN.
 Unrecognized targets remain `HPS_ARCH_UNKNOWN`; architecture identity does not
 imply SIMD, atomic lock freedom or permission for unaligned accesses.
 
@@ -59,8 +73,10 @@ classifies only 32/64-bit pointers; a known 128-bit width remains an unknown
 **classification** while its bit count is still available. Use
 `HPS_POINTER_WIDTH_IS_KNOWN` to test bit-count availability.
 
-Byte order uses compiler byte-order macros, then Windows' little-endian
-convention. Other targets return `HPS_ENDIAN_UNKNOWN`. Check
+Byte order uses compiler byte-order macros, then Windows/x86 little-endian
+conventions only when direct evidence is absent. Explicit unsupported byte order
+stays unknown even with those family hints; ARM/RISC-V identity alone never
+selects little endian. Other targets return `HPS_ENDIAN_UNKNOWN`. Check
 `HPS_ENDIANNESS_IS_KNOWN`, `HPS_IS_LITTLE_ENDIAN` and `HPS_IS_BIG_ENDIAN` before
 selecting order-dependent code. Unknown is never silently assumed little-endian.
 
