@@ -4,8 +4,8 @@
 #include "hps/memory/refcount.h"
 #include "hps/memory/refcount.h"
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /**
  * @file tests/data_structure/test_collection_operations.c

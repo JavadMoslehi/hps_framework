@@ -9,6 +9,9 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
   test('hps_base_portability', python,
     args: [files('tests/base/check_portability.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
+  test('hps_standard_types', python,
+    args: [files('tests/base/check_standard_types.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
   test('hps_environment_detection', python,
     args: [files('tests/base/check_detection.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
@@ -81,6 +84,7 @@ if get_option('hosted_debug')
   test_assertion_args += ['-DHPS_TEST_HOSTED_DEBUG=1']
 endif
 hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
+  'tests/base/test_standard_types.c',
   'tests/memory/test_pool.c', 'tests/memory/test_memory_operations.c',
   'tests/memory/test_memory_clone.c', 'tests/bytes/test_bytes.c', 'tests/bytes/test_reader.c',
   'tests/enum/test_enum.c', 'tests/string/test_string.c',

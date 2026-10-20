@@ -6,8 +6,8 @@
  * @brief Bounded formatting from typed arguments and exact fixed decimals.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/buffer.h"
 
 #define HPS_CSTR_ARG_TEXT ((uint8_t)1U)

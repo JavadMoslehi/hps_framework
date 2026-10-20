@@ -10,6 +10,9 @@ int main(void)
     if (test_base() != 0) {
         return 1;
     }
+    if (test_standard_types() != 0) {
+        return 29;
+    }
     if (test_pool() != 0) {
         return 2;
     }

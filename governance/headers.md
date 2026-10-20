@@ -45,8 +45,11 @@ HPS namespace; all definitions include their own public header before other
 implementation dependencies. Avoid ABI changes driven by undisclosed macros,
 packing pragmas or compiler-specific calling conventions.
 
-Headers declaring `int32_t` error results include `<stdint.h>` explicitly under
-HPS-HDR-003. Headers using module-local error constants explicitly include their
+Headers declaring `int32_t` error results include `hps/base/hps_stdint.h`
+explicitly under HPS-HDR-003. Size/difference declarations similarly include
+`hps/base/hps_stddef.h`, and Boolean declarations use `hps/base/hps_bool.h`.
+Only those providers include the corresponding native standard headers in core
+code. Headers using module-local error constants explicitly include their
 defining header, such as `hps/bytes/view.h` for `HPS_BYTE_*`. Document the error
 domain and keep constants typed; follow HPS-C-004/HPS-C-019 in
 [the C rules](c-rules.md). Do not add a shared status typedef or registry

@@ -6,8 +6,8 @@
  * @brief Iterative JSON grammar validation with caller token and depth budgets.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/json/tokenizer.h"
 
 /* Scratch frame fields are implementation state, not an application format. */

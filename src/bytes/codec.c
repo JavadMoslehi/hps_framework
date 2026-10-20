@@ -6,7 +6,7 @@
  * @brief Fixed-width integer codecs over caller-proven byte extents.
  */
 
-#include <stddef.h>
+#include "hps/base/hps_stddef.h"
 
 
 

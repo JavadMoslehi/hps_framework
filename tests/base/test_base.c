@@ -3,7 +3,7 @@
 #include "hps/base/all.h"
 
 #include <limits.h>
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include <string.h>
 
 HPS_STATIC_ASSERT(HPS_C_IS_C99, "base requires C99");

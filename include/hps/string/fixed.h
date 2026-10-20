@@ -6,8 +6,8 @@
  * @brief Typed fixed C-string storage with explicit buffer binding.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 #include "hps/string/buffer.h"
 

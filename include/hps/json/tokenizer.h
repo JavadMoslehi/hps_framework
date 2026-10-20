@@ -6,8 +6,8 @@
  * @brief Strict bounded JSON lexical tokens and counted scalar decoding.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 #define HPS_JSON_OK ((int32_t)INT32_C(0))

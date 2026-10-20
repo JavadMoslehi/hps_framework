@@ -1,6 +1,6 @@
 # Current adoption status
 
-Baseline date: 2026-10-11; utilities/runtime review updated 2026-10-19. This is a
+Baseline date: 2026-10-11; standard-type provider review updated 2026-10-20. This is a
 gap register, not a progress estimate. Earlier host results below belong to
 [the text migration snapshot](reviews/csep-text-2026-10-13.md). The changed error
 representation invalidates those results for affected sources; current evidence
@@ -38,6 +38,7 @@ industrial certification or release evidence bundle is currently established.
 | GAP-025 | New optional allocated arrays/manual owners retain pending allocator-hook disposition; attributes and hosted diagnostics require target-specific contracts | Resolve the [utility/runtime dispositions](reviews/utilities-runtime-2026-10-19.md), explicit ownership cleanup, annotation proofs and hosted libc/resource/security boundaries before production adoption | Open |
 | GAP-026 | Bounded JSON, String tokenization/indentation, refcounts and typed collection operations have host evidence; counted-character scope, target charset/ABI/resources and application ownership/schema/rate controls remain unqualified | Resolve the [runtime/text/JSON review](reviews/objects-json-2026-10-19.md) and perform scoped semantic, independent and target verification before production acceptance | Open |
 | GAP-027 | Added Bytes ordering/search/pop, typed optional values and compile-target x86 flags have host evidence only; optional copy/lifetime contracts and target/compiler/ABI/resource evidence remain unqualified | Complete the [23-header migration review](reviews/bytes-features-optional-2026-10-19.md), named acceptance and actual target verification; compile-target ISA metadata is not runtime permission | Open |
+| GAP-028 | Standard-name providers and narrow HPS-C-020 scope are implemented; replacement/compiler metadata and Boolean ABI need target evidence | Review the [provider record](reviews/standard-types-2026-10-20.md), select one provider per target and complete independent acceptance/target checks | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

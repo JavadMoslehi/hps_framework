@@ -6,8 +6,8 @@
  * @brief Typed optional values with checked access and explicit copy semantics.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 #include "hps/data_structure/define.h"
 

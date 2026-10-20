@@ -1,5 +1,10 @@
 # Legacy source inventory and continuation
 
+The [standard-type provider migration](standard-types.md), added 2026-10-20,
+records the user's separate Boolean/stdint/stddef submission and the new Base
+providers. Earlier decisions to omit wrappers are superseded by that request;
+reference trees, archives and their original source inventory remain unchanged.
+
 The [23-header byte/feature/optional migration](bytes-features-optional.md)
 records all selected source symbols and deliberate deduplication. Supplied live
 paths were unavailable during full reading; read-only ZIP members and the archive

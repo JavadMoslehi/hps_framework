@@ -6,8 +6,8 @@
  * @brief Checked bit operations on exact-width 64-bit unsigned values.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 
 #define HPS_BIT_SUCCESS ((int32_t)0)

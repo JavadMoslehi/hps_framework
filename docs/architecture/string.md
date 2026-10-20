@@ -138,7 +138,7 @@ initialized buffer; failed import or assignment preserves the buffer.
 
 ```c
 #include "hps/string/all.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 static int32_t demo_assign_cstr(hps_string_buffer *buffer,
                                 const char *text, size_t capacity)

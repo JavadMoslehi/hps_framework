@@ -6,8 +6,8 @@
  * @brief Bounded typed operations and iterators for existing vector/list layouts.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 #include "hps/data_structure/define.h"
 

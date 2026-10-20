@@ -25,7 +25,7 @@ rng = random.Random(8259)
 
 HARNESS = r'''
 #include <stdio.h>
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include "hps/json/all.h"
 #include "hps/string/fixed.h"
 HPS_STRING_FIXED_DEFINE(test_input, 1025U)

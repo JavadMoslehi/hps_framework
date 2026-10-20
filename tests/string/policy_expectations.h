@@ -1,7 +1,7 @@
 #ifndef HPS_TESTS_STRING_POLICY_EXPECTATIONS_H
 #define HPS_TESTS_STRING_POLICY_EXPECTATIONS_H
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /* Differential fixtures from the inventoried CSEP policy expression AST.
  * Original source was read as data, without compilation/execution or edits.

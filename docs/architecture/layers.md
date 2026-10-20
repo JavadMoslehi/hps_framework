@@ -24,7 +24,7 @@ graph TD
 
 | Boundary | Canonical paths | Responsibility |
 | --- | --- | --- |
-| Compile-time foundation | `hps/base/all.h`, `hps/base/` | Compiler/language/architecture capabilities and expression helpers; no runtime umbrella dependencies |
+| Compile-time foundation | `hps/base/all.h`, `hps/base/` | Compiler/language/architecture capabilities, standard type providers (`hps_bool.h`, `hps_stdint.h`, `hps_stddef.h`), fixed-work Boolean and expression helpers; no higher-layer dependencies |
 | Platform metadata | `hps/platform/detection.h`, `hps/platform/` | Visible OS-family, libc and POSIX evidence; no OS/libc includes, runtime adapter or API guarantee |
 | Hosted adapter | `hps/platform/hosted/debug.h` | Separately enabled stderr/assertion/abort adapter; no core dependency or no-heap claim |
 | Typed scalar algorithms | `hps/algorithm/scalar.h`, `hps/algorithm/bits.h` | Single-evaluation extrema and checked bit operations; no implicit generic mutation |

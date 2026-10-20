@@ -17,10 +17,14 @@ repository. User task constraints on execution and scope remain authoritative.
   Factor avoidable duplicate logic only when its contracts and resource bounds
   match; record justified specialization/repetition under HPS-C-017/HPS-C-018.
 - APIs use ordinary types suited to their result. Error-returning module APIs use
-  int32_t directly from stdint.h, with zero success and module-local negative typed
+  int32_t directly via hps/base/hps_stdint.h, with zero success and module-local negative typed
   constants; flags remain uint8_t. No shared status typedef, module-ID registry or
   diagnostic lookup dependency. Follow HPS-C-004/HPS-C-019 and document API/ABI
   and numeric-code changes.
+- Standard type providers live in hps/base/hps_bool.h, hps_stdint.h and
+  hps_stddef.h. Use their standard names, with no HPS type aliases. HPS-C-020
+  scopes fallback declarations and bool helper/test use; it does not relax
+  ordinary module flag/numerical rules or qualify unsupported toolchains.
 - The static pool is single-context. Do not introduce pthread, atomics, locks or a
   thread-safe claim unless the task explicitly requests a separate reviewed layer.
 - Map changes to policy IDs and relevant MISRA rows. Keep unverified results,

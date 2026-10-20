@@ -6,7 +6,7 @@
  * @brief Fixed-width unsigned integer conversion with explicit byte order.
  */
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include "hps/bytes/order.h"
 
 typedef uint8_t hps_codec_type;

@@ -7,7 +7,7 @@
  * @brief Exact-width byte-order selector for integer codecs.
  */
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /* Only these two selector values are supported by the codec API. */
 typedef uint8_t hps_byte_order;

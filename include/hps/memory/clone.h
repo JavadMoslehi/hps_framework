@@ -6,8 +6,8 @@
  * @brief Optional development proposal for array cloning with cleanup callbacks.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 #include "hps/memory/allocator.h"
 #include "hps/memory/operations.h"

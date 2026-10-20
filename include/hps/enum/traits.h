@@ -16,9 +16,9 @@
  * - Supports declaration / implementation / header-only modes.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
+#include "hps/base/hps_bool.h"
 #include <string.h>
 #include "hps/base/attributes.h"
 

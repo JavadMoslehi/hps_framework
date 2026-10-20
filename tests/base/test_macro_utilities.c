@@ -5,8 +5,8 @@
 #include "hps/algorithm/bits.h"
 
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include <string.h>
 
 #define HPS_TEST_STRINGIFY_VALUE 73U

@@ -6,7 +6,7 @@
  * @brief Template for a public HPS C module header.
  */
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /* Local errors: meaningful only with this module's API. */
 #define HPS_MODULE_OK ((int32_t)INT32_C(0))

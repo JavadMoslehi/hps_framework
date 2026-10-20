@@ -36,6 +36,26 @@ STATUSES = {'unassessed', 'open', 'satisfied', 'deviation-approved', 'not-applic
 # This admits its stdio include only; numerical/heap/concurrency rules still run.
 HOSTED_STDIO_SOURCES = {'src/platform/hosted/debug.c'}
 HOSTED_DEBUG_HEADER = 'include/hps/platform/hosted/debug.h'
+# HPS-C-020: standard names are declared only by their compatibility provider.
+# This does not exempt other statements, APIs, heap calls or headers in a file.
+STANDARD_PROVIDERS = {
+    'stdint': 'include/hps/base/hps_stdint.h',
+    'stddef': 'include/hps/base/hps_stddef.h',
+    'stdbool': 'include/hps/base/hps_bool.h',
+}
+STANDARD_TYPE_FIXTURES = {
+    'tests/base/test_standard_types.c',
+    'tests/base/check_standard_types.py',
+}
+BOOL_SURFACES = {STANDARD_PROVIDERS['stdbool']} | STANDARD_TYPE_FIXTURES
+STANDARD_INTEGER_NAMES = (
+    r'(?:u?int(?:8|16|32|64)_t|u?int_(?:least|fast)(?:8|16|32|64)_t|'
+    r'u?intmax_t|u?intptr_t)')
+STANDARD_INTEGER_TYPEDEF = re.compile(
+    r'^[ \t]*typedef[ \t]+(?:__[A-Z0-9_]+_TYPE__|'
+    r'(?:(?:signed|unsigned)[ \t]+)?(?:char|short|int|long(?:[ \t]+long)?|__int64)|'
+    + STANDARD_INTEGER_NAMES + r')[ \t]+' + STANDARD_INTEGER_NAMES + r'[ \t]*;',
+    re.MULTILINE)
 
 
 def blank_lexical(match):
@@ -45,6 +65,12 @@ def blank_lexical(match):
 def source_findings(source, path, hosted=False):
     """Return lexical findings; string/character literals and comments are ignored."""
     clean = TOKENS_TO_IGNORE.sub(blank_lexical, source)
+    if path == STANDARD_PROVIDERS['stdint']:
+        clean = STANDARD_INTEGER_TYPEDEF.sub(blank_lexical, clean)
+    if path in BOOL_SURFACES:
+        clean = re.sub(r'\bbool\b', lambda match: ' ' * len(match.group()), clean)
+    if path in STANDARD_TYPE_FIXTURES:
+        clean = NONEXACT_TYPES.sub(blank_lexical, clean)
     hosted_dependency_pattern = None
     if hosted:
         clean = HOSTED_MAIN.sub(blank_lexical, clean)
@@ -85,6 +111,18 @@ def source_findings(source, path, hosted=False):
             line = include_code.count('\n', 0, match.start()) + 1
             findings.append(f'{path}:{line}: HPS-PRO-002: hosted adapter dependency in core: '
                             f'{match.group().strip()}')
+    if path.startswith(('include/', 'src/')):
+        # Preserve quoted include names while ignoring explanatory comments.
+        include_code = TOKENS_TO_IGNORE.sub(
+            lambda match: blank_lexical(match) if match.group().startswith(('//', '/*'))
+            else match.group(), source)
+        for match in re.finditer(
+                r'^[ \t]*#\s*include\s*[<"](stdint|stddef|stdbool)\.h[>"]',
+                include_code, re.MULTILINE):
+            if path != STANDARD_PROVIDERS[match.group(1)]:
+                line = include_code.count('\n', 0, match.start()) + 1
+                findings.append(f'{path}:{line}: HPS-HDR-003/HPS-C-020: '
+                                f'use the Base standard-type provider: {match.group().strip()}')
     return findings
 
 
@@ -293,6 +331,30 @@ def self_test():
         if bool(source_findings(source, path)) != expected:
             raise RuntimeError(f'Implementation-scope self-test failed: {path}')
     print(f'Implementation-scope self-tests: {len(scope_cases)} cases passed.')
+    provider_cases = [
+        ('typedef __INT_FAST16_TYPE__ int_fast16_t;', STANDARD_PROVIDERS['stdint'], False),
+        ('typedef unsigned char uint8_t;', STANDARD_PROVIDERS['stdint'], False),
+        ('typedef unsigned char private_byte;', STANDARD_PROVIDERS['stdint'], True),
+        ('typedef unsigned char uint8_t;', 'include/hps/bytes/view.h', True),
+        ('uint_fast16_t count;', STANDARD_PROVIDERS['stdint'], True),
+        ('uint_fast16_t count;', 'tests/base/check_standard_types.py', False),
+        ('uint_fast16_t count;', 'tests/bytes/test_bytes.c', True),
+        ('int count;', STANDARD_PROVIDERS['stdint'], True),
+        ('bool value;', STANDARD_PROVIDERS['stdbool'], False),
+        ('bool value;', 'include/hps/bytes/view.h', True),
+        ('unsigned char value;', STANDARD_PROVIDERS['stdbool'], True),
+        ('malloc(1U);', STANDARD_PROVIDERS['stdint'], True),
+        ('#include <stdint.h>', STANDARD_PROVIDERS['stdint'], False),
+        ('#include <stddef.h>', STANDARD_PROVIDERS['stdint'], True),
+        ('#include "stdint.h"', 'src/bytes/view.c', True),
+        ('#include "hps/base/hps_stdint.h"', 'src/bytes/view.c', False),
+        ('#include <stdint.h>', 'tests/base/check_standard_types.py', False),
+        ('/* #include <stdint.h> */', 'include/hps/bytes/view.h', False),
+    ]
+    for source, path, expected in provider_cases:
+        if bool(source_findings(source, path)) != expected:
+            raise RuntimeError(f'Standard-provider scope self-test failed: {path}: {source}')
+    print(f'Standard-provider self-tests: {len(provider_cases)} cases passed.')
     if within_root_file(ROOT, '/etc/passwd') or within_root_file(ROOT, '../outside'):
         raise RuntimeError('Evidence path containment self-test failed')
     print(f'Policy checker self-tests: {len(cases)} lexical cases passed.')

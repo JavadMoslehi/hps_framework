@@ -6,7 +6,7 @@
  * @brief Array extent and explicit type-spelling helpers.
  */
 
-#include <stddef.h>
+#include "hps/base/hps_stddef.h"
 
 /* The argument must name an actual complete, non-VLA array, never a pointer or
  * a function array parameter. The result has type size_t. sizeof does not

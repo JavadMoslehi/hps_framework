@@ -65,6 +65,7 @@ endif()
 include(CTest)
 if(BUILD_TESTING)
     add_executable(hps_tests tests/main.c tests/base/test_base.c
+        tests/base/test_standard_types.c
         tests/memory/test_pool.c tests/memory/test_memory_operations.c
         tests/memory/test_memory_clone.c tests/bytes/test_bytes.c tests/bytes/test_reader.c
         tests/enum/test_enum.c tests/string/test_string.c
@@ -98,6 +99,9 @@ if(BUILD_TESTING)
     if(Python3_Interpreter_FOUND AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
         add_test(NAME hps_base_portability
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_portability.py
+                --compiler ${CMAKE_C_COMPILER})
+        add_test(NAME hps_standard_types
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_standard_types.py
                 --compiler ${CMAKE_C_COMPILER})
         add_test(NAME hps_environment_detection
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_detection.py

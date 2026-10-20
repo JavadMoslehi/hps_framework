@@ -2,7 +2,7 @@
 #include "hps/string/buffer.h"
 #include "hps/string/view.h"
 #include <assert.h>
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include <string.h>
 
 /**

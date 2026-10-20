@@ -12,7 +12,7 @@ behavior are unchanged by this include-path migration.
 For example:
 
 ```c
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include "hps/data_structure/define.h"
 
 HPS_VECTOR_DEFINE(uint16_t, hps_words)

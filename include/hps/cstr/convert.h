@@ -6,8 +6,8 @@
  * @brief Checked integer and byte conversions with bounded C-string inputs.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 #define HPS_CSTR_BYTES_HEX_COMPACT ((uint8_t)0U)

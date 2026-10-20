@@ -6,8 +6,8 @@
  * @brief Borrowed delimiter-set tokens with optional quotes, escapes and trim.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 #define HPS_STRING_TOKEN_TRIM ((uint8_t)UINT8_C(1))

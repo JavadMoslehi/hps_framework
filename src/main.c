@@ -1,5 +1,5 @@
 #include "hps/memory/pool.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /**
  * @file src/main.c

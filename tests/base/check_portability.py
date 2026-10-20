@@ -93,12 +93,12 @@ compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(1, "C89 asse
 compile_source('#include "hps/base/attributes.h"\nHPS_STATIC_ASSERT(0, "must fail");\n',
                'c89', fail=True)
 compile_source('''#include "hps/base/attributes.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 HPS_NODISCARD int32_t required_result(void);
 int main(void) { required_result(); return 0; }
 ''', flags=['-DHPS_ENABLE_COMPILER_ATTRIBUTES=1'], fail=True, diagnostic='unused', codegen=True)
 compile_source('''#include "hps/base/attributes.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 HPS_DEPRECATED("use replacement") int32_t old_function(void);
 int main(void) { return (old_function() == 0) ? 0 : 1; }
 ''', flags=['-DHPS_ENABLE_COMPILER_ATTRIBUTES=1'], fail=True, diagnostic='deprecated')
@@ -184,7 +184,7 @@ compile_source('''#include "hps/base/compiler.h"
 #undef HPS_HAS_ATTRIBUTE
 #define HPS_HAS_ATTRIBUTE(name) 0
 #include "hps/base/attributes.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 HPS_STATIC_ASSERT(sizeof(size_t) >= 1U, "portable assertion");
 HPS_NODISCARD static HPS_INLINE int32_t identity(int32_t value) { return value; }
 int main(void) { return (identity(0) == 0) ? 0 : 1; }
@@ -212,7 +212,7 @@ compile_source('''#include "hps/base/compiler.h"
 #undef HPS_COMPILER_IS_GCC
 #define HPS_COMPILER_IS_GCC 0
 #include "hps/base/expression.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 int main(void)
 {
     uint8_t calls = 0U;

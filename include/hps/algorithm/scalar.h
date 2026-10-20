@@ -6,8 +6,8 @@
  * @brief Typed scalar minimum and maximum operations with single evaluation.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 
 #ifdef __cplusplus

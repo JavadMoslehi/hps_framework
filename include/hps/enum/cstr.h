@@ -6,7 +6,7 @@
  * @brief X-macro string keys mapped to native enum values for switch statements.
  */
 
-#include <stddef.h>
+#include "hps/base/hps_stddef.h"
 #include <string.h>
 #include "hps/base/attributes.h"
 

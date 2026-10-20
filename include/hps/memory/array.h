@@ -6,8 +6,8 @@
  * @brief Checked element-count wrappers for caller-owned byte operations.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 #define HPS_MEMORY_ARRAY_OK ((int32_t)INT32_C(0))
 #define HPS_MEMORY_ARRAY_INVALID_ARGUMENT ((int32_t)-INT32_C(1))

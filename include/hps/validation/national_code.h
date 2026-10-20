@@ -6,8 +6,8 @@
  * @brief Bounded legacy Iranian national-code checksum validation.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 #ifdef __cplusplus

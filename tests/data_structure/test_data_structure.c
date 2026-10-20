@@ -2,7 +2,7 @@
 #include "hps/data_structure/define.h"
 #include "hps/data_structure/define.h"
 #include <assert.h>
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /**
  * @file tests/data_structure/test_data_structure.c

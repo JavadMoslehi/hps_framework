@@ -6,8 +6,8 @@
  * @brief Borrowed, length-bounded read-only byte sequences.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /* Local int32_t results: zero is success; negative values identify byte errors.
  * These codes belong to the bytes API and are not globally unique. */

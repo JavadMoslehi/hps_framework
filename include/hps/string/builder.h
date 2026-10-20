@@ -6,8 +6,8 @@
  * @brief Caller-owned bounded string editing, composition and JSON escaping.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/buffer.h"
 
 typedef hps_string_buffer hps_string_builder;

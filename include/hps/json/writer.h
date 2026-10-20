@@ -6,8 +6,8 @@
  * @brief Validate and emit compact JSON into fixed caller-owned text storage.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/json/reader.h"
 #include "hps/string/buffer.h"
 

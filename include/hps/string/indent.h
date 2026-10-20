@@ -6,8 +6,8 @@
  * @brief Persistent four-space indentation over a caller-owned string builder.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/builder.h"
 
 #define HPS_STRING_INDENT_WIDTH ((size_t)4U)

@@ -6,7 +6,7 @@
  * @brief Locale-independent ASCII character classes and bounded conversions.
  */
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 #ifdef __cplusplus
 extern "C" {

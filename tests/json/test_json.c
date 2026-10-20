@@ -3,8 +3,8 @@
 #include "hps/string/fixed.h"
 
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include <string.h>
 
 /**

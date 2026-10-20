@@ -6,8 +6,8 @@
  * @brief Caller-owned fixed-capacity C-string storage with atomic failures.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 typedef struct {

@@ -6,8 +6,8 @@
  * @brief Single-evaluation ASCII alphabet policies migrated from fixed strings.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/buffer.h"
 
 #define HPS_STRING_POLICY_NONE ((uint8_t)0U)

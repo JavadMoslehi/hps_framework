@@ -6,8 +6,8 @@
  * @brief Borrowed text views, bounded searches and exact C-string copying.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /* String operations return int32_t: zero succeeds; these local errors are negative.
  * Codes are meaningful only for string, C-string and dependent text operations. */

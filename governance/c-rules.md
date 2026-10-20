@@ -10,6 +10,9 @@ Use exact-width types rather than least/fast/max variants. Basic numerical types
 not appear in production numerical declarations. Do not hide them behind a private
 typedef. Public semantic typedefs are permitted only over an allowed numerical type.
 Pointers, structures and function types remain legitimate nonnumerical types.
+The standard-library compatibility providers have the narrow declaration
+exception recorded in HPS-C-020; ordinary module numerical declarations retain
+this rule.
 
 HPS-C-002: Exact-width types required by a module must exist on a qualified target.
 Do not substitute a larger native type to make an unsupported target compile.
@@ -152,6 +155,26 @@ status portion of the [earlier policy change](reviews/status-2026-10-11.md).
 HPS-C-017/HPS-C-018 remain unchanged. Project-role/release disposition remains
 pending; these edits do not approve an external-standard deviation or establish
 release qualification. Historical host results do not verify the changed API/ABI.
+
+## Standard-library compatibility providers
+
+HPS-C-020: The Base providers `hps/base/hps_stdint.h`,
+`hps/base/hps_stddef.h` and `hps/base/hps_bool.h` expose standard names rather
+than framework numerical aliases. Prefer compiler/library standard headers.
+Only these providers may declare the standard fallback typedefs using compiler
+type metadata or validated underlying representations. Standard least/fast/max/
+pointer families provided for compatibility do not authorize their use in core
+modules under HPS-C-001/002. `bool` is permitted in the Boolean provider's helper
+signatures/implementation and its dedicated verification fixtures. Those fixtures
+may exercise all standard integer families; module flags remain `uint8_t`. The pre-C99 byte fallback does not supply `_Bool` assignment
+normalization or a cross-dialect Boolean ABI. Replacement providers must document
+configuration, native-header coexistence limits and unsupported metadata/targets.
+Do not guess a target ABI or use a null-address expression to emulate `offsetof`.
+
+This user-requested project-policy amendment is recorded in the
+[standard-type review](reviews/standard-types-2026-10-20.md). Independent
+project-role acceptance, external-standard disposition and target qualification
+remain pending under HPS-GOV-004/006/008; this is not an approved MISRA deviation.
 
 ## Automated subset
 

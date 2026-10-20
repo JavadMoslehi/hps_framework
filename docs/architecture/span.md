@@ -12,7 +12,7 @@ pattern, see [typed data-structure descriptors](data-structure.md).
 Define at file scope with an object type and a unique name:
 
 ```c
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #include "hps/data_structure/define.h"
 
 HPS_SPAN_DEFINE(uint16_t, hps_words)

@@ -5,6 +5,10 @@ shared by runtime utilities and domain modules. The base has no runtime, allocat
 system, network, or file I/O dependency.
 
 Include `hps/base/all.h` for the base C99+ API, or include individual headers.
+Standard type providers are `hps/base/hps_bool.h`, `hps/base/hps_stdint.h` and
+`hps/base/hps_stddef.h`; they keep standard type names and use native headers
+by default. Their [fallback contracts](docs/architecture/base.md#standard-type-providers)
+document legacy-mode limitations and compiler requirements.
 Each public module keeps its declarations in its own directory. The former root
 headers remain compatibility includes; new consumers use the module paths below.
 See [the base API and portability contract](docs/architecture/base.md) before
@@ -14,7 +18,7 @@ include path and dependency direction.
 
 ```c
 #include "hps/base/all.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 HPS_STATIC_ASSERT(HPS_C_IS_C99, "C99 required");
 

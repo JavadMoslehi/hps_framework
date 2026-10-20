@@ -35,7 +35,7 @@ def compile_case(source, dialect='c99', enabled=0, fail=False, run=False):
 
 
 source = '''#include "hps/base/all.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 #if defined(HPS_PACKED) || defined(HPS_ALIGNED)
 #error "ABI-changing declaration attributes must not be silently imported"
 #endif
@@ -77,7 +77,7 @@ for dialect in ['c89', 'c++98']:
         compile_case(subset, dialect, enabled)
 
 nonnull = '''#include "hps/base/attributes.h"
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 HPS_NONNULL(1) int32_t hps_required(const int32_t *value);
 int main(void) { return hps_required(NULL) == INT32_C(0) ? 0 : 1; }
 '''

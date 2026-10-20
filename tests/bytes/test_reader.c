@@ -1,8 +1,8 @@
 #include "../test_suites.h"
 #include "hps/bytes/reader.h"
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /**
  * @file tests/bytes/test_reader.c

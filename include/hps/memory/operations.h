@@ -6,8 +6,8 @@
  * @brief Byte copying, movement, comparison, exchange and volatile clearing.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /* Payload scratch budget used by hps_memswap, excluding scalar bookkeeping. */
 #define HPS_MEMSWAP_SCRATCH_BYTES 256U

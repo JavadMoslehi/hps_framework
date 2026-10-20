@@ -6,8 +6,8 @@
  * @brief Borrowed fixed-capacity mutable byte buffers with checked operations.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/bytes/view.h"
 
 typedef struct {

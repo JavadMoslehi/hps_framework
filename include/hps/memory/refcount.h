@@ -6,8 +6,8 @@
  * @brief Checked reference counts for one caller-controlled execution context.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 
 #define HPS_REFCOUNT_OK ((int32_t)INT32_C(0))

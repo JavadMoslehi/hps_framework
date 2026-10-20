@@ -7,7 +7,7 @@
  */
 
 #include "hps/base/features.h"
-#include <stddef.h>
+#include "hps/base/hps_stddef.h"
 
 /* Target configuration: opt-in requires a recorded target review. */
 #ifndef HPS_ENABLE_COMPILER_ATTRIBUTES

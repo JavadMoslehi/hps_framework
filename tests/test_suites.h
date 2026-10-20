@@ -6,7 +6,7 @@
  * @brief Internal module test entry points for the shared hosted runner.
  */
 
-#include <stdint.h>
+#include "hps/base/hps_stdint.h"
 
 /* Each suite runs once per process; zero means success, nonzero means failure.
  * Assertion failures terminate the process. The pool suite requires the initial
@@ -14,6 +14,7 @@
  * exception in governance/reviews/test-entrypoints-2026-10-11.md.
  */
 int test_base(void);
+int32_t test_standard_types(void);
 int test_pool(void);
 int test_bytes(void);
 int32_t test_reader(void);

@@ -1,6 +1,8 @@
 # Base layer contract
 
 The base layer provides compile-time information and portable C declarations.
+It also provides the standard type compatibility headers and fixed-work Boolean
+conversion helpers described below.
 Industry policy, protocols, memory management, threading implementations, device
 access, logging and domain data models belong in higher layers. All base headers
 can be included independently and repeatedly; none defines executable runtime
@@ -26,7 +28,52 @@ C23 implementations.
 `HPS_HOSTED_IS_KNOWN` distinguishes a known execution environment from absent
 information. `HPS_IS_HOSTED` and `HPS_IS_FREESTANDING` are both false if the
 compiler does not supply `__STDC_HOSTED__`. Freestanding use assumes the target
-provides `<limits.h>` and `<stddef.h>` for the base headers.
+provides `<limits.h>` and either native `<stddef.h>` or the compiler metadata
+required by the explicit size-provider replacement below.
+
+## Standard type providers
+
+Include `hps/base/hps_bool.h`, `hps/base/hps_stdint.h` or
+`hps/base/hps_stddef.h` directly when their declarations are needed. The Base
+umbrella includes all three. They expose standard `bool`/`true`/`false`, integer
+types/constants/limits and `size_t`/`ptrdiff_t`/`wchar_t`/`NULL`/`offsetof`;
+there is no HPS type alias. Core and public headers use these providers instead
+of directly selecting the native standard headers. Detection-only headers do not
+include the Boolean provider or inject Boolean macros.
+
+The integer provider prefers native `<stdint.h>` when `__has_include` confirms
+it, including legacy C/C++ modes. Without that probe, C99+, C++11+ and
+MSVC 2010+ select the native header. `HPS_STDINT_USE_FALLBACK=0` explicitly
+selects native; `=1` requires compiler type/limit/constant metadata for replacement.
+HPS requires eight-bit bytes and exact signed/unsigned 8/16/32/64-bit integers;
+missing or inconsistent widths are rejected. Optional pointer integers are
+published only when both compiler types/limits exist. Least/fast/max families
+are standard compatibility exports, not new permitted core storage types.
+
+The size provider defaults to native `<stddef.h>`, available since C89.
+`HPS_STDDEF_USE_FALLBACK=1` selects a replacement using compiler size/difference/
+wide-character metadata and builtin `offsetof`; C++ retains its keyword
+`wchar_t`. Unsupported metadata/builtin support rejects the configuration.
+Both switches accept only 0 or 1 and must be consistent across the target.
+Do not mix either replacement with another provider of its types, including
+indirect native includes. Compiler fast-width choices can differ from libc's
+ABI. Replacement stddef covers the C89/C++98 surface, not `max_align_t` or later
+additions. Native providers inherit the library surface for the chosen mode.
+
+The Boolean provider leaves C++ and final C23 keywords intact, includes stdbool
+in C99 through C17/draft C2x, and supplies a `uint8_t` macro fallback before C99.
+The byte fallback does not normalize arbitrary assignments and does not promise
+a native Boolean ABI. `hps_bool_from_u8`/`hps_bool_from_i32` normalize zero/nonzero;
+`to_u8`/`to_i32` return exactly zero/one. `to_cstr` borrows immutable static
+`"true"`/`"false"` literals. Numeric character helpers accept/return `uint8_t`
+execution-character codes, recognizing only `'0'` and `'1'` for strict parsing.
+`hps_bool_from_char_checked` returns false for NULL without access, clears a
+valid output to false on invalid input, and returns true after valid conversion.
+All helpers perform fixed work without allocation, retained pointers or mutable
+global state. The full framework implementation minimum remains C99.
+
+See the [source/API mapping](../migration/standard-types.md) and
+[verification and policy scope](../../governance/reviews/standard-types-2026-10-20.md).
 
 ## Compiler and capabilities
 
@@ -95,7 +142,8 @@ It uses a standard assertion in C11+ and a negative-size typedef rejection in
 C89/C99, using a `size_t` array typedef from `<stddef.h>`. For the fallback, place assertions on distinct source lines; the
 message is not part of the diagnostic. It never becomes a runtime check.
 
-`HPS_INLINE` uses the C99 keyword, with an empty C89 fallback.
+`HPS_INLINE` uses the C99/C++ keyword, compiler inline spellings for MSVC/GCC
+in legacy C modes, and an empty fallback otherwise.
 `HPS_RESTRICT` is empty by default; `HPS_ENABLE_RESTRICT=1` enables it in C99+
 only after target review of the aliasing contract.
 Use `static HPS_INLINE` for header-defined helpers to avoid external inline

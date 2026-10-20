@@ -6,7 +6,7 @@
  * @brief Header-only typed spans, container descriptors and constructors.
  */
 
-#include <stddef.h>
+#include "hps/base/hps_stddef.h"
 #include "hps/base/attributes.h"
 #include "hps/base/expression.h"
 

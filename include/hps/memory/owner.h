@@ -6,8 +6,8 @@
  * @brief Optional typed manual ownership generator for explicit allocators.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/base/attributes.h"
 #include "hps/memory/allocator.h"
 #include "hps/memory/array.h"

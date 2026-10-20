@@ -6,8 +6,8 @@
  * @brief Single-context static byte-block allocator with malloc-family signatures.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 
 /* Fixed ABI/resource budget; these are not per-translation-unit overrides. */
 #define HPS_POOL_MAX_BUFFERS 32U

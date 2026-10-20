@@ -6,8 +6,8 @@
  * @brief Bounded validation, tokenization, lexical paths and diagnostic rendering.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/view.h"
 
 #define HPS_CSTR_CLASS_BINARY ((uint8_t)0U)

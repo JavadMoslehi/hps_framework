@@ -3,8 +3,10 @@
 This directory is the normative engineering policy for HPS. It defines what a
 contributor must demonstrate before a change or release can be accepted. The
 policy is written in English so that external reviewers and integrators can use
-the same requirements. Policy version: 0.3.0; established: 2026-10-11; amended:
-2026-10-18. The user-requested removal of the shared status system is recorded in
+the same requirements. Policy version: 0.4.0; established: 2026-10-11; amended:
+2026-10-20. The standard-type provider scope is recorded in the
+[standard-type review](reviews/standard-types-2026-10-20.md).
+The user-requested removal of the shared status system is recorded in
 the [removal review](reviews/status-removal-2026-10-18.md). Readability and
 duplication rules remain in force; project-role review and release acceptance
 remain pending.
@@ -21,6 +23,7 @@ and blocks the corresponding release claim.
 | --- | --- |
 | [Charter](charter.md) | Scope, authority, decisions and exceptions |
 | [Public headers](headers.md) | Guard, declarations, C linkage and dependency contracts |
+| [Standard-type providers](reviews/standard-types-2026-10-20.md) | Standard names, checked fallback metadata and provider dependency migration |
 | [C rules](c-rules.md) | Types, expressions, APIs, pointers and declarations |
 | [Memory and execution](memory-and-execution.md) | Static resources, timing and ownership |
 | [Security](security.md) | Threat model, trust boundaries, sensitive data and dependencies |

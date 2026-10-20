@@ -1,9 +1,9 @@
 #include "../test_suites.h"
 #include "hps/enum/traits.h"
 #include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
+#include "hps/base/hps_bool.h"
 #include <string.h>
 
 /**

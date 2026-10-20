@@ -6,8 +6,8 @@
  * @brief Bounded C-string inspection, copying and in-place text transformations.
  */
 
-#include <stddef.h>
-#include <stdint.h>
+#include "hps/base/hps_stddef.h"
+#include "hps/base/hps_stdint.h"
 #include "hps/string/buffer.h"
 
 #define HPS_CSTR_KEEP_CASE ((uint8_t)0U)
