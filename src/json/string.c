@@ -1,4 +1,4 @@
-#include "hps/json/tokenizer.h"
+#include "hps/json/hps_tokenizer.h"
 #include "internal.h"
 
 /**

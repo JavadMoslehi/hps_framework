@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/string/buffer.h"
-#include "hps/string/view.h"
+#include "hps/string/hps_buffer.h"
+#include "hps/string/hps_view.h"
 #include <assert.h>
 #include "hps/base/hps_stdint.h"
 #include <string.h>

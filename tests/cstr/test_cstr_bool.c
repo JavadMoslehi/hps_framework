@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/cstr/convert.h"
-#include "hps/string/fixed.h"
+#include "hps/cstr/hps_convert.h"
+#include "hps/string/hps_fixed.h"
 
 #include <assert.h>
 #include "hps/base/hps_stddef.h"

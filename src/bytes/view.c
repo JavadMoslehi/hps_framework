@@ -1,4 +1,4 @@
-#include "hps/bytes/view.h"
+#include "hps/bytes/hps_view.h"
 
 /**
  * @file src/bytes/view.c

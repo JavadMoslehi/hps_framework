@@ -1,4 +1,4 @@
-#include "hps/cstr/core.h"
+#include "hps/cstr/hps_core.h"
 #include <string.h>
 
 /**

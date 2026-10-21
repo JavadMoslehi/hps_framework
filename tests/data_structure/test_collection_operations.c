@@ -1,8 +1,8 @@
 #include "../test_suites.h"
-#include "hps/data_structure/operations.h"
-#include "hps/data_structure/operations.h"
-#include "hps/memory/refcount.h"
-#include "hps/memory/refcount.h"
+#include "hps/data_structure/data_structure.h"
+#include "hps/data_structure/data_structure.h"
+#include "hps/memory/hps_refcount.h"
+#include "hps/memory/hps_refcount.h"
 #include <assert.h>
 #include "hps/base/hps_stddef.h"
 #include "hps/base/hps_stdint.h"

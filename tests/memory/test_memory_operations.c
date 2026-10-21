@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/memory/operations.h"
+#include "hps/memory/hps_operations.h"
 #include <assert.h>
 
 /**

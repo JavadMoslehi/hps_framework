@@ -1,6 +1,6 @@
-#include "hps/memory/array.h"
+#include "hps/memory/hps_array.h"
 
-#include "hps/memory/operations.h"
+#include "hps/memory/hps_operations.h"
 
 int32_t hps_memory_array_size(size_t count, size_t element_size, size_t *size)
 {

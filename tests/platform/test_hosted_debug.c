@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/platform/hosted/debug.h"
+#include "hps/platform/hosted/hps_debug.h"
 #include <assert.h>
 
 /**

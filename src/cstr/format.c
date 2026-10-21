@@ -1,4 +1,4 @@
-#include "hps/cstr/format.h"
+#include "hps/cstr/hps_format.h"
 #include "../internal/text.h"
 #include <string.h>
 

@@ -7,18 +7,20 @@ Industry policy, protocols, memory management, threading implementations, device
 access, logging and domain data models belong in higher layers. All base headers
 can be included independently and repeatedly; none defines executable runtime
 state. The API starts at development version 0.1.0 and is not a stable ABI.
-Use `hps/base/all.h` for the module umbrella; `hps/base.h` remains a forwarding
-compatibility include. Every base declaration lives beneath `hps/base/`.
+Use `hps/base.h` for the module umbrella. It directly includes the Base providers
+and is the only public header at the `hps/` root. Leaf declarations live beneath
+`hps/base/`; nested architecture/features umbrellas are
+`hps/base/architecture/architecture.h` and `hps/base/features/features.h`.
 
 ## Language and standards
 
-`language.h` exposes `HPS_LANGUAGE_IS_C`, `HPS_LANGUAGE_IS_CPP`, the raw
+`hps_language.h` exposes `HPS_LANGUAGE_IS_C`, `HPS_LANGUAGE_IS_CPP`, the raw
 `HPS_C_STANDARD_VERSION`, C89/C95/C99/C11/C17/C23 constants, and the raw C++
 version for detection only. C++ is not advertised as a C dialect. The complete
 base API targets C99 or newer. C++ identification is supported; public external
 C APIs carry guarded C linkage. Full C++/ABI consumption has not been qualified. Detection, version and declaration headers can be used in C89.
 
-`standard.h` preserves the C99 minimum policy. `HPS_REQUIRE_C99` enables an
+`hps_standard.h` preserves the C99 minimum policy. `HPS_REQUIRE_C99` enables an
 explicit compile-time rejection in this header. `HPS_C_IS_C99` through
 `HPS_C_IS_C23` mean **at least** that revision. `HPS_C_LEGACY` is true only for
 pre-C99 C. `HPS_C_STANDARD_NAME` is a diagnostic string. C23 is recognized only
@@ -77,7 +79,7 @@ See the [source/API mapping](../migration/standard-types.md) and
 
 ## Compiler and capabilities
 
-`compiler.h` checks Armclang, Intel LLVM, Intel Classic, IAR, ARMCC and TinyCC
+`hps_compiler.h` checks Armclang, Intel LLVM, Intel Classic, IAR, ARMCC and TinyCC
 before generic Clang, MSVC and GCC so compatibility macros do not hide more
 specific identities. Existing IDs 0–4 remain stable; added identities use 5–9.
 Version fields describe the selected frontend or documented vendor encoding.
@@ -100,14 +102,14 @@ MSVC thread-storage extension). `HPS_HAS_BUILTIN_*` flags distinguish individual
 builtins; type compatibility/choose-expression probes are C-only. These flags
 enable no extension, declaration fallback or policy exception.
 
-`features.h` aggregates language, compiler and architecture capabilities.
+`features/features.h` aggregates language, compiler and architecture capabilities.
 Standard feature flags follow the selected C dialect; VLA, complex and atomics
 also honor the corresponding `__STDC_NO_*__` macro. MSVC compatibility mode is
 conservative about VLA, complex, atomics and standard thread-local syntax.
 Flags describe compiler language facilities, not OS services or library linkage.
 No flag promises availability of `<threads.h>` or a threading runtime.
 
-`features/architecture.h` also reports `HPS_TARGET_HAS_X86_AESNI`, `PCLMUL`,
+`features/hps_architecture.h` also reports `HPS_TARGET_HAS_X86_AESNI`, `PCLMUL`,
 `AVX`, `AVX2` and `SHA` (each with the full `HPS_TARGET_HAS_X86_` prefix).
 Each flag requires x86 identity and its own compiler predefined instruction
 macro; all are zero on other families. These are translation-unit target-option
@@ -166,13 +168,13 @@ casts to void and evaluates its operand once; avoid side effects in its operand.
 
 ## Version and validation
 
-`macros.h` supplies `HPS_STRINGIFY_RAW(tokens)` for unexpanded spelling and
+`hps_macros.h` supplies `HPS_STRINGIFY_RAW(tokens)` for unexpanded spelling and
 `HPS_STRINGIFY(tokens)` for expansion before stringification. Both produce
 immutable literals and evaluate no runtime expression. The raw form preserves
 the legacy TO_STRING contract. See the
 [23-header migration](../migration/bytes-features-optional.md).
 
-`version.h` supplies the major/minor/patch components, string and
+`hps_version.h` supplies the major/minor/patch components, string and
 `HPS_VERSION_AT_LEAST(major, minor, patch)`. This predicate is intended for
 constant version values, not expressions with side effects.
 

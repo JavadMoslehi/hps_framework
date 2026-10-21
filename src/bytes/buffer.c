@@ -1,4 +1,4 @@
-#include "hps/bytes/buffer.h"
+#include "hps/bytes/hps_buffer.h"
 #include <string.h>
 
 /**

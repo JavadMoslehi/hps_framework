@@ -1,4 +1,4 @@
-#include "hps/string/char.h"
+#include "hps/string/hps_char.h"
 
 /**
  * @file src/string/char.c

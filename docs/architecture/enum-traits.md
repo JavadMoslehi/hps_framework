@@ -1,9 +1,9 @@
 # Enum traits contract
 
-`hps/enum/traits.h` is the renamed CSEP enum traits generator. It belongs beside
+`hps/enum/hps_traits.h` is the renamed CSEP enum traits generator. It belongs beside
 bytes and memory in the utility layer because its generated functions perform
 runtime lookup, parsing, iteration and formatting. It is excluded from
-`hps/base/all.h`, whose contract covers environment detection and portable declarations.
+`hps/base.h`, whose contract covers environment detection and portable declarations.
 The user's requested restoration retains the original enum definitions, generated
 API and helper behavior; this is a naming and placement migration.
 
@@ -11,7 +11,7 @@ The original C89-style function bodies and declaration/implementation/header-onl
 modes are retained. This does not establish strict C89 toolchain compatibility:
 `stdint.h` and `stdbool.h` are standard from C99 onward, and a C89 implementation
 needs compatible headers/extensions. Helpers and inline generation use
-`static HPS_INLINE`, sharing the selection in `hps/base/attributes.h`:
+`static HPS_INLINE`, sharing the selection in `hps/base/hps_attributes.h`:
 `inline` for C++/C99, compiler inline extensions for MSVC/GCC, or an empty token
 otherwise. `HPS_INLINE` can be defined by the caller before inclusion.
 The current shared C host suite passed with GCC and Clang; this does not qualify
@@ -28,7 +28,7 @@ navigation and distance. Numerical order governs min/max and comparison. Sparse
 and unsorted enum values work.
 
 ```c
-#include "hps/enum/traits.h"
+#include "hps/enum/hps_traits.h"
 
 typedef enum {
     DEMO_MODE_IDLE = -7,
@@ -131,7 +131,7 @@ with the caller.
 The migration maps `CSEP_ENUM_*` to `HPS_ENUM_*`, `csep_enum_*` to `hps_enum_*`, and
 `csep_static_inline` to `static HPS_INLINE`. Of the original CSEP includes,
 only the static-inline token was used; the C-string and container includes were
-unused. Inline compatibility now comes from `hps/base/attributes.h`, so there is
+unused. Inline compatibility now comes from `hps/base/hps_attributes.h`, so there is
 no remaining CSEP dependency. Standard `stddef.h`, `stdint.h`, `stdbool.h` and
 `string.h` dependencies remain explicit.
 

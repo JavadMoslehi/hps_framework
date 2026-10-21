@@ -1,13 +1,14 @@
 # Bounded string foundation
 
-`hps/string/all.h` exposes the completed bounded string foundation: a borrowed text
+`hps/string/string.h` exposes the completed bounded string foundation: a borrowed text
 view and a caller-owned fixed-capacity C-string buffer. Their public contracts are
-in `include/hps/string/view.h` and `include/hps/string/buffer.h`; implementations
+in `include/hps/string/hps_view.h` and `include/hps/string/hps_buffer.h`; implementations
 are in `src/string/view.c` and `src/string/buffer.c`. This utility layer sits beside
 bytes and memory, outside the environment-detection responsibilities of
-`hps/base/all.h`. It uses local `int32_t` result codes and the C library's `memcmp`
+`hps/base.h`. It uses local `int32_t` result codes and the C library's `memcmp`
 and `memmove`; it does not use the pool, allocate storage, or call OS services.
-The former `hps/string.h` path remains a forwarding compatibility include.
+The former root forwarding header has been removed; see the
+[include migration](../migration/public-headers-2026-10-21.md).
 
 The initial foundation below contains 23 functions. The subsequent user-authorized
 [extension and C-string migration](cstr.md) adds the remaining view/search/split
@@ -137,7 +138,7 @@ following helper imports bounded C-string input and assigns it to an already
 initialized buffer; failed import or assignment preserves the buffer.
 
 ```c
-#include "hps/string/all.h"
+#include "hps/string/string.h"
 #include "hps/base/hps_stdint.h"
 
 static int32_t demo_assign_cstr(hps_string_buffer *buffer,
@@ -228,13 +229,13 @@ MISRA compliance, target qualification, certification or measured performance.
 
 ## Tokenization and indentation extensions
 
-`hps/string/tokenizer.h` adds delimiter-set scanning with optional literal
+`hps/string/hps_tokenizer.h` adds delimiter-set scanning with optional literal
 quote/escape shielding and edge trimming. Enabled syntax takes precedence over
 delimiter membership, including at token boundaries; no unquoting occurs.
 Malformed quoting/trailing escape preserves cursor and outputs. Existing
 substring `split_next` remains the provider for empty-field substring splitting.
 
-`hps/string/indent.h` adds persistent checked four-space levels and explicit
+`hps/string/hps_indent.h` adds persistent checked four-space levels and explicit
 line-start state over an initialized builder. Compound appends stage the complete
 result in disjoint caller scratch; source may borrow the builder. All failures
 preserve context, destination and scratch. Explicit newline/line calls drive

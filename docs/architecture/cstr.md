@@ -1,7 +1,8 @@
 # Bounded C strings and text composition
 
-Include `hps/cstr/all.h`, link `HPS::cstr` (CMake) or `hps-cstr` (Meson).
-The former `hps/cstr.h` path remains a forwarding compatibility include.
+Include `hps/cstr/cstr.h`, link `HPS::cstr` (CMake) or `hps-cstr` (Meson).
+The former root forwarding header has been removed; see the
+[include migration](../migration/public-headers-2026-10-21.md).
 This layer builds on `HPS::string` and returns its local `int32_t` result codes:
 zero for success and `HPS_STRING_*` errors -1 through -5. It has no shared result
 registry dependency. The return representation and numeric error values change
@@ -10,10 +11,10 @@ Its 45 functions group the implemented CSEP C-string operations into four header
 
 | Header | Operations |
 | --- | --- |
-| `hps/cstr/core.h` | Bounded length/termination/space, clear, comparison/case, exact range copy, substring/character search, reverse/replace/filter/remove, trim and padding |
-| `hps/cstr/convert.h` | Checked signed/unsigned integer parse/render, hex/binary/text/decimal byte formats, decode, inverse bits, bool text |
-| `hps/cstr/algorithm.h` | Character classes, borrowed split/count/index, join/group, lexical filenames/min/max, title/value and deterministic integer/byte dumps |
-| `hps/cstr/format.h` | Typed formatting/append and exact fixed-decimal rendering |
+| `hps/cstr/hps_core.h` | Bounded length/termination/space, clear, comparison/case, exact range copy, substring/character search, reverse/replace/filter/remove, trim and padding |
+| `hps/cstr/hps_convert.h` | Checked signed/unsigned integer parse/render, hex/binary/text/decimal byte formats, decode, inverse bits, bool text |
+| `hps/cstr/hps_algorithm.h` | Character classes, borrowed split/count/index, join/group, lexical filenames/min/max, title/value and deterministic integer/byte dumps |
+| `hps/cstr/hps_format.h` | Typed formatting/append and exact fixed-decimal rendering |
 
 Every raw string input has a real readable capacity **including NUL**. Missing
 termination is an error; no unbounded scans or silent truncating writes remain.
@@ -50,7 +51,7 @@ Native float/double and FILE printing were not imported into core.
 
 The string layer additionally exposes 45 view functions, 10 buffer functions,
 26 bounded builder functions, 21 ASCII-octet helpers and 59 alphabet policies
-through three policy operations. `hps/string/fixed.h` generates typed owned
+through three policy operations. `hps/string/hps_fixed.h` generates typed owned
 character arrays and binds separate descriptors; it does not serialize a native
 struct or embed a movable self-pointer. ASCII builder/policy operations explicitly
 require an ASCII-compatible execution character set. Alphabet policies never
@@ -59,9 +60,9 @@ capacity; it never allocates. The original heap-owning lifecycle was replaced by
 caller ownership, explicit binding and capacity failure, with no hidden pool use.
 
 The Iranian national-code checksum is a separate domain utility in
-`hps/validation/national_code.h`, linked as `HPS::validation`/`hps-validation`.
+`hps/validation/hps_national_code.h`, linked as `HPS::validation`/`hps-validation`.
 It checks syntax and the legacy checksum only, with no issuance/identity claim.
-String keys for switch statements belong to `hps/enum/cstr.h`.
+String keys for switch statements belong to `hps/enum/hps_cstr.h`.
 
 [The complete legacy family/file mapping](../migration/csep-text.md) distinguishes
 adapted APIs, consolidated variants, removed unsafe/heap/hosted contracts and

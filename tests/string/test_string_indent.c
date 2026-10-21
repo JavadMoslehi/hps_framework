@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/string/fixed.h"
-#include "hps/string/indent.h"
+#include "hps/string/hps_fixed.h"
+#include "hps/string/hps_indent.h"
 
 #include <assert.h>
 #include <string.h>

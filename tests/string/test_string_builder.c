@@ -1,7 +1,7 @@
 #include "../test_suites.h"
-#include "hps/string/builder.h"
-#include "hps/string/fixed.h"
-#include "hps/string/policy.h"
+#include "hps/string/hps_builder.h"
+#include "hps/string/hps_fixed.h"
+#include "hps/string/hps_policy.h"
 #include "policy_expectations.h"
 #include <assert.h>
 #include <string.h>

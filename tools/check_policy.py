@@ -35,7 +35,11 @@ STATUSES = {'unassessed', 'open', 'satisfied', 'deviation-approved', 'not-applic
 # Separately built, default-disabled hosted adapter allowed by HPS-PRO-002.
 # This admits its stdio include only; numerical/heap/concurrency rules still run.
 HOSTED_STDIO_SOURCES = {'src/platform/hosted/debug.c'}
-HOSTED_DEBUG_HEADER = 'include/hps/platform/hosted/debug.h'
+HOSTED_DEBUG_HEADER = 'include/hps/platform/hosted/hps_debug.h'
+HOSTED_API_HEADERS = {
+    HOSTED_DEBUG_HEADER,
+    'include/hps/platform/hosted/hosted.h',
+}
 # HPS-C-020: standard names are declared only by their compatibility provider.
 # This does not exempt other statements, APIs, heap calls or headers in a file.
 STANDARD_PROVIDERS = {
@@ -93,7 +97,7 @@ def source_findings(source, path, hosted=False):
             (re.compile(r'#\s*include\s*<\s*(?:' + forbidden_headers + r')\.h\s*>'),
              'HPS-PRO-002/HPS-MEM-005: platform/concurrency/I/O dependency in core'),
         ])
-        if (path not in HOSTED_STDIO_SOURCES) and (path != HOSTED_DEBUG_HEADER):
+        if (path not in HOSTED_STDIO_SOURCES) and (path not in HOSTED_API_HEADERS):
             hosted_dependency_pattern = re.compile(
                 r'^[ \t]*#\s*include\s*[<"]hps/platform/hosted/[^>"\n]+[>"]',
                 re.MULTILINE)
@@ -323,9 +327,12 @@ def self_test():
         ('malloc(1U);', 'src/platform/hosted/debug.c', True),
         ('int value;', 'src/platform/hosted/debug.c', True),
         ('pthread_lock(value);', 'src/platform/hosted/debug.c', True),
-        ('#include "hps/platform/hosted/debug.h"', 'src/bytes/buffer.c', True),
-        ('#include <hps/platform/hosted/debug.h>', 'include/hps/base/all.h', True),
-        ('#include "hps/platform/hosted/debug.h"', 'src/platform/hosted/debug.c', False),
+        ('#include "hps/platform/hosted/hps_debug.h"', 'src/bytes/buffer.c', True),
+        ('#include <hps/platform/hosted/hps_debug.h>', 'include/hps/base.h', True),
+        ('#include "hps/platform/hosted/hps_debug.h"', 'src/platform/hosted/debug.c', False),
+        ('#include "hps/platform/hosted/hps_debug.h"',
+         'include/hps/platform/hosted/hosted.h', False),
+        ('#include "hps/platform/hosted/hosted.h"', 'include/hps/base.h', True),
     ]
     for source, path, expected in scope_cases:
         if bool(source_findings(source, path)) != expected:
@@ -335,13 +342,13 @@ def self_test():
         ('typedef __INT_FAST16_TYPE__ int_fast16_t;', STANDARD_PROVIDERS['stdint'], False),
         ('typedef unsigned char uint8_t;', STANDARD_PROVIDERS['stdint'], False),
         ('typedef unsigned char private_byte;', STANDARD_PROVIDERS['stdint'], True),
-        ('typedef unsigned char uint8_t;', 'include/hps/bytes/view.h', True),
+        ('typedef unsigned char uint8_t;', 'include/hps/bytes/hps_view.h', True),
         ('uint_fast16_t count;', STANDARD_PROVIDERS['stdint'], True),
         ('uint_fast16_t count;', 'tests/base/check_standard_types.py', False),
         ('uint_fast16_t count;', 'tests/bytes/test_bytes.c', True),
         ('int count;', STANDARD_PROVIDERS['stdint'], True),
         ('bool value;', STANDARD_PROVIDERS['stdbool'], False),
-        ('bool value;', 'include/hps/bytes/view.h', True),
+        ('bool value;', 'include/hps/bytes/hps_view.h', True),
         ('unsigned char value;', STANDARD_PROVIDERS['stdbool'], True),
         ('malloc(1U);', STANDARD_PROVIDERS['stdint'], True),
         ('#include <stdint.h>', STANDARD_PROVIDERS['stdint'], False),
@@ -349,7 +356,7 @@ def self_test():
         ('#include "stdint.h"', 'src/bytes/view.c', True),
         ('#include "hps/base/hps_stdint.h"', 'src/bytes/view.c', False),
         ('#include <stdint.h>', 'tests/base/check_standard_types.py', False),
-        ('/* #include <stdint.h> */', 'include/hps/bytes/view.h', False),
+        ('/* #include <stdint.h> */', 'include/hps/bytes/hps_view.h', False),
     ]
     for source, path, expected in provider_cases:
         if bool(source_findings(source, path)) != expected:

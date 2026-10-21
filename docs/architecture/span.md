@@ -1,10 +1,10 @@
 # Typed spans and expression helpers
 
-`hps/data_structure/define.h` contains the header-only typed borrowed-span generator
-alongside the other typed container generators.
+`hps/data_structure/hps_span.h` contains the header-only typed borrowed-span generator.
 It is outside the base umbrella because base describes the environment.
-`hps/data_structure/all.h` includes the module API. The former `hps/span/define.h`,
-`hps/span/all.h` and `hps/span.h` paths remain forwarding compatibility includes.
+`hps/data_structure/data_structure.h` includes the whole module API. The former
+root and `span/` forwarding headers have been removed; see the
+[include migration](../migration/public-headers-2026-10-21.md).
 Generator names and behavior are unchanged.
 For mutable spans and the other container families following this generator
 pattern, see [typed data-structure descriptors](data-structure.md).
@@ -13,7 +13,7 @@ Define at file scope with an object type and a unique name:
 
 ```c
 #include "hps/base/hps_stdint.h"
-#include "hps/data_structure/define.h"
+#include "hps/data_structure/hps_span.h"
 
 HPS_SPAN_DEFINE(uint16_t, hps_words)
 static const uint16_t words[] = {1U, 2U};
@@ -35,7 +35,7 @@ The user's names `HPS_SPAN_DEF`/`HPS_MAKE_SPAN` were normalized to
 The generated function gained static linkage. C89 syntax does not establish
 availability of every selected stdint type, compiler extension or target ABI.
 
-`hps/base/expression.h`, included by base, owns `HPS_LIKELY`, `HPS_UNLIKELY`
+`hps/base/hps_expression.h`, included by base, owns `HPS_LIKELY`, `HPS_UNLIKELY`
 and C99-only `HPS_LVALUE`. Both hints normalize to zero/one and evaluate their
 expression once, including the fallback; this corrects the sample fallback's
 different return-value semantics. Builtin expectation uses existing HPS compiler

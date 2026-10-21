@@ -1,8 +1,8 @@
 #include "../test_suites.h"
-#include "hps/base/macros.h"
-#include "hps/base/attributes.h"
-#include "hps/algorithm/scalar.h"
-#include "hps/algorithm/bits.h"
+#include "hps/base/hps_macros.h"
+#include "hps/base/hps_attributes.h"
+#include "hps/algorithm/hps_scalar.h"
+#include "hps/algorithm/hps_bits.h"
 
 #include <assert.h>
 #include "hps/base/hps_stddef.h"

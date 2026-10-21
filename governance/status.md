@@ -1,6 +1,6 @@
 # Current adoption status
 
-Baseline date: 2026-10-11; standard-type provider review updated 2026-10-20. This is a
+Baseline date: 2026-10-11; public-header layout review updated 2026-10-21. This is a
 gap register, not a progress estimate. Earlier host results below belong to
 [the text migration snapshot](reviews/csep-text-2026-10-13.md). The changed error
 representation invalidates those results for affected sources; current evidence
@@ -39,6 +39,7 @@ industrial certification or release evidence bundle is currently established.
 | GAP-026 | Bounded JSON, String tokenization/indentation, refcounts and typed collection operations have host evidence; counted-character scope, target charset/ABI/resources and application ownership/schema/rate controls remain unqualified | Resolve the [runtime/text/JSON review](reviews/objects-json-2026-10-19.md) and perform scoped semantic, independent and target verification before production acceptance | Open |
 | GAP-027 | Added Bytes ordering/search/pop, typed optional values and compile-target x86 flags have host evidence only; optional copy/lifetime contracts and target/compiler/ABI/resource evidence remain unqualified | Complete the [23-header migration review](reviews/bytes-features-optional-2026-10-19.md), named acceptance and actual target verification; compile-target ISA metadata is not runtime permission | Open |
 | GAP-028 | Standard-name providers and narrow HPS-C-020 scope are implemented; replacement/compiler metadata and Boolean ABI need target evidence | Review the [provider record](reviews/standard-types-2026-10-20.md), select one provider per target and complete independent acceptance/target checks | Open |
+| GAP-029 | Public include paths and guards are reorganized; old root/span forwarding paths are removed and Memory's umbrella includes ownership-proposal declarations | Apply the [include migration](../docs/migration/public-headers-2026-10-21.md), refresh installed headers and complete the [layout review](reviews/public-headers-2026-10-21.md); existing allocator, target and independent-review gates remain open | Open |
 | GAP-010 | Lightweight checks cover only syntax-level restrictions and document consistency | Add qualified semantic/whole-program tools and independent review for release | Open |
 
 Historical host tests from the earlier allocator are not replacement-pool evidence.

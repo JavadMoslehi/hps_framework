@@ -19,7 +19,7 @@ position. Clearing a buffer changes this length and does not erase its storage.
 
 ## View
 
-Include `hps/bytes/view.h`. An hps_byte_view contains a const uint8_t pointer and
+Include `hps/bytes/hps_view.h`. An hps_byte_view contains a const uint8_t pointer and
 length. Construction and slice are O(1), with no payload copy. Empty results are
 normalized to {NULL, 0}; slicing an empty range performs no pointer arithmetic.
 An empty slice at the end is valid, an offset beyond the end is not.
@@ -34,13 +34,13 @@ are binary sequences: embedded zero bytes are ordinary data, not a terminator.
 No encoding or character/string semantics are attached.
 
 For explicit unsigned integer field encoding, see the
-[endian operations](bytes-endian.md) in `hps/bytes/endian.h`.
+[endian operations](bytes-endian.md) in `hps/bytes/hps_endian.h`.
 For sequential checked reads with a cursor, see the
-[reader contract](bytes-reader.md) in `hps/bytes/reader.h`.
+[reader contract](bytes-reader.md) in `hps/bytes/hps_reader.h`.
 
 ## Buffer
 
-Include `hps/bytes/buffer.h`. An hps_byte_buffer contains a uint8_t pointer,
+Include `hps/bytes/hps_buffer.h`. An hps_byte_buffer contains a uint8_t pointer,
 length and capacity. Initialize it with an actual caller-owned writable array;
 length starts at zero without reading or clearing payloads. NULL storage is valid
 only with capacity zero. Empty zero-capacity buffers accept empty
@@ -62,7 +62,7 @@ borrows only initialized active bytes; buffer mutation, rebinding or release of
 backing storage invalidates such views under the API contract.
 
 ```c
-#include "hps/bytes/buffer.h"
+#include "hps/bytes/hps_buffer.h"
 
 #define MESSAGE_CAPACITY 64U
 static uint8_t message_storage[MESSAGE_CAPACITY];
@@ -90,7 +90,7 @@ budgets; size_t alone is not admission control.
 
 Checked byte APIs return `int32_t` directly from `<stdint.h>`. Zero means
 success; local negative values distinguish the errors below. Constants are typed
-as `int32_t` in `hps/bytes/view.h`; there is no result typedef, module registry,
+as `int32_t` in `hps/bytes/hps_view.h`; there is no result typedef, module registry,
 diagnostic-string lookup or shared result-library dependency. Codes are local to
 the bytes API and may overlap other APIs; compare the named byte constants.
 

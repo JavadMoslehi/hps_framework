@@ -1,4 +1,4 @@
-#include "hps/memory/pool.h"
+#include "hps/memory/hps_pool.h"
 #include "hps/base/hps_stdint.h"
 
 /**

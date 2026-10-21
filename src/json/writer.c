@@ -1,4 +1,4 @@
-#include "hps/json/writer.h"
+#include "hps/json/hps_writer.h"
 #include "internal.h"
 
 #include <string.h>

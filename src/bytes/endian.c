@@ -1,5 +1,5 @@
-#include "hps/bytes/endian.h"
-#include "hps/bytes/codec.h"
+#include "hps/bytes/hps_endian.h"
+#include "hps/bytes/hps_codec.h"
 
 /**
  * @file src/bytes/endian.c

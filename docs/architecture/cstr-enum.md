@@ -1,13 +1,13 @@
 # String keys for switch statements
 
-The user's generator now lives in `hps/enum/cstr.h` beside enum traits. It generates
+The user's generator now lives in `hps/enum/hps_cstr.h` beside enum traits. It generates
 a native enum, a bounded text-to-enum function and reverse immutable name lookup.
 Matching is exact, case-sensitive and compares text directly; there is no hash
 collision behavior. The table requires unique IDs and immutable NUL-terminated
 string literals without embedded NUL. Duplicate text selects its first entry.
 
 ```c
-#include "hps/enum/cstr.h"
+#include "hps/enum/hps_cstr.h"
 
 #define CONFIG_KEYS(ENTRY, PREFIX) \
     ENTRY(PREFIX, PORT, "port") \

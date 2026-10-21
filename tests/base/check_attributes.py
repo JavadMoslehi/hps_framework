@@ -34,7 +34,7 @@ def compile_case(source, dialect='c99', enabled=0, fail=False, run=False):
         checks += 1
 
 
-source = '''#include "hps/base/all.h"
+source = '''#include "hps/base.h"
 #include "hps/base/hps_stdint.h"
 #if defined(HPS_PACKED) || defined(HPS_ALIGNED)
 #error "ABI-changing declaration attributes must not be silently imported"
@@ -65,8 +65,8 @@ for dialect in ['c99', 'c11', 'c17', 'c2x']:
     for enabled in [0, 1]:
         compile_case(source, dialect, enabled, run=True)
 
-subset = '''#include "hps/base/attributes.h"
-#include "hps/base/macros.h"
+subset = '''#include "hps/base/hps_attributes.h"
+#include "hps/base/hps_macros.h"
 #ifdef HPS_NONNULL
 #error "Variadic annotation is absent from the legacy dialect subset"
 #endif
@@ -76,7 +76,7 @@ for dialect in ['c89', 'c++98']:
     for enabled in [0, 1]:
         compile_case(subset, dialect, enabled)
 
-nonnull = '''#include "hps/base/attributes.h"
+nonnull = '''#include "hps/base/hps_attributes.h"
 #include "hps/base/hps_stdint.h"
 HPS_NONNULL(1) int32_t hps_required(const int32_t *value);
 int main(void) { return hps_required(NULL) == INT32_C(0) ? 0 : 1; }
@@ -84,10 +84,10 @@ int main(void) { return hps_required(NULL) == INT32_C(0) ? 0 : 1; }
 compile_case(nonnull, enabled=0)
 compile_case(nonnull, enabled=1, fail=True)
 
-without_probes = '''#include "hps/base/compiler.h"
+without_probes = '''#include "hps/base/hps_compiler.h"
 #undef HPS_HAS_ATTRIBUTE
 #define HPS_HAS_ATTRIBUTE(name) 0
-#include "hps/base/attributes.h"
+#include "hps/base/hps_attributes.h"
 #if HPS_HAS_ALWAYS_INLINE || HPS_HAS_NEVER_INLINE || HPS_HAS_USED || HPS_HAS_PURE || HPS_HAS_CONSTFUNC || HPS_HAS_NONNULL
 #error "No extension annotation may be claimed without its probe"
 #endif

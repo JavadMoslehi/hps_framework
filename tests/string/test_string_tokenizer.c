@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/string/tokenizer.h"
+#include "hps/string/hps_tokenizer.h"
 
 #include <assert.h>
 #include <string.h>

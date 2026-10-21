@@ -10,6 +10,9 @@ The user-requested removal of the shared status system is recorded in
 the [removal review](reviews/status-removal-2026-10-18.md). Readability and
 duplication rules remain in force; project-role review and release acceptance
 remain pending.
+The 2026-10-21 [public-header layout review](reviews/public-headers-2026-10-21.md)
+records package umbrellas, per-type Data Structure headers and the include-path
+migration; it changes no policy exception or qualification status.
 
 HPS is currently a development framework with host-tested modules and no qualified
 deployment target. This policy is an engineering baseline, not a certificate, a safety case,
@@ -23,6 +26,7 @@ and blocks the corresponding release claim.
 | --- | --- |
 | [Charter](charter.md) | Scope, authority, decisions and exceptions |
 | [Public headers](headers.md) | Guard, declarations, C linkage and dependency contracts |
+| [Package header layout](reviews/public-headers-2026-10-21.md) | Named umbrellas, per-type generators, removed compatibility paths and current evidence |
 | [Standard-type providers](reviews/standard-types-2026-10-20.md) | Standard names, checked fallback metadata and provider dependency migration |
 | [C rules](c-rules.md) | Types, expressions, APIs, pointers and declarations |
 | [Memory and execution](memory-and-execution.md) | Static resources, timing and ownership |

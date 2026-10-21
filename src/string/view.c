@@ -1,4 +1,4 @@
-#include "hps/string/view.h"
+#include "hps/string/hps_view.h"
 #include "../internal/text.h"
 #include <string.h>
 

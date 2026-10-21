@@ -1,10 +1,17 @@
 # Integer byte encoding
 
-Include `hps/bytes/endian.h` and link the existing bytes library (`HPS::bytes`
+Include `hps/bytes/hps_endian.h` and link the existing bytes library (`HPS::bytes`
 in CMake or `hps-bytes` in Meson). This extends the
 [borrowed bytes module](bytes.md) without changing its descriptor layouts.
 It requires exact-width uint8_t, uint16_t, uint32_t and uint64_t on the target.
 uint8_t availability implies eight-bit C bytes for this representation.
+
+Order-selecting codecs use `hps/bytes/hps_order.h`: `hps_byte_order` is uint8_t,
+with `HPS_BYTE_ORDER_LITTLE_ENDIAN` = 0 and `HPS_BYTE_ORDER_BIG_ENDIAN` = 1.
+Base's `HPS_ENDIAN_*` detection constants have different values and are not codec
+selectors. The unused conflicting Bytes `hps_endian_t` enum is removed; consumers
+must migrate both its type and constants using the
+[explicit source/API note](../migration/public-headers-2026-10-21.md#removed-conflicting-bytes-endian-type).
 
 ## Operations
 

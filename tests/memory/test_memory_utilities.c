@@ -1,8 +1,8 @@
 #include "../test_suites.h"
-#include "hps/memory/allocated_array.h"
-#include "hps/memory/array.h"
-#include "hps/memory/operations.h"
-#include "hps/memory/owner.h"
+#include "hps/memory/hps_allocated_array.h"
+#include "hps/memory/hps_array.h"
+#include "hps/memory/hps_operations.h"
+#include "hps/memory/hps_owner.h"
 #include <assert.h>
 
 /**

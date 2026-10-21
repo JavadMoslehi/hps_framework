@@ -1,5 +1,12 @@
 # Legacy source inventory and continuation
 
+The [public-header layout migration](public-headers-2026-10-21.md), added
+2026-10-21, is the current include-path map for all packages. Its named umbrellas
+and per-type Data Structure headers supersede earlier `all.h`, root/span
+forwarding and generic descriptor-header paths in the historical migration
+records below. Source snapshots, inventories and earlier verification remain
+unchanged; the layout review records fresh evidence separately.
+
 The [standard-type provider migration](standard-types.md), added 2026-10-20,
 records the user's separate Boolean/stdint/stddef submission and the new Base
 providers. Earlier decisions to omit wrappers are superseded by that request;

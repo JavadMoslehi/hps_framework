@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/data_structure/optional.h"
-#include "hps/data_structure/optional.h"
+#include "hps/data_structure/hps_optional.h"
+#include "hps/data_structure/hps_optional.h"
 
 #include <assert.h>
 #include "hps/base/hps_stddef.h"

@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/result/check.h"
+#include "hps/result/hps_check.h"
 #include <assert.h>
 
 /**

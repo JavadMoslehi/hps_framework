@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/json/all.h"
-#include "hps/string/fixed.h"
+#include "hps/json/json.h"
+#include "hps/string/hps_fixed.h"
 
 #include <assert.h>
 #include "hps/base/hps_stddef.h"

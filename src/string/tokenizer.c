@@ -1,4 +1,4 @@
-#include "hps/string/tokenizer.h"
+#include "hps/string/hps_tokenizer.h"
 
 #include "../internal/text.h"
 

@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/cstr/format.h"
+#include "hps/cstr/hps_format.h"
 #include <assert.h>
 #include <string.h>
 

@@ -59,18 +59,18 @@ with tempfile.TemporaryDirectory(prefix='hps-detection-instructions-') as tempor
     Path(temporary, 'limits.h').write_text('#define CHAR_BIT 8\n')
     for dialect in ['c99', 'c++11']:
         for target in ['__i386__=1', '_M_IX86=600', '__x86_64__=1', '_M_X64=100']:
-            check('hps/base/features/architecture.h', instruction_expectations([]),
+            check('hps/base/features/hps_architecture.h', instruction_expectations([]),
                   [target], dialect=dialect, include_paths=[temporary])
-            check('hps/base/features/architecture.h', instruction_expectations(instruction_names),
+            check('hps/base/features/hps_architecture.h', instruction_expectations(instruction_names),
                   [target] + all_instruction_definitions, dialect=dialect,
                   include_paths=[temporary])
         for macro, name in zip(instruction_macros, instruction_names):
-            check('hps/base/features/architecture.h', instruction_expectations([name]),
+            check('hps/base/features/hps_architecture.h', instruction_expectations([name]),
                   ['__x86_64__=1', macro + '=1'], dialect=dialect,
                   include_paths=[temporary])
         for target in [[], ['__arm__=1'], ['__aarch64__=1'], ['__riscv=1'],
                        ['__mips__=1'], ['__powerpc__=1']]:
-            check('hps/base/features/architecture.h', instruction_expectations([]),
+            check('hps/base/features/hps_architecture.h', instruction_expectations([]),
                   target + all_instruction_definitions, dialect=dialect,
                   include_paths=[temporary])
 
@@ -89,7 +89,7 @@ if predefined_names.intersection({'__i386__', '__x86_64__', '_M_IX86', '_M_X64'}
                     (['-maes', '-mpclmul', '-mavx', '-mavx2', '-msha'], instruction_names)]
     for dialect in ['c99', 'c++11']:
         for options, enabled in native_cases:
-            check('hps/base/features/architecture.h', instruction_expectations(enabled),
+            check('hps/base/features/hps_architecture.h', instruction_expectations(enabled),
                   dialect=dialect, flags=disabled + options, synthetic=False)
 else:
     print('HPS detection: native x86 option checks skipped for non-x86 compiler target.')
@@ -122,7 +122,7 @@ for definitions, identity, version in [
     (['_MSC_VER=1930', '_MSC_FULL_VER=193012345'], 'MSVC', (19, 30, 0)),
     (gcc + ['__NVCOMPILER=1'], 'UNKNOWN', (0, 0, 0)),
 ]:
-    check('hps/base/compiler.h', [
+    check('hps/base/hps_compiler.h', [
         'HPS_COMPILER == HPS_COMPILER_' + identity,
         ' + '.join('HPS_COMPILER_IS_' + name for name in identities) + ' == 1',
         'HPS_COMPILER_VERSION_MAJOR == ' + str(version[0]),
@@ -136,23 +136,23 @@ for definitions, family in [
     (['__powerpc64__=1'], 'PPC'), (['_M_PPC=1'], 'PPC'),
     (['__riscv=1'], 'RISCV'), (['__riscv=1', '__riscv_xlen=128'], 'RISCV'),
 ]:
-    check('hps/base/architecture/id.h',
+    check('hps/base/architecture/hps_id.h',
           ['HPS_ARCHITECTURE == HPS_ARCH_' + family], definitions)
 
 # Bi-endian CPU identity is insufficient evidence for byte order.
 for definitions in [[], ['__arm__=1'], ['__aarch64__=1'],
                     ['__riscv=1'], ['__mips__=1'], ['__powerpc__=1']]:
-    check('hps/base/architecture/endian.h',
+    check('hps/base/architecture/hps_endian.h',
           ['HPS_ENDIANNESS == HPS_ENDIAN_UNKNOWN'], definitions)
 
 for target in ['__i386__=1', '__x86_64__=1', '_WIN32=1']:
-    check('hps/base/architecture/endian.h',
+    check('hps/base/architecture/hps_endian.h',
           ['HPS_ENDIANNESS == HPS_ENDIAN_LITTLE'], [target])
-    check('hps/base/architecture/endian.h',
+    check('hps/base/architecture/hps_endian.h',
           ['HPS_ENDIANNESS == HPS_ENDIAN_UNKNOWN'],
           [target, '__BYTE_ORDER__=3412', '__ORDER_LITTLE_ENDIAN__=1234',
            '__ORDER_BIG_ENDIAN__=4321'])
-    check('hps/base/architecture/endian.h',
+    check('hps/base/architecture/hps_endian.h',
           ['HPS_ENDIANNESS == HPS_ENDIAN_BIG'],
           [target, '__BYTE_ORDER__=4321', '__ORDER_LITTLE_ENDIAN__=1234',
            '__ORDER_BIG_ENDIAN__=4321'])
@@ -160,26 +160,26 @@ for target in ['__i386__=1', '__x86_64__=1', '_WIN32=1']:
 # Standard syntax and compiler extensions remain separate, including in C++.
 for dialect in ['c89', 'c99', 'c11', 'c17', 'c++11', 'c++17']:
     c99 = dialect in ['c99', 'c11', 'c17']
-    check('hps/base/features/language.h', [
+    check('hps/base/features/hps_language.h', [
         'HPS_HAS_COMPOUND_LITERALS == ' + str(1 if c99 else 0),
         'HPS_HAS_DESIGNATED_INITIALIZERS == ' + str(1 if c99 else 0),
         '!HPS_HAS_TYPEOF',
     ], dialect=dialect)
     for strict in [False, True]:
         definitions = gcc + (['__STRICT_ANSI__=1'] if strict else [])
-        check('hps/base/features/compiler.h', [
+        check('hps/base/features/hps_compiler.h', [
             'HPS_HAS_EXTENSION_STATEMENT_EXPRESSIONS == ' + str(0 if strict else 1),
             'HPS_HAS_EXTENSION_TYPEOF == ' + str(0 if strict else 1),
             'HPS_HAS_BUILTIN_EXPECT',
             'HPS_HAS_BUILTIN_TYPES_COMPATIBLE_P == ' + str(0 if dialect.startswith('c++') else 1),
             'HPS_HAS_BUILTIN_CHOOSE_EXPR == ' + str(0 if dialect.startswith('c++') else 1),
         ], definitions, dialect=dialect)
-check('hps/base/features/compiler.h',
+check('hps/base/features/hps_compiler.h',
       ['!HPS_HAS_EXTENSION_STATEMENT_EXPRESSIONS',
        '!HPS_HAS_EXTENSION_TYPEOF', 'HPS_HAS_EXTENSION_THREAD_LOCAL'],
       ['_MSC_VER=1930'])
-check('hps/base/features/language.h', ['HPS_HAS_TYPEOF'], prefix=
-      '#include "hps/base/language.h"\n#undef HPS_C_STANDARD_VERSION\n'
+check('hps/base/features/hps_language.h', ['HPS_HAS_TYPEOF'], prefix=
+      '#include "hps/base/hps_language.h"\n#undef HPS_C_STANDARD_VERSION\n'
       '#define HPS_C_STANDARD_VERSION 202311L\n')
 
 for definitions, expected in [
@@ -194,7 +194,7 @@ for definitions, expected in [
     (['__APPLE__=1', '__MACH__=1', 'TARGET_OS_OSX=1'], ['HPS_PLATFORM_IS_MACOS', '!HPS_PLATFORM_IS_IOS']),
     (['__APPLE__=1', '__MACH__=1', 'TARGET_OS_IPHONE=1', 'TARGET_OS_TV=1'], ['!HPS_PLATFORM_IS_IOS', '!HPS_PLATFORM_IS_MACOS']),
 ]:
-    check('hps/platform/os.h', expected, definitions)
+    check('hps/platform/hps_os.h', expected, definitions)
 
 for definitions, identity in [
     ([], 'UNKNOWN'), (['__linux__=1'], 'UNKNOWN'),
@@ -207,11 +207,11 @@ for definitions, identity in [
     (['HPS_CONFIG_LIBC=HPS_LIBC_MUSL'], 'MUSL'),
     (['__GLIBC__=2', 'HPS_CONFIG_LIBC=HPS_LIBC_GLIBC'], 'GLIBC'),
 ]:
-    check('hps/platform/libc.h', ['HPS_LIBC_IS_' + identity], definitions)
+    check('hps/platform/hps_libc.h', ['HPS_LIBC_IS_' + identity], definitions)
 for definitions in [['HPS_CONFIG_LIBC=99'], ['HPS_CONFIG_LIBC=-1'],
                     ['HPS_CONFIG_LIBC=0'],
                     ['__GLIBC__=2', 'HPS_CONFIG_LIBC=HPS_LIBC_MUSL']]:
-    check('hps/platform/libc.h', [], definitions, fail=True)
+    check('hps/platform/hps_libc.h', [], definitions, fail=True)
 
 for definitions, expressions in [
     ([], ['!HPS_POSIX_AVAILABLE', 'HPS_POSIX_VERSION == 0L', 'HPS_XOPEN_VERSION == 0L']),
@@ -221,10 +221,10 @@ for definitions, expressions in [
     (['_POSIX_C_SOURCE=200809L', '_XOPEN_SOURCE=700'],
      ['!HPS_POSIX_AVAILABLE', 'HPS_POSIX_VERSION == 0L', 'HPS_XOPEN_VERSION == 0L']),
 ]:
-    check('hps/platform/posix.h', expressions, definitions)
+    check('hps/platform/hps_posix.h', expressions, definitions)
 
 # Neither detection family injects bool/true/false into a consumer's namespace.
-for header in ['hps/base/features/language.h', 'hps/platform/detection.h']:
+for header in ['hps/base/features/hps_language.h', 'hps/platform/platform.h']:
     for dialect in ['c89', 'c99', 'c11', 'c++11', 'c++17']:
         check(header, ['!defined(bool)', '!defined(true)', '!defined(false)'],
               dialect=dialect)
@@ -232,7 +232,7 @@ for header in ['hps/base/features/language.h', 'hps/platform/detection.h']:
 # Pointer width comes from its own evidence even for a 64-bit CPU with x32 ABI.
 with tempfile.TemporaryDirectory(prefix='hps-detection-width-') as temporary:
     Path(temporary, 'limits.h').write_text('#define CHAR_BIT 8\n')
-    source = '''#include "hps/base/architecture.h"
+    source = '''#include "hps/base/architecture/architecture.h"
 #if HPS_ARCHITECTURE != HPS_ARCH_X86_64 || HPS_POINTER_BITS != 32
 #error "CPU identity must not imply pointer width"
 #endif

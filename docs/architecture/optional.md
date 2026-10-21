@@ -1,10 +1,11 @@
 # Typed optional values
 
-Include `hps/data_structure/optional.h` or `data_structure/all.h`. Expand
+Include `hps/data_structure/hps_optional.h` or
+`hps/data_structure/data_structure.h`. Expand
 `HPS_OPTIONAL_DEFINE(type, name)` once at file scope after defining a complete,
 copyable assignable type. Use a typedef for pointers; C++ values must be trivial
 C-compatible objects. The header reuses existing typed aggregate-initialization
-machinery in `data_structure/define.h`; it owns no heap or shared runtime state.
+machinery in `hps/data_structure/hps_static_init.h`; it owns no heap or shared runtime state.
 
 The generated `name_t` stores a uint8 `has_value` flag and one real typed value.
 `name_none()` zero-initializes the payload using language semantics, including

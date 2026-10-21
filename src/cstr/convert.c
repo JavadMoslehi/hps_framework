@@ -1,6 +1,6 @@
-#include "hps/cstr/convert.h"
-#include "hps/cstr/core.h"
-#include "hps/string/char.h"
+#include "hps/cstr/hps_convert.h"
+#include "hps/cstr/hps_core.h"
+#include "hps/string/hps_char.h"
 
 #include <string.h>
 

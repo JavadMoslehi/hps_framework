@@ -1,4 +1,4 @@
-#include "hps/memory/operations.h"
+#include "hps/memory/hps_operations.h"
 
 #include <string.h>
 

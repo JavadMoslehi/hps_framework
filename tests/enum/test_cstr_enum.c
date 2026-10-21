@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/enum/cstr.h"
-#include "hps/enum/cstr.h"
+#include "hps/enum/hps_cstr.h"
+#include "hps/enum/hps_cstr.h"
 #include <assert.h>
 #include "hps/base/hps_stdint.h"
 #include <string.h>

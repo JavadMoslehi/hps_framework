@@ -12,6 +12,9 @@ if python.found() and cc.get_id() in ['gcc', 'clang']
   test('hps_standard_types', python,
     args: [files('tests/base/check_standard_types.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
+  test('hps_public_headers', python,
+    args: [files('tests/base/check_headers.py'), '--compiler'] + cc.cmd_array(),
+    timeout: 120)
   test('hps_environment_detection', python,
     args: [files('tests/base/check_detection.py'), '--compiler'] + cc.cmd_array(),
     timeout: 120)
@@ -90,7 +93,7 @@ hps_tests = executable('hps_tests', 'tests/main.c', 'tests/base/test_base.c',
   'tests/enum/test_enum.c', 'tests/string/test_string.c',
   'tests/string/test_string_extended.c', 'tests/string/test_string_builder.c',
   'tests/string/test_string_tokenizer.c', 'tests/string/test_string_indent.c',
-  'tests/span/test_span.c', 'tests/data_structure/test_data_structure.c',
+  'tests/data_structure/test_span.c', 'tests/data_structure/test_data_structure.c',
   'tests/data_structure/test_collection_operations.c', 'tests/json/test_json.c',
   'tests/data_structure/test_optional.c', 'tests/bytes/test_byte_algorithms.c',
   'tests/cstr/test_cstr_bool.c',

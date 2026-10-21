@@ -1,6 +1,6 @@
-#include "hps/cstr/algorithm.h"
+#include "hps/cstr/hps_algorithm.h"
 
-#include "hps/cstr/convert.h"
+#include "hps/cstr/hps_convert.h"
 #include "../internal/text.h"
 #include <string.h>
 

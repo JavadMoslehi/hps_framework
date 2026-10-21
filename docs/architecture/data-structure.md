@@ -1,19 +1,21 @@
 # Typed data-structure descriptors
 
-`hps/data_structure/define.h` extends the file-scope generator pattern from
-the [read-only span generator](span.md) in the same header to the eleven families
-supplied in the user's draft.
+Each type has a dedicated header beneath `hps/data_structure/`. The
+[read-only span generator](span.md) lives in `hps_span.h`; the other descriptor
+families follow the same file-scope generator pattern.
 Each definition takes an explicit element type and a unique prefix. It emits
 `name_s`, `name_t` and an internal `static HPS_INLINE name_make(...)` constructor.
-`hps/data_structure/all.h` is the module umbrella. The former
-`hps/data_structure.h` and `hps/hps_data_structure.h` paths remain forwarding
-compatibility headers; new consumers use the module paths. Generator names and
-behavior are unchanged by this include-path migration.
+`hps/data_structure/data_structure.h` is the module umbrella. The former generic
+definition/operation headers and root/span forwarding headers have been removed.
+Generator names, expansions, object layouts and behavior are preserved; see the
+[include migration](../migration/public-headers-2026-10-21.md).
 For example:
 
 ```c
 #include "hps/base/hps_stdint.h"
-#include "hps/data_structure/define.h"
+#include "hps/data_structure/hps_vector.h"
+#include "hps/data_structure/hps_svector.h"
+#include "hps/data_structure/hps_slist.h"
 
 HPS_VECTOR_DEFINE(uint16_t, hps_words)
 HPS_SVECTOR_DEFINE(uint16_t, hps_local_words, 8U)
@@ -37,19 +39,20 @@ identifier tokens, unique across all instantiations
 in a translation unit. The generators use token concatenation; they do not derive
 public names from the spelling of the element type.
 
-| Generator | Generated container fields, in declaration/constructor order |
-| --- | --- |
-| `HPS_VECTOR_DEFINE(type_, name_)` | `type_ *data`, `size_t length`, `size_t capacity` |
-| `HPS_MUTABLE_SPAN_DEFINE(type_, name_)` | `type_ *data`, `size_t length` |
-| `HPS_CSPAN_DEFINE(type_, name_)` | `const type_ *data`, `size_t length` |
-| `HPS_ROBUFFER_DEFINE(type_, name_)` | `const type_ *data`, `size_t length`, `size_t capacity` |
-| `HPS_SVECTOR_DEFINE(type_, name_, capacity_)` | `type_ data[capacity_]`, `size_t length` |
-| `HPS_SRING_DEFINE(type_, name_, capacity_)` | `type_ data[capacity_]`, `size_t head`, `size_t tail`, `size_t length` |
-| `HPS_RING_DEFINE(type_, name_)` | `type_ *data`, `size_t head`, `size_t tail`, `size_t length`, `size_t capacity` |
-| `HPS_STACK_DEFINE(type_, name_)` | `type_ *data`, `size_t length`, `size_t capacity` |
-| `HPS_SLIST_DEFINE(type_, name_)` | `name_node_t *head`, `size_t length` |
-| `HPS_DLIST_DEFINE(type_, name_)` | `name_node_t *head`, `name_node_t *tail`, `size_t length` |
-| `HPS_BST_DEFINE(type_, name_)` | `name_node_t *root`, `size_t length` |
+| Header | Generator | Generated container fields, in declaration/constructor order |
+| --- | --- | --- |
+| `hps_span.h` | `HPS_SPAN_DEFINE(type_, name_)` | `const type_ *data`, `size_t length` |
+| `hps_vector.h` | `HPS_VECTOR_DEFINE(type_, name_)` | `type_ *data`, `size_t length`, `size_t capacity` |
+| `hps_mutable_span.h` | `HPS_MUTABLE_SPAN_DEFINE(type_, name_)` | `type_ *data`, `size_t length` |
+| `hps_cspan.h` | `HPS_CSPAN_DEFINE(type_, name_)` | `const type_ *data`, `size_t length` |
+| `hps_robuffer.h` | `HPS_ROBUFFER_DEFINE(type_, name_)` | `const type_ *data`, `size_t length`, `size_t capacity` |
+| `hps_svector.h` | `HPS_SVECTOR_DEFINE(type_, name_, capacity_)` | `type_ data[capacity_]`, `size_t length` |
+| `hps_sring.h` | `HPS_SRING_DEFINE(type_, name_, capacity_)` | `type_ data[capacity_]`, `size_t head`, `size_t tail`, `size_t length` |
+| `hps_ring.h` | `HPS_RING_DEFINE(type_, name_)` | `type_ *data`, `size_t head`, `size_t tail`, `size_t length`, `size_t capacity` |
+| `hps_stack.h` | `HPS_STACK_DEFINE(type_, name_)` | `type_ *data`, `size_t length`, `size_t capacity` |
+| `hps_slist.h` | `HPS_SLIST_DEFINE(type_, name_)` | `name_node_t *head`, `size_t length` |
+| `hps_dlist.h` | `HPS_DLIST_DEFINE(type_, name_)` | `name_node_t *head`, `name_node_t *tail`, `size_t length` |
+| `hps_bst.h` | `HPS_BST_DEFINE(type_, name_)` | `name_node_t *root`, `size_t length` |
 
 `HPS_CSPAN_DEFINE` delegates to the existing read-only `HPS_SPAN_DEFINE`; its
 `HPS_CSPAN_MAKE` and `HPS_CSPAN_STATIC_INIT` helpers use the same representation
@@ -127,7 +130,7 @@ draft naming migration, policy/MISRA mapping, actual checks and remaining gaps.
 
 ## Bounded operations and borrowed iteration
 
-`hps/data_structure/operations.h`, also included by `all.h`, extends an existing
+`hps/data_structure/hps_vector.h` and `hps_dlist.h` also supply operations for an existing
 `HPS_VECTOR_DEFINE` or `HPS_DLIST_DEFINE` instantiation with matching
 `HPS_VECTOR_OPERATIONS_DEFINE(type, name)` or
 `HPS_DLIST_OPERATIONS_DEFINE(type, name)`. No descriptor generator is duplicated.
@@ -143,9 +146,16 @@ node ownership remain caller preconditions; endpoint validation cannot prove
 arbitrary pointers safe. See the header contracts and
 [development review](../../governance/reviews/objects-json-2026-10-19.md).
 
-`hps/data_structure/optional.h` adds a separate named typed optional-value
-generator, included by `all.h`. Presence and payload are actual typed fields;
+`hps/data_structure/hps_optional.h` adds a separate named typed optional-value
+generator, included by the module umbrella. Presence and payload are actual typed fields;
 checked access distinguishes absent values from present NULL pointers. It
 reuses language-correct aggregate initialization and performs no allocation or
 element cleanup. See the [optional contract](optional.md) and
 [23-header migration](../migration/bytes-features-optional.md).
+
+Shared `hps_collection.h` supplies the unchanged typed collection error constants
+and common operation contract. `hps_static_init.h` supplies the language-correct
+empty initializer and static-array construction contract used by static containers
+and optional values. These providers avoid duplicate definitions without pulling
+unrelated type generators into a leaf header. The umbrella includes all thirteen
+type headers and both shared providers.

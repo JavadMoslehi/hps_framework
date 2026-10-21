@@ -6,7 +6,7 @@
  * @brief Shared bounded JSON scanning and grammar preflight contracts.
  */
 
-#include "hps/json/reader.h"
+#include "hps/json/hps_reader.h"
 
 int32_t hps_json_scan_string(hps_string_view input, size_t start,
                                 size_t *end, uint8_t *output, size_t *written);

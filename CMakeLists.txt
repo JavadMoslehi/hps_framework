@@ -71,7 +71,7 @@ if(BUILD_TESTING)
         tests/enum/test_enum.c tests/string/test_string.c
         tests/string/test_string_extended.c tests/string/test_string_builder.c
         tests/string/test_string_tokenizer.c tests/string/test_string_indent.c
-        tests/span/test_span.c tests/data_structure/test_data_structure.c
+        tests/data_structure/test_span.c tests/data_structure/test_data_structure.c
         tests/data_structure/test_collection_operations.c tests/json/test_json.c
         tests/data_structure/test_optional.c tests/bytes/test_byte_algorithms.c
         tests/cstr/test_cstr_bool.c
@@ -102,6 +102,9 @@ if(BUILD_TESTING)
                 --compiler ${CMAKE_C_COMPILER})
         add_test(NAME hps_standard_types
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_standard_types.py
+                --compiler ${CMAKE_C_COMPILER})
+        add_test(NAME hps_public_headers
+            COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_headers.py
                 --compiler ${CMAKE_C_COMPILER})
         add_test(NAME hps_environment_detection
             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tests/base/check_detection.py

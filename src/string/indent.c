@@ -1,4 +1,4 @@
-#include "hps/string/indent.h"
+#include "hps/string/hps_indent.h"
 
 #include "../internal/text.h"
 

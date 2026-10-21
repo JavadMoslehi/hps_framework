@@ -26,8 +26,8 @@ rng = random.Random(8259)
 HARNESS = r'''
 #include <stdio.h>
 #include "hps/base/hps_stdint.h"
-#include "hps/json/all.h"
-#include "hps/string/fixed.h"
+#include "hps/json/json.h"
+#include "hps/string/hps_fixed.h"
 HPS_STRING_FIXED_DEFINE(test_input, 1025U)
 HPS_STRING_FIXED_DEFINE(test_output, 1025U)
 

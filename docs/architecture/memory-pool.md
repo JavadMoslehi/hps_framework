@@ -9,7 +9,7 @@ is promised by portable C; confirm sections and budget in the target linker map.
 ## Public API
 
 ```c
-#include "hps/memory/pool.h"
+#include "hps/memory/hps_pool.h"
 
 /* Call hps_pool_init() once during exclusive startup first. */
 int32_t buffer_example(void)
@@ -50,7 +50,7 @@ pool choices, not a promise of all zero-size behaviors across libc implementatio
 
 The result-returning pool APIs use `int32_t` directly from `<stdint.h>`. Zero
 means success; local negative values distinguish the errors below. Constants in
-`hps/memory/pool.h` are typed as `int32_t`. Codes belong to this API and may overlap
+`hps/memory/hps_pool.h` are typed as `int32_t`. Codes belong to this API and may overlap
 codes from other APIs; compare the named pool constants. No shared result typedef,
 module registry or diagnostic-string lookup is required.
 

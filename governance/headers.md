@@ -1,8 +1,8 @@
 # Public C header contract
 
 HPS-HDR-001: Every public header uses a unique path-derived guard, for example
-`hps/memory/pool.h` -> `HPS_MEMORY_POOL_H`. Begin with matching `#ifndef`/`#define`
-and end with `#endif /* HPS_MEMORY_POOL_H */`. Guards must not use reserved
+`hps/memory/hps_pool.h` -> `HPS_MEMORY_HPS_POOL_H`. Begin with matching `#ifndef`/`#define`
+and end with `#endif /* HPS_MEMORY_HPS_POOL_H */`. Guards must not use reserved
 identifiers. `#pragma once` is not a substitute for the portable guard.
 
 HPS-HDR-002: Include a file comment naming the public path (`@file`) and purpose
@@ -50,7 +50,7 @@ explicitly under HPS-HDR-003. Size/difference declarations similarly include
 `hps/base/hps_stddef.h`, and Boolean declarations use `hps/base/hps_bool.h`.
 Only those providers include the corresponding native standard headers in core
 code. Headers using module-local error constants explicitly include their
-defining header, such as `hps/bytes/view.h` for `HPS_BYTE_*`. Document the error
+defining header, such as `hps/bytes/hps_view.h` for `HPS_BYTE_*`. Document the error
 domain and keep constants typed; follow HPS-C-004/HPS-C-019 in
 [the C rules](c-rules.md). Do not add a shared status typedef or registry
 dependency. Return-type width changes and numeric-code changes need an explicit

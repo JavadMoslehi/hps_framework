@@ -1,6 +1,6 @@
 # Sequential byte reader
 
-Include `hps/bytes/reader.h` and link the existing bytes library (`HPS::bytes`
+Include `hps/bytes/hps_reader.h` and link the existing bytes library (`HPS::bytes`
 in CMake or `hps-bytes` in Meson). A `hps_byte_reader` stores a borrowed
 `hps_byte_view` and a `size_t position`. The reader advances over caller-owned
 bytes without allocating, copying payload or using the static pool.

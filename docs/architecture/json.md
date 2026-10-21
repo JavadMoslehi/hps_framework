@@ -1,7 +1,7 @@
 # Bounded JSON syntax
 
-Include `hps/json/all.h`, or the independent `tokenizer.h`, `reader.h` and
-`writer.h` headers. Link `HPS::json` in CMake or `hps-json` in Meson. JSON depends
+Include `hps/json/json.h`, or the independent `hps_tokenizer.h`, `hps_reader.h` and
+`hps_writer.h` headers. Link `HPS::json` in CMake or `hps-json` in Meson. JSON depends
 only on the existing String/Base providers. All fallible operations return direct
 `int32_t` with typed module-local `HPS_JSON_*` constants: zero succeeds, negative
 values report invalid arguments/state, syntax, space, depth or numeric range.
@@ -30,7 +30,7 @@ capacity are preflighted before any token/document output write; frames are
 scratch and may change on error. The two scans use constant automatic state.
 
 ```c
-#include "hps/json/reader.h"
+#include "hps/json/hps_reader.h"
 
 static int32_t read_number(int64_t *number)
 {

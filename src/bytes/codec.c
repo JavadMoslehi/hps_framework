@@ -1,5 +1,5 @@
-#include "hps/bytes/codec.h"
-#include "hps/base/attributes.h"
+#include "hps/bytes/hps_codec.h"
+#include "hps/base/hps_attributes.h"
 
 /**
  * @file src/bytes/codec.c

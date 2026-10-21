@@ -1,7 +1,7 @@
-#include "hps/string/builder.h"
+#include "hps/string/hps_builder.h"
 
 #include <string.h>
-#include "hps/string/char.h"
+#include "hps/string/hps_char.h"
 #include "../internal/text.h"
 
 /**

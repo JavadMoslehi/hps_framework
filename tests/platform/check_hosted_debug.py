@@ -24,7 +24,7 @@ def disable_core_dump():
     resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
 
 
-source = '''#include "hps/platform/hosted/debug.h"
+source = '''#include "hps/platform/hosted/hps_debug.h"
 #include <stdlib.h>
 #include <string.h>
 int main(void)

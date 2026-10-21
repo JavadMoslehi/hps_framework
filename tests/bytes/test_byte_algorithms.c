@@ -1,8 +1,8 @@
 #include "../test_suites.h"
-#include "hps/bytes/view.h"
-#include "hps/bytes/view.h"
-#include "hps/bytes/buffer.h"
-#include "hps/bytes/buffer.h"
+#include "hps/bytes/hps_view.h"
+#include "hps/bytes/hps_view.h"
+#include "hps/bytes/hps_buffer.h"
+#include "hps/bytes/hps_buffer.h"
 
 #include <assert.h>
 #include "hps/base/hps_stddef.h"

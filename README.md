@@ -4,20 +4,24 @@ HPS is a general-purpose C framework. Its base layer is a header-only foundation
 shared by runtime utilities and domain modules. The base has no runtime, allocation, operating
 system, network, or file I/O dependency.
 
-Include `hps/base/all.h` for the base C99+ API, or include individual headers.
+Include `hps/base.h` for the base C99+ API, or include individual headers.
 Standard type providers are `hps/base/hps_bool.h`, `hps/base/hps_stdint.h` and
 `hps/base/hps_stddef.h`; they keep standard type names and use native headers
 by default. Their [fallback contracts](docs/architecture/base.md#standard-type-providers)
 document legacy-mode limitations and compiler requirements.
-Each public module keeps its declarations in its own directory. The former root
-headers remain compatibility includes; new consumers use the module paths below.
+`hps/base.h` is the only header directly beneath `include/hps`. Each other
+package has a named umbrella, such as `hps/bytes/bytes.h`, and `hps_`-prefixed
+leaf headers in its own directory. Data Structure exposes each type in its own
+header, such as `hps/data_structure/hps_span.h`. The
+[header migration](docs/migration/public-headers-2026-10-21.md) maps removed paths
+to their replacements; consumers must update includes and refresh installed headers.
 See [the base API and portability contract](docs/architecture/base.md) before
 using optional capabilities on a new target.
 The [layer map](docs/architecture/layers.md) describes every module, canonical
 include path and dependency direction.
 
 ```c
-#include "hps/base/all.h"
+#include "hps/base.h"
 #include "hps/base/hps_stdint.h"
 
 HPS_STATIC_ASSERT(HPS_C_IS_C99, "C99 required");
@@ -89,7 +93,9 @@ functions matching their filenames; the only suite runner `main` is in
 separate module test executables; the portability suite remains separate.
 The user-requested `int` test entry points currently fail the numerical policy
 subset and have a [proposed test-only exception](governance/reviews/test-entrypoints-2026-10-11.md).
-The current twenty-seven-suite verification (twenty-eight with hosted diagnostics)
+The current layout verification is recorded in the
+[public-header review](governance/reviews/public-headers-2026-10-21.md).
+The preceding twenty-seven-suite verification (twenty-eight with hosted diagnostics)
 is recorded in the [Bytes/features/optional review](governance/reviews/bytes-features-optional-2026-10-19.md).
 The preceding twenty-four-suite verification (twenty-five with hosted diagnostics)
 is recorded in the [runtime/text/JSON review](governance/reviews/objects-json-2026-10-19.md).
@@ -122,8 +128,8 @@ rebuild and update old result typedefs and numeric assumptions; see the
 
 ## Environment metadata
 
-Language/compiler/CPU declarations remain in `hps/base/all.h`. Optional
-`hps/platform/detection.h` separately aggregates OS-family hints and already-visible
+Language/compiler/CPU declarations remain in `hps/base.h`. Optional
+`hps/platform/platform.h` separately aggregates OS-family hints and already-visible
 libc/POSIX evidence, without including SDK/OS headers. Unknown values remain
 unknown; an explicit libc family hint is allowlisted and checked. See
 [the platform contract](docs/architecture/platform.md) and the
@@ -131,17 +137,17 @@ unknown; an explicit libc family hint is allowlisted and checked. See
 
 ## Attributes, algorithms and optional diagnostics
 
-`hps/base/macros.h` supplies namespaced array counts/type spelling; Base's existing
+`hps/base/hps_macros.h` supplies namespaced array counts/type spelling; Base's existing
 attributes now offer opt-in probed annotations. Typed min/max and checked u64 bit
-operations live in `hps/algorithm/scalar.h` and `bits.h`.
+operations live in `hps/algorithm/hps_scalar.h` and `hps_bits.h`.
 
-`hps/memory/array.h` checks count arithmetic for byte operations. Optional
-`allocated_array.h` and `owner.h` add bounded-provider helpers and explicit typed
+`hps/memory/hps_array.h` checks count arithmetic for byte operations. Optional
+`hps_allocated_array.h` and `hps_owner.h` add bounded-provider helpers and explicit typed
 ownership under the pending allocator proposal. Scope exit performs no cleanup.
 Full-scan equality is not a qualified constant-time comparison.
 
-`hps/result/check.h` checks only zero/nonzero, without shared errors or lookup.
-The optional `hps/platform/hosted/debug.h` stderr/assert/abort adapter is disabled
+`hps/result/hps_check.h` checks only zero/nonzero, without shared errors or lookup.
+The optional `hps/platform/hosted/hps_debug.h` stderr/assert/abort adapter is disabled
 by default. Enable CMake `-DHPS_BUILD_HOSTED_DEBUG=ON` and link `HPS::hosted_debug`,
 Meson `-Dhosted_debug=true`/`hps-hosted-debug`, or Make `HPS_BUILD_HOSTED_DEBUG=1`.
 It is separate from core and can inherit allocation/blocking inside libc.
@@ -149,7 +155,7 @@ See the [eight-file mapping and intentional behavior changes](docs/migration/uti
 
 ## Bounded JSON and collection operations
 
-`hps/json/all.h` provides strict tokenization, iterative document reading,
+`hps/json/json.h` provides strict tokenization, iterative document reading,
 counted UTF-8 string decoding, checked i64 access and validated compact output.
 Supply token/frame/output storage explicitly; numbers can remain raw text.
 Link `HPS::json`/`hps-json`, depending on String. No heap object graph, recursion
@@ -157,13 +163,13 @@ or native floating conversion is required. See the
 [JSON contract](docs/architecture/json.md) and
 [twenty-file migration mapping](docs/migration/objects-json.md).
 
-`hps/data_structure/operations.h` extends existing vector/dlist descriptors with
-bounded typed operations and borrowed iterators. `hps/memory/refcount.h` adds
+`hps/data_structure/hps_vector.h` and `hps_dlist.h` provide descriptors,
+bounded typed operations and borrowed iterators. `hps/memory/hps_refcount.h` adds
 checked single-context reference arithmetic with explicit final-release output.
 Neither allocates or destroys element objects. String additionally offers
 delimiter-set tokenization and persistent four-space indentation over its builder.
 
-`hps/data_structure/optional.h` generates named typed optional values with checked
+`hps/data_structure/hps_optional.h` generates named typed optional values with checked
 access, uint8 presence and explicit copy/lifetime rules. It performs no cleanup
 or ownership transfer. `hps_cstr_parse_bool` adds bounded legacy truthy spelling;
 Base adds raw/expanded stringification and five compile-target x86 feature flags,
@@ -172,7 +178,7 @@ which do not detect runtime CPU/OS support. See the
 
 ## Named-value traits
 
-`hps/enum/traits.h` preserves the imported enum API for name lookup, parsing,
+`hps/enum/hps_traits.h` preserves the imported enum API for name lookup, parsing,
 formatting and ordered traversal from an X-macro list of native enum values.
 It supports separate
 declaration/implementation and header-only modes. It is a general utility beside
@@ -183,7 +189,7 @@ the user's request. Its suite is included in the current host verification.
 
 ## Strings
 
-`hps/string/all.h` includes borrowed text views and fixed-capacity C-string buffers.
+`hps/string/string.h` includes borrowed text views and fixed-capacity C-string buffers.
 Views support exact slicing, comparison, prefix/suffix tests, forward/backward
 search, trimming and bounded C-string import/export. Buffers use caller-owned
 storage for assign, append, erase, truncate and clear; capacity includes the NUL
@@ -200,42 +206,45 @@ separate contracts.
 
 ## C strings, spans and string keys
 
-`hps/cstr/all.h` provides bounded C-string transformations, parsing/rendering, byte
+`hps/cstr/cstr.h` provides bounded C-string transformations, parsing/rendering, byte
 encoding, split/join, lexical path helpers, diagnostics and typed formatting.
 Link `HPS::cstr`/`hps-cstr`; it depends on string. Formatting uses exact-width
 arguments and fixed decimal coefficient/scale, with no printf varargs or native
 floating point. See [the contract](docs/architecture/cstr.md) and
 [legacy family migration](docs/migration/csep-text.md).
 
-`hps/data_structure/define.h` generates typed borrowed read-only spans with C89-style constructors
-and C99 compound-literal support. `hps/base/expression.h` supplies single-evaluation
+`hps/data_structure/hps_span.h` generates typed borrowed read-only spans with C89-style constructors
+and C99 compound-literal support. `hps/base/hps_expression.h` supplies single-evaluation
 branch hints and LVALUE. See [span construction](docs/architecture/span.md).
-`hps/data_structure/all.h` is the shared span/container umbrella. Former span
-paths forward to it; the implementation lives only in `data_structure/define.h`.
-The native string-key enum generator lives beside traits in `hps/enum/cstr.h`;
+`hps/data_structure/data_structure.h` is the shared span/container umbrella.
+The former root and `span/` forwarding headers have been removed.
+The native string-key enum generator lives beside traits in `hps/enum/hps_cstr.h`;
 [its bounded switch example](docs/architecture/cstr-enum.md) includes input capacity.
 
-`hps/data_structure/define.h` extends the span pattern to eleven typed descriptor
-families: vector, mutable/read-only span, read-only window, in-place vector/ring,
-ring, stack, singly/doubly linked list and binary tree. Each has a named generator,
+Each remaining descriptor family has a matching header, such as
+`hps/data_structure/hps_vector.h` for vectors. The families cover mutable/read-only
+spans, read-only windows, in-place vectors/rings, rings, stacks, singly/doubly linked
+lists and binary trees. Each has a named generator,
 constructor, `MAKE` helper and static initializer; linked families also generate
 nodes. See [definitions and ownership contracts](docs/architecture/data-structure.md).
-`hps/data_structure/all.h` is the data-structure module umbrella. The former
-`hps/data_structure.h` and `hps/hps_data_structure.h` paths remain forwarding
-includes.
+The module umbrella includes all type headers and their shared error/initialization
+providers. Public generator names and object layouts are preserved.
 
 ## Memory operations and optional cloning
 
-`hps/memory/operations.h` supplies byte fill, copy, overlap-safe movement,
+`hps/memory/hps_operations.h` supplies byte fill, copy, overlap-safe movement,
 comparison, const-preserving search and volatile clearing. Link `HPS::memory` or
 `hps-memory`. Caller-proven extents and target libc requirements apply.
 
-`hps/memory/allocator.h` and `hps/memory/clone.h` separately expose the supplied
+`hps/memory/hps_allocator.h` and `hps/memory/hps_clone.h` separately expose the supplied
 allocator and deep-copy designs as optional development proposals. Their wrapper
 names use `hps_allocator_*` to coexist with the existing pool API. Callback hooks
 remain subject to the proposed HPS-MEM-001 exception; no core module uses them and
 no heap provider is supplied. See the explicit
 [API and behavior migration](docs/migration/memory.md).
+`hps/memory/memory.h` includes these declarations together with the ordinary
+memory headers. Inclusion supplies no provider and calls no allocator; using the
+ownership proposals remains subject to that pending disposition.
 
 ## Static memory pool
 
@@ -252,8 +261,8 @@ profile and [review evidence](docs/architecture/misra-review.md).
 
 ## Bytes
 
-`hps/bytes/view.h` provides borrowed read-only byte views with checked slicing,
-`read_u8` access and equality. `hps/bytes/buffer.h` provides fixed-capacity mutable
+`hps/bytes/hps_view.h` provides borrowed read-only byte views with checked slicing,
+`read_u8` access and equality. `hps/bytes/hps_buffer.h` provides fixed-capacity mutable
 buffers over caller-owned uint8_t arrays, with `assign_bytes`, `append_bytes`,
 `append_u8`, truncate/clear and borrowed views. A view describes readable bytes;
 a buffer tracks writable storage, its active length and its capacity. Failures
@@ -264,11 +273,11 @@ Bytes also provides checked `pop_u8`, unsigned-byte view comparison,
 prefix/suffix checks and bounded first/last subsequence search. Empty needles
 produce `HPS_BYTE_NPOS`; absence succeeds, and failures preserve outputs.
 
-`hps/bytes/endian.h` adds checked u16/u32/u64 reads at view offsets and complete
+`hps/bytes/hps_endian.h` adds checked u16/u32/u64 reads at view offsets and complete
 field appends to buffers, in explicit LE/BE order. No native alignment/byte-order
 assumption is used. See [integer byte encoding](docs/architecture/bytes-endian.md).
 
-`hps/bytes/reader.h` adds a sequential cursor over borrowed views, with remaining,
+`hps/bytes/hps_reader.h` adds a sequential cursor over borrowed views, with remaining,
 skip, `take_view` borrowed slices and u8/u16/u32/u64 reads. Failed operations
 preserve cursor and output; taking a slice copies no payload. See
 [the reader contract](docs/architecture/bytes-reader.md) for ownership, bounded

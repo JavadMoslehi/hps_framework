@@ -6,8 +6,8 @@
  * @brief Shared shape and embedded-NUL validation for bounded text operations.
  */
 
-#include "hps/base/attributes.h"
-#include "hps/string/view.h"
+#include "hps/base/hps_attributes.h"
+#include "hps/string/hps_view.h"
 
 static HPS_INLINE int32_t hps_string_check_view(hps_string_view view)
 {

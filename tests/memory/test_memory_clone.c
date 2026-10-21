@@ -1,6 +1,6 @@
 #include "../test_suites.h"
-#include "hps/memory/allocator.h"
-#include "hps/memory/clone.h"
+#include "hps/memory/hps_allocator.h"
+#include "hps/memory/hps_clone.h"
 #include <assert.h>
 
 /**

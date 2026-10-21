@@ -1,4 +1,4 @@
-#include "hps/string/buffer.h"
+#include "hps/string/hps_buffer.h"
 
 #include <string.h>
 #include "../internal/text.h"

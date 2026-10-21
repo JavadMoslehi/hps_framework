@@ -1,4 +1,4 @@
-#include "hps/string/policy.h"
+#include "hps/string/hps_policy.h"
 #include "../internal/text.h"
 
 /**

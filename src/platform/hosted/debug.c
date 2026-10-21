@@ -1,4 +1,4 @@
-#include "hps/platform/hosted/debug.h"
+#include "hps/platform/hosted/hps_debug.h"
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>

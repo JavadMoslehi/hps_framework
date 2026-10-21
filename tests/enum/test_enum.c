@@ -1,5 +1,5 @@
 #include "../test_suites.h"
-#include "hps/enum/traits.h"
+#include "hps/enum/hps_traits.h"
 #include <assert.h>
 #include "hps/base/hps_stddef.h"
 #include "hps/base/hps_stdint.h"

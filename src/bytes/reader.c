@@ -1,5 +1,5 @@
-#include "hps/bytes/reader.h"
-#include "hps/bytes/endian.h"
+#include "hps/bytes/hps_reader.h"
+#include "hps/bytes/hps_endian.h"
 
 /**
  * @file src/bytes/reader.c

@@ -1,4 +1,4 @@
-#include "hps/json/reader.h"
+#include "hps/json/hps_reader.h"
 #include "internal.h"
 
 /**
