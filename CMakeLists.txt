@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 project(HPS VERSION 0.1.0 LANGUAGES C)
+
+# Select the dialect for each compiled HPS target (default remains C99).
+set(HPS_C_STANDARD 99 CACHE STRING "C standard for HPS targets: 99, 11, 17 or 23")
+set_property(CACHE HPS_C_STANDARD PROPERTY STRINGS 99 11 17 23)
+if(NOT HPS_C_STANDARD MATCHES "^(99|11|17|23)$")
+    message(FATAL_ERROR "HPS_C_STANDARD must be 99, 11, 17, or 23")
+endif()
+if(HPS_C_STANDARD STREQUAL "23" AND CMAKE_VERSION VERSION_LESS "3.21")
+    message(FATAL_ERROR "C23 requires CMake 3.21 or newer")
+endif()
 include(GNUInstallDirs)
 
 add_library(hps_base INTERFACE)
@@ -14,14 +24,14 @@ add_library(hps_memory STATIC src/memory/pool.c src/memory/operations.c
 add_library(HPS::memory ALIAS hps_memory)
 target_link_libraries(hps_memory PUBLIC HPS::base)
 set_target_properties(hps_memory PROPERTIES EXPORT_NAME memory
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_bytes STATIC src/bytes/view.c src/bytes/buffer.c src/bytes/codec.c src/bytes/endian.c
     src/bytes/reader.c)
 add_library(HPS::bytes ALIAS hps_bytes)
 target_link_libraries(hps_bytes PUBLIC HPS::base)
 set_target_properties(hps_bytes PROPERTIES EXPORT_NAME bytes
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_string STATIC src/string/view.c src/string/buffer.c
     src/string/char.c src/string/builder.c src/string/policy.c
@@ -29,27 +39,27 @@ add_library(hps_string STATIC src/string/view.c src/string/buffer.c
 add_library(HPS::string ALIAS hps_string)
 target_link_libraries(hps_string PUBLIC HPS::base)
 set_target_properties(hps_string PROPERTIES EXPORT_NAME string
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_cstr STATIC src/cstr/core.c src/cstr/convert.c
     src/cstr/algorithm.c src/cstr/format.c)
 add_library(HPS::cstr ALIAS hps_cstr)
 target_link_libraries(hps_cstr PUBLIC HPS::string)
 set_target_properties(hps_cstr PROPERTIES EXPORT_NAME cstr
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_json STATIC src/json/tokenizer.c src/json/reader.c
     src/json/writer.c src/json/string.c)
 add_library(HPS::json ALIAS hps_json)
 target_link_libraries(hps_json PUBLIC HPS::string)
 set_target_properties(hps_json PROPERTIES EXPORT_NAME json
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 add_library(hps_validation STATIC src/validation/national_code.c)
 add_library(HPS::validation ALIAS hps_validation)
 target_link_libraries(hps_validation PUBLIC HPS::string)
 set_target_properties(hps_validation PROPERTIES EXPORT_NAME validation
-    C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+    C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
 
 option(HPS_BUILD_HOSTED_DEBUG "Build the optional hosted stderr/abort adapter" OFF)
 if(HPS_BUILD_HOSTED_DEBUG)
@@ -57,7 +67,7 @@ if(HPS_BUILD_HOSTED_DEBUG)
     add_library(HPS::hosted_debug ALIAS hps_hosted_debug)
     target_link_libraries(hps_hosted_debug PUBLIC HPS::base)
     set_target_properties(hps_hosted_debug PROPERTIES EXPORT_NAME hosted_debug
-        C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+        C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
     install(TARGETS hps_hosted_debug EXPORT HPSTargets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
@@ -87,7 +97,7 @@ if(BUILD_TESTING)
         target_compile_definitions(hps_tests PRIVATE HPS_TEST_HOSTED_DEBUG=1)
     endif()
     set_target_properties(hps_tests PROPERTIES
-        C_STANDARD 99 C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
+        C_STANDARD ${HPS_C_STANDARD} C_STANDARD_REQUIRED YES C_EXTENSIONS NO)
     # Test assertions must remain active in Release builds.
     if(MSVC)
         target_compile_options(hps_tests PRIVATE /UNDEBUG)
