@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(HPS VERSION 0.1.0 LANGUAGES C)
 
 # Select the dialect for each compiled HPS target (default remains C99).
-set(HPS_C_STANDARD ${HPS_C_STANDARD} CACHE STRING "C standard for HPS targets: 99, 11, 17 or 23")
+set(HPS_C_STANDARD 99 CACHE STRING "C standard for HPS targets: 99, 11, 17 or 23")
 set_property(CACHE HPS_C_STANDARD PROPERTY STRINGS 99 11 17 23)
 if(NOT HPS_C_STANDARD MATCHES "^(99|11|17|23)$")
     message(FATAL_ERROR "HPS_C_STANDARD must be 99, 11, 17, or 23")
