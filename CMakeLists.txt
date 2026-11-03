@@ -72,4 +72,35 @@ if(BUILD_TESTING)
             NAME hps_portability_c89
             COMMAND hps_test_c89
     )
+
+
+
+
+    #######################################################
+    # Verify the compiler's selected C language standard.
+    add_executable(hps_test_language_standard
+            tests/portability/test_language_standard.c
+    )
+
+    set_target_properties(hps_test_language_standard PROPERTIES
+            C_STANDARD ${HPS_C_STANDARD}
+            C_STANDARD_REQUIRED ON
+            C_EXTENSIONS OFF
+    )
+
+    target_compile_definitions(
+            hps_test_language_standard
+            PRIVATE
+            HPS_EXPECTED_C_STANDARD=${HPS_C_STANDARD}
+    )
+
+    hps_enable_strict_warnings(hps_test_language_standard)
+
+    add_test(
+            NAME hps_language_standard
+            COMMAND hps_test_language_standard
+    )
+    #######################################################
+
+
 endif()
