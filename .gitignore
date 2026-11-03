@@ -1,33 +1,53 @@
-# Build directories
-build/
-cmake-build-*/
-out/
 
-# Compiler outputs
+# Build outputs
+/build/
+/cmake-build-*/
+/out/
+
+# CMake and Ninja generated files
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+build.ninja
+.ninja_deps
+.ninja_log
+
+# Compiler and linker outputs
 *.o
 *.obj
 *.a
 *.so
 *.so.*
 *.dll
+*.dylib
 *.exe
+*.elf
+*.bin
 
-# CMake generated
-CMakeFiles/
-CMakeCache.txt
-compile_commands.json
+# Test and coverage outputs
+Testing/
+coverage/
+*.gcda
+*.gcno
+*.gcov
+*.profraw
+*.profdata
 
-# Editor and IDE
+# IDE and editor
 .idea/
+.vscode/
 *.swp
+*.swo
 *~
 
-# Logs
-*.log
+# Python
+__pycache__/
+*.pyc
 
-# Secrets and local environment
+# Local environment and secrets
 .env
 .env.*
 !.env.example
-*.pem
-*.key
+
+# Logs
+*.log
