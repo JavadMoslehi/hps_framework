@@ -1,0 +1,66 @@
+
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "hps-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/matrix/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "gcc-c89",
+      "inherits": "hps-base",
+      "displayName": "HPS GCC Strict C89",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "HPS_C_STANDARD": "90"
+      }
+    },
+    {
+      "name": "clang-c89",
+      "inherits": "hps-base",
+      "displayName": "HPS Clang Strict C89",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "HPS_C_STANDARD": "90"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "gcc-c89",
+      "configurePreset": "gcc-c89"
+    },
+    {
+      "name": "clang-c89",
+      "configurePreset": "clang-c89"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "gcc-c89",
+      "configurePreset": "gcc-c89",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "clang-c89",
+      "configurePreset": "clang-c89",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

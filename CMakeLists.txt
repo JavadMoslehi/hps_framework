@@ -8,9 +8,38 @@ project(
         LANGUAGES C
 )
 
-set(CMAKE_C_STANDARD 90)
+#set(CMAKE_C_STANDARD 90)
+#set(CMAKE_C_STANDARD_REQUIRED ON)
+#set(CMAKE_C_EXTENSIONS OFF)
+
+
+
+# HPS language standard selection.
+set(HPS_C_STANDARD "90" CACHE STRING
+        "ISO C standard used for HPS verification"
+)
+
+set_property(CACHE HPS_C_STANDARD PROPERTY
+        STRINGS 90 99 11 17 23
+)
+
+set(HPS_SUPPORTED_C_STANDARDS 90 99 11 17 23)
+
+if(NOT HPS_C_STANDARD IN_LIST HPS_SUPPORTED_C_STANDARDS)
+    message(FATAL_ERROR
+            "HPS: Unsupported C standard: ${HPS_C_STANDARD}"
+    )
+endif()
+
+set(CMAKE_C_STANDARD ${HPS_C_STANDARD})
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
+
+message(STATUS "HPS: C standard = C${HPS_C_STANDARD}")
+message(STATUS "HPS: Compiler = ${CMAKE_C_COMPILER_ID}")
+
+
+
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -32,11 +61,11 @@ if(BUILD_TESTING)
     )
 
     set_target_properties(hps_test_c89 PROPERTIES
-            C_STANDARD 90
+#            C_STANDARD 90
+            C_STANDARD ${HPS_C_STANDARD}
             C_STANDARD_REQUIRED ON
             C_EXTENSIONS OFF
     )
-
     hps_enable_strict_warnings(hps_test_c89)
 
     add_test(
