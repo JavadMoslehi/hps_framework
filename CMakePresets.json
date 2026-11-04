@@ -103,6 +103,48 @@
       "cacheVariables": {
         "HPS_C_STANDARD": "23"
       }
+    },
+
+    {
+      "name": "gcc-sanitized",
+      "displayName": "HPS GCC C89 Sanitized",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "90",
+        "HPS_BUILD_PROFILE": "SANITIZED",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "clang-sanitized",
+      "displayName": "HPS Clang C89 Sanitized",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "90",
+        "HPS_BUILD_PROFILE": "SANITIZED",
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "gcc-release",
+      "displayName": "HPS GCC C89 Release",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "90",
+        "HPS_BUILD_PROFILE": "RELEASE",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "clang-release",
+      "displayName": "HPS Clang C89 Release",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "90",
+        "HPS_BUILD_PROFILE": "RELEASE",
+        "CMAKE_BUILD_TYPE": "Release"
+      }
     }
+
   ]
 }
