@@ -94,6 +94,20 @@ if(BUILD_TESTING)
             HPS_EXPECTED_C_STANDARD=${HPS_C_STANDARD}
     )
 
+
+    if(HPS_C_STANDARD STREQUAL "23"
+            AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
+
+        target_compile_definitions(
+                hps_test_language_standard PRIVATE
+                HPS_ALLOW_C23_DRAFT=1
+        )
+
+        message(STATUS
+                "HPS: GCC C23 verification permits draft C2x"
+        )
+    endif()
+
     hps_enable_strict_warnings(hps_test_language_standard)
 
     add_test(

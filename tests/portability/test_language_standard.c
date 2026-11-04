@@ -51,6 +51,30 @@
 #  error "HPS: Unexpected C23/C2x language version"
 # endif
 
+
+
+
+
+
+#elif HPS_EXPECTED_C_STANDARD == 23
+
+# if !defined(__STDC_VERSION__)
+#  error "HPS: C23 language version macro is missing"
+
+# elif __STDC_VERSION__ == 202311L
+   /* Final C23 language version is reported. */
+
+# elif __STDC_VERSION__ == 202000L
+
+#  if !defined(HPS_ALLOW_C23_DRAFT)
+#   error "HPS: Draft C2x is not permitted"
+#  endif
+
+# else
+#  error "HPS: Unexpected C23 language version"
+# endif
+
+
 #else
 
 # error "HPS: Unsupported expected C standard"

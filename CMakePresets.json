@@ -3,7 +3,7 @@
   "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 21,
+    "minor": 28,
     "patch": 0
   },
   "configurePresets": [
@@ -19,47 +19,89 @@
       }
     },
     {
-      "name": "gcc-c89",
+      "name": "gcc-base",
+      "hidden": true,
       "inherits": "hps-base",
-      "displayName": "HPS GCC Strict C89",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_C_COMPILER": "gcc"
+      }
+    },
+    {
+      "name": "clang-base",
+      "hidden": true,
+      "inherits": "hps-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang"
+      }
+    },
+    {
+      "name": "gcc-c89",
+      "inherits": "gcc-base",
+      "cacheVariables": {
         "HPS_C_STANDARD": "90"
       }
     },
     {
       "name": "clang-c89",
-      "inherits": "hps-base",
-      "displayName": "HPS Clang Strict C89",
+      "inherits": "clang-base",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang",
         "HPS_C_STANDARD": "90"
       }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "gcc-c89",
-      "configurePreset": "gcc-c89"
     },
     {
-      "name": "clang-c89",
-      "configurePreset": "clang-c89"
-    }
-  ],
-  "testPresets": [
-    {
-      "name": "gcc-c89",
-      "configurePreset": "gcc-c89",
-      "output": {
-        "outputOnFailure": true
+      "name": "gcc-c99",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "99"
       }
     },
     {
-      "name": "clang-c89",
-      "configurePreset": "clang-c89",
-      "output": {
-        "outputOnFailure": true
+      "name": "clang-c99",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "99"
+      }
+    },
+    {
+      "name": "gcc-c11",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "11"
+      }
+    },
+    {
+      "name": "clang-c11",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "11"
+      }
+    },
+    {
+      "name": "gcc-c17",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "17"
+      }
+    },
+    {
+      "name": "clang-c17",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "17"
+      }
+    },
+    {
+      "name": "gcc-c23",
+      "inherits": "gcc-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "23"
+      }
+    },
+    {
+      "name": "clang-c23",
+      "inherits": "clang-base",
+      "cacheVariables": {
+        "HPS_C_STANDARD": "23"
       }
     }
   ]
