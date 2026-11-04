@@ -23,7 +23,8 @@
       "hidden": true,
       "inherits": "hps-base",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "gcc"
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
       }
     },
     {
@@ -31,7 +32,8 @@
       "hidden": true,
       "inherits": "hps-base",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang"
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
       }
     },
     {
@@ -104,7 +106,6 @@
         "HPS_C_STANDARD": "23"
       }
     },
-
     {
       "name": "gcc-sanitized",
       "displayName": "HPS GCC C89 Sanitized",
@@ -143,6 +144,78 @@
         "HPS_C_STANDARD": "90",
         "HPS_BUILD_PROFILE": "RELEASE",
         "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "gcc-c89-cpp11",
+      "displayName": "HPS GCC C89 / C++11 Interop",
+      "inherits": "gcc-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "11"
+      }
+    },
+    {
+      "name": "clang-c89-cpp11",
+      "displayName": "HPS Clang C89 / C++11 Interop",
+      "inherits": "clang-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "11"
+      }
+    },
+    {
+      "name": "gcc-c89-cpp14",
+      "inherits": "gcc-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "14"
+      }
+    },
+    {
+      "name": "clang-c89-cpp14",
+      "inherits": "clang-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "14"
+      }
+    },
+    {
+      "name": "gcc-c89-cpp17",
+      "inherits": "gcc-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "17"
+      }
+    },
+    {
+      "name": "clang-c89-cpp17",
+      "inherits": "clang-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "17"
+      }
+    },
+    {
+      "name": "gcc-c89-cpp20",
+      "inherits": "gcc-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "clang-c89-cpp20",
+      "inherits": "clang-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "20"
+      }
+    },
+    {
+      "name": "gcc-c89-cpp23",
+      "inherits": "gcc-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "23"
+      }
+    },
+    {
+      "name": "clang-c89-cpp23",
+      "inherits": "clang-c89",
+      "cacheVariables": {
+        "HPS_CXX_STANDARD": "23"
       }
     }
 

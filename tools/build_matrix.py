@@ -25,6 +25,21 @@ MATRIX = (
 )
 
 
+CPP_MATRIX = (
+    "gcc-c89",
+    "clang-c89",
+    "gcc-c89-cpp11",
+    "clang-c89-cpp11",
+    "gcc-c89-cpp14",
+    "clang-c89-cpp14",
+    "gcc-c89-cpp17",
+    "clang-c89-cpp17",
+    "gcc-c89-cpp20",
+    "clang-c89-cpp20",
+    "gcc-c89-cpp23",
+    "clang-c89-cpp23",
+)
+
 def run_command(command, log_path):
     print("\n$ " + " ".join(str(arg) for arg in command), flush=True)
 
@@ -85,12 +100,25 @@ def main():
         action="store_true",
         help="Run only GCC and Clang C89 gates",
     )
+    parser.add_argument(
+        "--cpp",
+        action="store_true",
+        help="Run the complete C/C++ interoperability matrix",
+    )
     args = parser.parse_args()
 
     report_dir = ROOT / "build" / "matrix-reports"
     report_dir.mkdir(parents=True, exist_ok=True)
 
-    presets = MATRIX[:2] if args.c89_only else MATRIX
+    if args.cpp and args.c89_only:
+        parser.error("--cpp and --c89-only cannot be used together")
+
+    if args.cpp:
+        presets = CPP_MATRIX
+    elif args.c89_only:
+        presets = MATRIX[:2]
+    else:
+        presets = MATRIX
 
     for index, name in enumerate(presets, start=1):
         print(

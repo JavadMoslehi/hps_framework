@@ -170,6 +170,59 @@ include(CTest)
 
 
 # ------------------------------------------------------------
+# Enable C++ only for interoperability verification.
+#
+# HPS itself remains a C project.
+# C++ is required only when BUILD_TESTING is enabled.
+# ------------------------------------------------------------
+
+if(BUILD_TESTING)
+    enable_language(CXX)
+endif()
+
+
+
+
+
+
+# ------------------------------------------------------------
+# C++ interoperability verification configuration
+#
+# HPS remains a C framework. C++ is enabled only for tests.
+#
+# Supported test modes:
+#   C++98, C++11, C++14, C++17, C++20, C++23
+# ------------------------------------------------------------
+
+if(BUILD_TESTING)
+
+    set(HPS_CXX_STANDARD "98" CACHE STRING
+            "C++ standard for HPS interoperability verification"
+    )
+
+    set_property(CACHE HPS_CXX_STANDARD PROPERTY STRINGS
+            98 11 14 17 20 23
+    )
+
+    set(HPS_SUPPORTED_CXX_STANDARDS
+            98 11 14 17 20 23
+    )
+
+    if(NOT HPS_CXX_STANDARD IN_LIST HPS_SUPPORTED_CXX_STANDARDS)
+        message(FATAL_ERROR
+                "HPS: Unsupported C++ standard: ${HPS_CXX_STANDARD}"
+        )
+    endif()
+
+    message(STATUS
+            "HPS: C++ verification standard = C++${HPS_CXX_STANDARD}"
+    )
+
+endif()
+
+
+
+# ------------------------------------------------------------
 # 9. HPS Base interface target
 #
 # No implementation has been written yet.
@@ -210,6 +263,7 @@ if(BUILD_TESTING)
     )
 
     hps_enable_strict_warnings(hps_test_c89)
+    hps_apply_build_profile(hps_test_c89)
 
     add_test(
             NAME hps_portability_c89
@@ -268,14 +322,62 @@ if(BUILD_TESTING)
 
     endif()
 
-    hps_enable_strict_warnings(
-            hps_test_language_standard
-    )
+    hps_enable_strict_warnings(hps_test_language_standard)
+    hps_apply_build_profile(hps_test_language_standard)
 
     add_test(
             NAME hps_language_standard
             COMMAND hps_test_language_standard
     )
+
+
+
+
+
+    # --------------------------------------------------------
+    # HPS Base: Language Abstraction Unit Test
+    #
+    # Verifies the public language abstraction header.
+    #
+    # The test must compile under the selected C standard.
+    # --------------------------------------------------------
+
+    add_executable(hps_test_base_language
+            tests/unit/base/test_language.c
+    )
+
+    # Enforce the language standard selected by the preset.
+    set_target_properties(hps_test_base_language PROPERTIES
+            C_STANDARD ${HPS_C_STANDARD}
+            C_STANDARD_REQUIRED ON
+            C_EXTENSIONS OFF
+    )
+
+    # Inherit the public include paths from HPS::base.
+    target_link_libraries(hps_test_base_language PRIVATE
+            HPS::base
+    )
+
+    # Supply the expected standard to the C preprocessor.
+    target_compile_definitions(hps_test_base_language PRIVATE
+            HPS_EXPECTED_C_STANDARD=${HPS_C_STANDARD}
+    )
+
+    # Apply mandatory compiler warnings.
+    hps_enable_strict_warnings(hps_test_base_language)
+
+    # Enable ASan/UBSan if the SANITIZED profile is selected.
+    hps_apply_build_profile(hps_test_base_language)
+
+    # Register the executable as a CTest test.
+    add_test(
+            NAME hps_base_language
+            COMMAND hps_test_base_language
+    )
+
+
+
+
 
 
     # --------------------------------------------------------
@@ -290,6 +392,53 @@ if(BUILD_TESTING)
             REQUIRED
             COMPONENTS Interpreter
     )
+
+
+
+
+
+
+
+
+
+
+
+    # --------------------------------------------------------
+    # HPS Static Assertion Negative Verification
+    #
+    # The same intentionally invalid source is checked in
+    # both C90 and C++98 language modes.
+    #
+    # The Python harness validates the compiler diagnostic.
+    # --------------------------------------------------------
+
+    add_test(
+            NAME hps_static_assert_negative_c
+            COMMAND
+            ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tools/test_static_assert_negative.py
+            --compiler ${CMAKE_C_COMPILER}
+            --language c
+            --source
+            ${PROJECT_SOURCE_DIR}/tests/portability/test_static_assert_negative.c
+            --include
+            ${PROJECT_SOURCE_DIR}/include
+    )
+
+    add_test(
+            NAME hps_static_assert_negative_cpp
+            COMMAND
+            ${Python3_EXECUTABLE}
+            ${PROJECT_SOURCE_DIR}/tools/test_static_assert_negative.py
+            --compiler ${CMAKE_CXX_COMPILER}
+            --language cpp
+            --source
+            ${PROJECT_SOURCE_DIR}/tests/portability/test_static_assert_negative.c
+            --include
+            ${PROJECT_SOURCE_DIR}/include
+    )
+
+    
 
 
 
@@ -487,4 +636,174 @@ if(BUILD_TESTING)
 
     endif()
 
+
+
+
+
+
+
+    # --------------------------------------------------------
+    # C/C++ interoperability verification.
+    #
+    # The implementation is compiled as C.
+    # The consumer is compiled as C++98.
+    #
+    # The test verifies that C linkage is correctly exposed
+    # through the public HPS language abstraction.
+    # --------------------------------------------------------
+
+    add_library(hps_test_c_api STATIC
+            tests/interop/c_api.c
+    )
+
+    # Make the public HPS headers available to the C API.
+    target_link_libraries(hps_test_c_api PUBLIC
+            HPS::base
+    )
+
+    set_target_properties(hps_test_c_api PROPERTIES
+            C_STANDARD ${HPS_C_STANDARD}
+            C_STANDARD_REQUIRED ON
+            C_EXTENSIONS OFF
+    )
+
+    # Apply the C compiler warning policy.
+    hps_enable_strict_warnings(hps_test_c_api)
+
+    # Apply the selected build profile.
+    hps_apply_build_profile(hps_test_c_api)
+
+
+    # --------------------------------------------------------
+    # C++ consumer of the C API.
+    # --------------------------------------------------------
+
+    add_executable(hps_test_cpp_linkage
+            tests/interop/test_cpp_linkage.cpp
+    )
+
+
+    set_target_properties(hps_test_cpp_linkage PROPERTIES
+            CXX_STANDARD ${HPS_CXX_STANDARD}
+            CXX_STANDARD_REQUIRED ON
+            CXX_EXTENSIONS OFF
+    )
+
+    target_compile_definitions(hps_test_cpp_linkage PRIVATE
+            HPS_EXPECTED_CXX_STANDARD=${HPS_CXX_STANDARD}
+    )
+
+
+    target_link_libraries(hps_test_cpp_linkage PRIVATE
+            hps_test_c_api
+    )
+
+    # Basic strict C++ diagnostics.
+    # A dedicated C++ warning policy will be added later.
+    target_compile_options(hps_test_cpp_linkage PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+            -pedantic-errors
+            -Werror
+    )
+
+    hps_apply_build_profile(hps_test_cpp_linkage)
+
+    add_test(
+            NAME hps_cpp_linkage
+            COMMAND hps_test_cpp_linkage
+    )
+
+
+
+
+
+
+
+
+
+    # --------------------------------------------------------
+    # HPS Base: Compile-Time Assertion Test
+    #
+    # Verifies portable assertions under the selected C
+    # language standard and build profile.
+    # --------------------------------------------------------
+
+    add_executable(hps_test_static_assert
+            tests/unit/base/test_static_assert.c
+    )
+
+    target_link_libraries(hps_test_static_assert PRIVATE
+            HPS::base
+    )
+
+    set_target_properties(hps_test_static_assert PROPERTIES
+            C_STANDARD ${HPS_C_STANDARD}
+            C_STANDARD_REQUIRED ON
+            C_EXTENSIONS OFF
+    )
+
+    hps_enable_strict_warnings(hps_test_static_assert)
+    hps_apply_build_profile(hps_test_static_assert)
+
+    add_test(
+            NAME hps_static_assert
+            COMMAND hps_test_static_assert
+    )
+
+
+
+
+
+
+    # ------------------------------------------------------------
+    # C++ language standard verification
+    #
+    # Confirms that the requested C++ standard matches the
+    # language mode reported by the compiler.
+    # ------------------------------------------------------------
+
+    add_executable(hps_test_cpp_standard
+            tests/interop/test_cpp_standard.cpp
+    )
+
+    set_target_properties(hps_test_cpp_standard PROPERTIES
+            CXX_STANDARD ${HPS_CXX_STANDARD}
+            CXX_STANDARD_REQUIRED ON
+            CXX_EXTENSIONS OFF
+    )
+
+    target_link_libraries(hps_test_cpp_standard PRIVATE
+            HPS::base
+    )
+
+    target_compile_definitions(hps_test_cpp_standard PRIVATE
+            HPS_EXPECTED_CXX_STANDARD=${HPS_CXX_STANDARD}
+    )
+
+    target_compile_options(hps_test_cpp_standard PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+            -pedantic-errors
+            -Werror
+    )
+
+    hps_apply_build_profile(hps_test_cpp_standard)
+
+    add_test(
+            NAME hps_cpp_standard
+            COMMAND hps_test_cpp_standard
+    )
+
+
+
+
+
+
+
+
 endif()
+
+
